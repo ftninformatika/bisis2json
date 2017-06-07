@@ -1,5 +1,11 @@
+*.DS_Store
+Thumbs.db
+
+# Build Files
+bin
+target
+build/
 .gradle
-/build/
 
 # Ignore Gradle GUI config
 gradle-app.setting
@@ -12,3 +18,32 @@ gradle-app.setting
 
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
+
+# Eclipse Project Files
+.classpath
+.project
+.settings
+
+# STS Project Files
+.springBeans
+.apt_generated
+.factorypath
+
+
+# IntelliJ IDEA Files #
+*.iml
+*.ipr
+*.iws
+*.idea
+
+# NetBeans Project Files #
+nbactions.xml
+nb-configuration.xml
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# PMD
+.pmd
