@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mysql.cj.core.exceptions.DataReadException;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -179,11 +180,19 @@ public class ExportUsers {
     
   }
   
-  private static LocalDate getDate(ResultSet rset, String columnName) throws Exception {
-    java.sql.Date date = rset.getDate(columnName);
-    if (date == null)
+  private static LocalDate getDate(ResultSet rset, String columnName)  {
+
+    try {
+      java.sql.Date date = rset.getDate(columnName);
+      if (date == null)
+        return null;
+      return date.toLocalDate();
+    }
+    catch (Exception e) {
+      e.printStackTrace();
       return null;
-    return date.toLocalDate();
+    }
+
   }
 
   private static String toJSON(User user) {
