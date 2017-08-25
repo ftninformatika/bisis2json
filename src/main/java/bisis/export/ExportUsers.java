@@ -88,28 +88,40 @@ public class ExportUsers {
     int userCount = 0;
     List<User> users = new ArrayList<>();
     Statement stmt = conn.createStatement();
-    PreparedStatement p1 = conn.prepareStatement("SELECT id, ctlg_no, lend_date, location, return_date, resume_date, deadline, librarian_lend, librarian_return, librarian_resume FROM lending WHERE sys_id=?");
-    PreparedStatement p2 = conn.prepareStatement("SELECT id, sign_date, location, until_date, cost, receipt_id, librarian FROM signing WHERE sys_id=?");
+    PreparedStatement lendingPS = conn.prepareStatement("SELECT id, ctlg_no, lend_date, location, return_date, resume_date, deadline, librarian_lend, librarian_return, librarian_resume FROM lending WHERE sys_id=?");
+    PreparedStatement signingPS = conn.prepareStatement("SELECT id, sign_date, location, until_date, cost, receipt_id, librarian FROM signing WHERE sys_id=?");
+    PreparedStatement organizationPS = conn.prepareStatement("SELECT adress, name, city, zip from organization where id=?");
+    PreparedStatement membershipTypePS = conn.prepareStatement("SELECT name, period from mmbr_types where id=?");
+    PreparedStatement userCategoryPS = conn.prepareStatement("SELECT name, titles_no, period, max_period from user_categs where id=?");
+    PreparedStatement corporateMemberPS = conn.prepareStatement("SELECT * from gruops where user_id=?");
+    PreparedStatement duplicatesPS = conn.prepareStatement("SELECT * from duplicate where id=?");
+    PreparedStatement picturebooksPS = conn.prepareStatement("SELECT * from picturebooks where id=?");
+
     ResultSet rset = stmt.executeQuery("SELECT sys_id, organization, languages, edu_lvl, mmbr_type, user_categ, groups, user_id, first_name, last_name, parent_name, address, city, zip, phone, email, jmbg, doc_id, doc_no, doc_city, country, gender, age, sec_address, sec_zip, sec_city, sec_phone, note, interests, warning_ind, occupation, title, index_no, class_no, pass, block_reason FROM users");
     while (rset.next()) {
       if (++userCount % 1000 == 0)
         System.out.println("users exported: " + userCount);
       User user = new User();
-      user.setSysId(rset.getInt("sys_id"));
-      user.setOrganizationId(rset.getInt("organization"));
-      user.setLanguages(rset.getInt("languages"));
-      user.setEducationLevel(rset.getInt("edu_lvl"));
-      user.setMembershipType(rset.getInt("mmbr_type"));
-      user.setUserCategory(rset.getInt("user_categ"));
-      user.setGroups(rset.getInt("groups"));
-      user.setUserId(rset.getString("user_id"));
-      user.setFirstName(rset.getString("first_name"));
-      user.setLastName(rset.getString("last_name"));
-      user.setParentName(rset.getString("parent_name"));
-      user.setAddress(rset.getString("address"));
-      user.setCity(rset.getString("city"));
-      user.setZip(rset.getInt("zip"));
-      user.setPhone(rset.getString("phone"));
+      //user.setSysId(rset.getInt("sys_id"));
+
+
+      organizationPS.setInt(1, rset.getInt("organization"));
+
+      rset.getInt("organization");
+      //user.setOrganizationId(rset.getInt("organization"));
+      //user.setLanguages(rset.getInt("languages"));
+      //user.setEducationLevel(rset.getInt("edu_lvl"));
+      //user.setMembershipType(rset.getInt("mmbr_type"));
+      //user.setUserCategory(rset.getInt("user_categ"));
+      //user.setGroups(rset.getInt("groups"));
+      //user.setUserId(rset.getString("user_id"));
+      //user.setFirstName(rset.getString("first_name"));
+      //user.setLastName(rset.getString("last_name"));
+      //user.setParentName(rset.getString("parent_name"));
+      //user.setAddress(rset.getString("address"));
+      //user.setCity(rset.getString("city"));
+      //user.setZip(rset.getInt("zip"));
+      /*user.setPhone(rset.getString("phone"));
       user.setEmail(rset.getString("email"));
       user.setJmbg(rset.getString("jmbg"));
       user.setDocId(rset.getInt("doc_id"));
@@ -131,9 +143,9 @@ public class ExportUsers {
       user.setClassNo(rset.getInt("class_no"));
       user.setPass(rset.getString("pass"));
       user.setBlockReason(rset.getString("block_reason"));
-      
-      p1.setInt(1, user.getSysId());
-      ResultSet r1 = p1.executeQuery();
+
+      lendingPS.setInt(1, user.getSysId());
+      ResultSet r1 = lendingPS.executeQuery();
       while (r1.next()) {
         Lending lending = new Lending();
         lending.setId(r1.getInt("id"));
@@ -149,9 +161,9 @@ public class ExportUsers {
         user.getLending().add(lending);
       }
       r1.close();
-      
-      p2.setInt(1, user.getSysId());
-      ResultSet r2 = p2.executeQuery();
+
+      signingPS.setInt(1, user.getSysId());
+      ResultSet r2 = signingPS.executeQuery();
       while (r2.next()) {
         Signing signing = new Signing();
         signing.setId(r2.getInt("id"));
@@ -165,12 +177,12 @@ public class ExportUsers {
       }
       r2.close();
       
-      users.add(user);
+      users.add(user);*/
     }
     rset.close();
     stmt.close();
-    p1.close();
-    p2.close();
+    lendingPS.close();
+    signingPS.close();
     
     for (User user: users) {
       outputFile.write(toJSON(user));
