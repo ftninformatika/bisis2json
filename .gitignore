@@ -29,6 +29,8 @@ gradle-app.setting
 .apt_generated
 .factorypath
 
+# Output json file
+/*.json
 
 # IntelliJ IDEA Files #
 *.iml
