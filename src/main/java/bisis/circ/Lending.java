@@ -15,13 +15,13 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class Lending implements Serializable {
 
-  private Integer id;
+  private String userId;
   private String ctlgNo;
 
   @JsonSerialize(using = IsoLocalDateSerializer.class)
   private LocalDate lendDate;
 
-  private Integer location;
+  private String location;
 
   @JsonSerialize(using = IsoLocalDateSerializer.class)
   private LocalDate returnDate;
