@@ -248,7 +248,7 @@ public class ExportUsers {
         signing.setCost(r2.getBigDecimal("cost"));
         signing.setReceiptId(r2.getString("receipt_id"));
         signing.setLibrarian(r2.getString("librarian"));
-        member.getSigning().add(signing);
+        member.getSignings().add(signing);
       }
       r2.close();
 

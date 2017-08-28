@@ -52,8 +52,8 @@ public class Member implements Serializable {
   private String pass;
   private String blockReason;
   
-  private List<Lending> lending = new ArrayList<>();
-  private List<Signing> signing = new ArrayList<>();
+  private List<Lending> lendings = new ArrayList<>();
+  private List<Signing> signings = new ArrayList<>();
   private List<Duplicate> duplicates = new ArrayList<>();
   private List<PictureBook> picturebooks = new ArrayList<>();
   
