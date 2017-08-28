@@ -79,7 +79,6 @@ public class ExportLendings {
 
     public static void export(Connection conn, PrintWriter outputFile) throws SQLException {
 
-        List<Lending> lendings = new ArrayList<>();
         Statement stmt = conn.createStatement();
         ResultSet rset = stmt.executeQuery("SELECT * FROM lending");
         PreparedStatement userPS = conn.prepareStatement("SELECT user_id FROM users where sys_id = ?");
@@ -113,10 +112,8 @@ public class ExportLendings {
 
             outputFile.write(toJSON(lending));
         }
-
         userPS.close();
         stmt.close();
-
 
         System.out.println("Total lendings exported: " + lendingCount);
 
