@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.*;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * Created by dboberic on 28/07/2017.
@@ -20,7 +20,7 @@ public class CorporateMember implements Serializable {
     private String userId;
     private String instName;
     @JsonSerialize(using = IsoLocalDateSerializer.class)
-    private Date signDate;
+    private LocalDate signDate;
     private String address;
     private String city;
     private Integer zip;

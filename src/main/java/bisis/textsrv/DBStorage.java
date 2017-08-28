@@ -138,7 +138,7 @@ public class DBStorage {
    * Retrieves a record with an exclusive lock for editing.
    * @param conn Database connection
    * @param id Record ID
-   * @param user User trying to lock the record
+   * @param user Member trying to lock the record
    * @return The locked record
    * @throws LockException if the record is already locked
    */
@@ -155,7 +155,7 @@ public class DBStorage {
    * Locks the given record.
    * @param conn Database connection
    * @param id Record ID
-   * @param user User trying to lock the record
+   * @param user Member trying to lock the record
    * @return The user that owns the lock
    */
   public String lock(Connection conn, int id, String user) {
@@ -179,7 +179,7 @@ public class DBStorage {
       conn.commit();
       return inUseBy;
     } catch (SQLException ex) {
-      log.fatal("User " + user + " Cannot lock record with id: " + id);
+      log.fatal("Member " + user + " Cannot lock record with id: " + id);
       log.fatal(ex);
       return null;
     }
