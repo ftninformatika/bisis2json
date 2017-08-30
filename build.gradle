@@ -28,6 +28,27 @@ task fatJarUsers(type: Jar) {
     archiveName 'bisis2json-export-users.jar'
 }
 
+task fatJarClientConfig(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'bisis.export.ExportClientConfig'
+    }
+    from sourceSets.main.output
+    //from sourceSets.resources.files
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
+    with jar
+    archiveName 'bisis2json-export-client-config.jar'
+}
+
+task fatJarLendings(type: Jar){
+    manifest {
+        attributes 'Main-Class': 'bisis.export.ExportLendings'
+    }
+    from sourceSets.main.output
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
+    with jar
+    archiveName 'bisis2json-export-lendings.jar'
+}
+
 repositories {
     mavenCentral()
 }
@@ -49,5 +70,5 @@ dependencies {
 configurations.archives.artifacts.clear();
 
 artifacts {
-    archives fatJarRecords, fatJarUsers
+    archives fatJarRecords, fatJarUsers, fatJarLendings, fatJarClientConfig
 }

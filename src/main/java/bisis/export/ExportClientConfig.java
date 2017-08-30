@@ -6,10 +6,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 
 import java.io.*;
-import java.sql.Array;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.util.Arrays;
 
 /**
  * Created by Petar on 8/30/2017.
