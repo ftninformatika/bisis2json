@@ -230,6 +230,7 @@ public class ExportCoders {
             writeToFile(circCodersOutputDirName + "/warningTypes.json", mapper.writeValueAsString(warningTypes));
         }
 
+        System.out.println("Coders successfully exported!");
 
 
     }

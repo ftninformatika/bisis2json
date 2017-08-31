@@ -73,7 +73,6 @@ public class ExportClientConfig {
                 outString.append(getPropName(line,header) + getPropValue(line) + "\n");
 
         }
-
         int lastComma = outString.lastIndexOf(",");
         outString.replace(lastComma, lastComma+1, "\n}");
 
