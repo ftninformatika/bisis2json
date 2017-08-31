@@ -30,6 +30,9 @@ gradle-app.setting
 .factorypath
 
 # Output json file
+
+coders_json_output/
+circ_coders_json_output/
 /*.json
 
 # IntelliJ IDEA Files #
