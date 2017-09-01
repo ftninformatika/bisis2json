@@ -8,16 +8,16 @@ Za build projekta koristi se Gradle.
 $ gradle build
 ```
 
-Rezultat ce biti cetiri jara u `build/libs` folderu:
+Rezultat ce biti pet jar- ova u `build/libs` folderu:
 
 * `bisis2json-export-records.jar` za eksport zapisa
 * `bisis2json-export-users.jar` za eksport cirkulacije
 * `bisis2json-export-lendings.jar` za eksport cirkulacije
 * `bisis2json-export-client-config.jar` za eksport cirkulacije
 * `bisis2json-export-client-config.jar` za eksport šifarnika
-#Eksport - import moguće izvršiti na 2 načina
+# Eksport - import moguće izvršiti na 2 načina
 
-##Korišćenjem skripte (Windows only)
+## Korišćenjem skripte (Windows only)
 Pokrenuti `bisis_export_import_tool.cmd` ispratiti korake:
 Parametri:
 * Kod biblioteke(na pr. gbns, gbsa...)
