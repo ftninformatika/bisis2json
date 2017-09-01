@@ -138,7 +138,7 @@ echo Finished importing coders
 )
 
 IF /I "%iClient%" == "Y" (
-mongoimport --db "%mDb%" --collection config --file clientConfig.json
+mongoimport --db "%mDb%" --collection configs --file clientConfig.json
 )
 
 IF /I "%iUsers%" == "Y" (
