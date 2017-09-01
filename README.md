@@ -18,8 +18,7 @@ Rezultat ce biti pet jar- ova u `build/libs` folderu:
 # Eksport - import moguće izvršiti na 2 načina
 
 ## Korišćenjem skripte (Windows only)
-Pokrenuti `bisis_export_import_tool.cmd` ispratiti korake:
-Parametri:
+Pokrenuti `bisis_export_import_tool.cmd` ispratiti korake, parametri:
 * Kod biblioteke(na pr. gbns, gbsa...)
 * Prefiks biblioteke(na pr. gbns_com, gbsa_rs...)
 * Adresu i port MySQL servera, ime baze, kao i kredencijale za pristup
