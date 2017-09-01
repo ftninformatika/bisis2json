@@ -94,6 +94,11 @@ public class ExportRecords {
       int i = 0;
       for (int id: docIDs) {
         Record rec = storage.get(conn, id);
+        if (rec == null){
+          System.out.println("Problem parsing record with ID: " + id );
+          continue;
+        }
+
         rec.pack();
         if ("xml".equals(format))
           out.println(LooseXMLSerializer.toLooseXML(rec));
