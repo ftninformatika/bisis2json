@@ -126,7 +126,7 @@ public class Indexer {
     doc.add(id);
     
     Set<String> sortPrefixes = PrefixConfigFactory.getPrefixConfig().getSortPrefixes();
-    Iterator<PrefixValue> prefixes = PrefixConverter.toPrefixes(rec).iterator();
+    Iterator<PrefixValue> prefixes = PrefixConverter.toPrefixes(rec, null).iterator();
     while (prefixes.hasNext()) {
       PrefixValue pref = prefixes.next();
       String value = LatCyrUtils.toLatin(pref.value);

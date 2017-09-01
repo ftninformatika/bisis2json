@@ -11,6 +11,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import bisis.prefixes.PrefixConverter;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -75,6 +76,7 @@ public class ExportRecords {
     }
     try {
       PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), "UTF8")));
+      PrintWriter outElastic = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream("elastic"+outputFile), "UTF8")));
       if ("xml".equals(format))
         out.println("<?xml version=\"1.0\"?>\n<records>");
       Connection conn = DriverManager.getConnection("jdbc:mysql://" + address
@@ -97,6 +99,7 @@ public class ExportRecords {
           out.println(LooseXMLSerializer.toLooseXML(rec));
         else
           out.println(JSONSerializer.toJSON(rec));
+        outElastic.write(JSONSerializer.toElasticJson(PrefixConverter.toMap(rec, null)));
         if (i % 1000 == 0)
           System.out.println(Integer.toString(i) + " records exported");
         i++;
@@ -106,6 +109,7 @@ public class ExportRecords {
       System.out.println("Total " + Integer.toString(i) + " records exported.");
       conn.close();
       out.close();
+      outElastic.close();
     } catch (Exception e) {
       e.printStackTrace();
     }

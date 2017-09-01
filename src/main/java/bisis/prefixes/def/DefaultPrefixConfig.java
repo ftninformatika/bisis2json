@@ -160,16 +160,16 @@ public class DefaultPrefixConfig implements PrefixConfig {
     prefixNameLists = new HashMap<Locale, List<PrefixValue>>();
     prefixNameLists.put(null, initPrefixNameList(null));
   }
-  
+
   private List<PrefixValue> initPrefixNameList(Locale locale) {
     List<PrefixValue> retVal = new ArrayList<PrefixValue>();
     ResourceBundle rb = null;
     if (locale == null)
       rb = PropertyResourceBundle.getBundle(
-          "com.gint.app.bisis4.prefixes.def.PrefixNames");
+          "bisis.prefixes.def.PrefixNames");
     else
       rb = PropertyResourceBundle.getBundle(
-          "com.gint.app.bisis4.prefixes.def.PrefixNames", locale);
+          "bisis.prefixes.def.PrefixNames", locale);
     if (rb == null)
       return retVal;
     Enumeration<String> keys = rb.getKeys();
@@ -183,10 +183,10 @@ public class DefaultPrefixConfig implements PrefixConfig {
     List<PrefixValue> temp = new ArrayList<PrefixValue>();
     if (locale == null)
       rb = PropertyResourceBundle.getBundle(
-          "com.gint.app.bisis4.prefixes.def.SubfieldNames");
+          "bisis.prefixes.def.SubfieldNames");
     else
       rb = PropertyResourceBundle.getBundle(
-          "com.gint.app.bisis4.prefixes.def.SubfieldNames", locale);
+          "bisis.prefixes.def.SubfieldNames", locale);
     if (rb == null)
       return retVal;
     keys = rb.getKeys();
