@@ -14,7 +14,7 @@ Rezultat ce biti pet jar- ova u `build/libs` folderu:
 * `bisis2json-export-users.jar` za eksport cirkulacije
 * `bisis2json-export-lendings.jar` za eksport cirkulacije
 * `bisis2json-export-client-config.jar` za eksport cirkulacije
-* `bisis2json-export-client-config.jar` za eksport šifarnika
+* `bisis2json-export-client-coders.jar` za eksport šifarnika
 # Eksport - import moguće izvršiti na 2 načina
 
 ## Korišćenjem skripte (Windows only)
