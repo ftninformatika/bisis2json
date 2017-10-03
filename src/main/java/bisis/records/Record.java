@@ -6,9 +6,11 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import bisis.export.IsoDateSerializer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import bisis.records.serializers.PrimerakSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @SuppressWarnings("serial")
 public class Record implements Serializable {
@@ -473,7 +475,9 @@ public class Record implements Serializable {
   /** record modifier */
   private Author modifier;
   /** record creation date */
+  @JsonSerialize(using = IsoDateSerializer.class)
   private Date creationDate;
   /** last modification date */
+  @JsonSerialize(using = IsoDateSerializer.class)
   private Date lastModifiedDate;
 }
