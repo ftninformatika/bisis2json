@@ -66,6 +66,7 @@ task fatJarItemAvailabilities(type: Jar){
     from sourceSets.main.output
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
     with jar
+    archiveName 'bisis2json-export-item-availabilities.jar'
 }
 
 repositories {

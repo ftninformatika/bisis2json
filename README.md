@@ -8,7 +8,7 @@ Za build projekta koristi se Gradle.
 $ gradle build
 ```
 
-Rezultat ce biti pet jar- ova u `build/libs` folderu:
+Rezultat ce biti šest jar- ova u `build/libs` folderu:
 
 * `bisis2json-export-records.jar` za eksport zapisa
 * `bisis2json-export-users.jar` za eksport cirkulacije
