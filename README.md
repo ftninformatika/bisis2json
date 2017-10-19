@@ -12,9 +12,10 @@ Rezultat ce biti pet jar- ova u `build/libs` folderu:
 
 * `bisis2json-export-records.jar` za eksport zapisa
 * `bisis2json-export-users.jar` za eksport cirkulacije
-* `bisis2json-export-lendings.jar` za eksport cirkulacije
-* `bisis2json-export-client-config.jar` za eksport cirkulacije
+* `bisis2json-export-lendings.jar` za eksport zaduženja
+* `bisis2json-export-client-config.jar` za eksport konfiguracije
 * `bisis2json-export-coders.jar` za eksport šifarnika
+* `bisis2json-export-item-availabilities.jar` za eksport stanja primeraka
 # Eksport - import moguće izvršiti na 2 načina
 
 ## Korišćenjem skripte (Windows only)
@@ -62,22 +63,28 @@ Eksport `client-config.ini` fajla :
 java -jar bisis2json-export-client-config.jar -i putanja-do-config-ini/client-config.ini -o clientConfig.json
 ```
 
+Eksport stanja primeraka :
+
+```
+java -jar bisis2json-export-item-availabilities.jar -o users.json
+```
+
 ### Import u MongoDB
 
 Import zapisa (u primeru za biblioteku BGB):
 
 ```
-mongoimport --db bisis --collection bgb.records --file records.json
+mongoimport --db bisis --collection bgb_records --file records.json
 ```
 
 Import cirkulacije (korisnici):
 ```
-mongoimport --db bisis --collection bgb.users --file users.json
+mongoimport --db bisis --collection bgb_users --file users.json
 ```
 
 Import cirkulacije (zaduzenja):
 ```
-mongoimport --db bisis --collection bgb.lendings --file lendings.json
+mongoimport --db bisis --collection bgb_lendings --file lendings.json
 ```
 
 Import konfiguracije:
@@ -108,4 +115,8 @@ mongoimport --db bisis --collection coders.organization --file circ_coders_json_
 mongoimport --db bisis --collection coders.place --file circ_coders_json_output/places.json --jsonArray
 mongoimport --db bisis --collection coders.user_categ --file circ_coders_json_output/userCategories.json --jsonArray
 mongoimport --db bisis --collection coders.warning_type --file circ_coders_json_output/warningTypes.json --jsonArray
+```
+Import stanja primeraka:
+```
+mongoimport --db bisis --collection bgb_item_availabilities --file items.json
 ```

@@ -92,7 +92,7 @@ public class ExportItemAvailability {
         }
         stmt.close();
 
-        System.out.println("Total lendings exported: " + primerciCount);
+        System.out.println("Total items exported: " + primerciCount);
 
     }
 

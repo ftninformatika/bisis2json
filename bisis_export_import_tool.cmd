@@ -5,6 +5,7 @@ SET pathToRecords=%~dp0\build\libs\bisis2json-export-records.jar
 SET pathToLendings=%~dp0\build\libs\bisis2json-export-lendings.jar
 SET pathToClientConfig=%~dp0\build\libs\bisis2json-export-client-config.jar
 SET pathToUsers=%~dp0\build\libs\bisis2json-export-users.jar
+SET pathToItems=%~dp0\build\libs\bisis2json-export-item-availabilities.jar
 
 echo  & echo. Welcome to BISIS export tool, please make connection to both MySQLDB and MongoDB & echo. and provide the following informations in order make an export! & echo.
 
@@ -71,15 +72,27 @@ goto choiceRecordsMongo
 :choiceLendings
 SET /P l=Export lendings(y/n):
 if /I "%l%" == "Y" goto choiceLendingsMongo
-if /I "%l%" == "N" goto export
+if /I "%l%" == "N" goto choiceItems
 goto choiceLendings
-
 
 :choiceLendingsMongo
 SET /P iL=Import lendings in mongo after exporting?(y/n):
-if /I "%iL%" == "Y" goto export
-if /I "%iL%" == "N" goto export
+if /I "%iL%" == "Y" goto choiceItems
+if /I "%iL%" == "N" goto choiceItems
 goto choiceLendingsMongo
+
+:choiceItems
+SET /P items=Export item availabilities(y/n):
+if /I "%items%" == "Y" goto choiceItemsMongo
+if /I "%items%" == "N" goto export
+goto choiceItems
+
+
+:choiceItemsMongo
+SET /P iItems=Import item availabilities in mongo after exporting?(y/n):
+if /I "%iItems%" == "Y" goto export
+if /I "%iItems%" == "N" goto export
+goto choiceItemsMongo
 
 :export
 
@@ -107,12 +120,17 @@ IF /I "%l%" == "Y" (
 echo Starting lendings exporting...
 java -jar "%pathToLendings%"  -a %address% -p %port% -d %db% -u %username% -w %password% -o lendings.json
 )
+
+IF /I "%items%" == "Y" (
+echo Starting item availiabilities exporting...
+java -jar "%pathToItems%"  -a %address% -p %port% -d %db% -u %username% -w %password% -o item_availabilities.json
+)
+
 echo Exporting completed
 
 :mongoImport
 
 IF /I "%iCoders%" == "Y" (
-echo Starting coders mongo import...
 mongoimport --db "%mDb%" --collection coders.accessionReg --file coders_json_output/invknj.json --jsonArray
 mongoimport --db "%mDb%" --collection coders.acquisition --file coders_json_output/nacin_nabavke.json --jsonArray
 mongoimport --db "%mDb%" --collection coders.availability --file coders_json_output/dostupnost.json --jsonArray
@@ -134,7 +152,6 @@ mongoimport --db "%mDb%" --collection coders.organization --file circ_coders_jso
 mongoimport --db "%mDb%" --collection coders.place --file circ_coders_json_output/places.json --jsonArray
 mongoimport --db "%mDb%" --collection coders.user_categ --file circ_coders_json_output/userCategories.json --jsonArray
 mongoimport --db "%mDb%" --collection coders.warning_type --file circ_coders_json_output/warningTypes.json --jsonArray
-echo Finished importing coders
 )
 
 IF /I "%iClient%" == "Y" (
@@ -150,8 +167,11 @@ mongoimport --db "%mDb%" --collection %libraryPrefix%_records --file records.jso
 )
 
 IF /I "%iL%" == "Y" (
-echo Starting lendings exporting...
 mongoimport --db "%mDb%" --collection %libraryPrefix%_lendings --file lendings.json
+)
+
+IF /I "%iItems%" == "Y" (
+mongoimport --db "%mDb%" --collection %libraryPrefix%_itemAvailability --file item_availabilities.json
 )
 
 pause
