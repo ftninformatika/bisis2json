@@ -14,6 +14,7 @@ public class Primerak implements Serializable {
 
   private int primerakID;
   private String invBroj;
+  @JsonSerialize(using = IsoDateSerializer.class)
   private Date datumRacuna;
   private String brojRacuna;
   private String dobavljac;
