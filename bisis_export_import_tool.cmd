@@ -136,7 +136,6 @@ mongoimport --db "%mDb%" --collection coders.acquisition --file coders_json_outp
 mongoimport --db "%mDb%" --collection coders.availability --file coders_json_output/dostupnost.json --jsonArray
 mongoimport --db "%mDb%" --collection coders.binding --file coders_json_output/povez.json --jsonArray
 mongoimport --db "%mDb%" --collection coders.location --file coders_json_output/location.json --jsonArray
-mongoimport --db "%mDb%" --collection coders.circ_location --file coders_json_output/location.json --jsonArray
 mongoimport --db "%mDb%" --collection coders.sublocation --file coders_json_output/podlokacija.json --jsonArray
 mongoimport --db "%mDb%" --collection coders.status --file coders_json_output/status_primerka.json --jsonArray
 mongoimport --db "%mDb%" --collection coders.format --file coders_json_output/sigformat.json --jsonArray
