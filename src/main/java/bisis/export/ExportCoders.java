@@ -230,6 +230,20 @@ public class ExportCoders {
             writeToFile(circCodersOutputDirName + "/warningTypes.json", mapper.writeValueAsString(warningTypes));
         }
 
+        rs = statement.executeQuery("SELECT * from location");
+        {
+            List<CircLocation> circLocations = new ArrayList<>();
+            while (rs.next()){
+                CircLocation m = new CircLocation();
+                m.setLibrary(library);
+                m.setDescription(rs.getString("name"));
+                m.setLocationCode(rs.getString("id"));
+                m.setLastUserId(rs.getInt("last_user_id"));
+                circLocations.add(m);
+            }
+            writeToFile(circCodersOutputDirName + "/circLocations.json", mapper.writeValueAsString(circLocations));
+        }
+
         System.out.println("Coders successfully exported!");
 
 

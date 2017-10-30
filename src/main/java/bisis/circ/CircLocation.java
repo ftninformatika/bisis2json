@@ -14,7 +14,7 @@ import lombok.*;
 public class CircLocation {
     private String _id;
     private String library;
-    private String location_id;
+    private String locationCode;
     private String description;
     private int lastUserId;
 }
