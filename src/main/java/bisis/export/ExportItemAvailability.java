@@ -11,6 +11,8 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Petar on 10/19/2017.
@@ -75,8 +77,15 @@ public class ExportItemAvailability {
     public static void export(Connection conn, PrintWriter outputFile) throws SQLException {
 
         Statement stmt = conn.createStatement();
-        ResultSet rset = stmt.executeQuery("SELECT * FROM primerci");
+        ResultSet rsetOdlj = stmt.executeQuery("SELECT * FROM odeljenje");
 
+        Map<String, String> libDepartments = new HashMap<>();
+        while (rsetOdlj.next()){
+            libDepartments.put(rsetOdlj.getString("odeljenje_id"), rsetOdlj.getString("odeljenje_naziv"));
+        }
+
+
+        ResultSet rset = stmt.executeQuery("SELECT * FROM primerci");
         int primerciCount = 0;
 
         while(rset.next()){
@@ -87,6 +96,7 @@ public class ExportItemAvailability {
             ia.setRecordID(rset.getString("record_id"));
             ia.setBorrowed(rset.getInt("stanje") == 1);
             ia.setCtlgNo(rset.getString("inv_broj"));
+            ia.setLibDepartment(libDepartments.get(rset.getString("odeljenje_id")));
 
             outputFile.write(toJSON(ia));
         }

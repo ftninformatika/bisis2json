@@ -143,6 +143,7 @@ mongoimport --db "%mDb%" --collection coders.internalMark --file coders_json_out
 
 
 mongoimport --db "%mDb%" --collection coders.corporate_member --file circ_coders_json_output/corporateMember.json --jsonArray
+mongoimport --db "%mDb%" --collection coders.circ_location --file coders_json_output/circLocations.json --jsonArray
 mongoimport --db "%mDb%" --collection coders.education --file circ_coders_json_output/eduLvls.json --jsonArray
 mongoimport --db "%mDb%" --collection coders.language --file circ_coders_json_output/languages.json --jsonArray
 mongoimport --db "%mDb%" --collection coders.membership --file circ_coders_json_output/memberships.json --jsonArray
