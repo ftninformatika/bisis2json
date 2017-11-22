@@ -112,6 +112,7 @@ public class ExportReportsConfig {
 
         PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream("reportsConfig.json"), "UTF8")));
         out.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(parsedJson.toList()));
+        out.close();
     }
 
 
