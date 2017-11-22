@@ -5,15 +5,17 @@ import lombok.*;
 /**
  * Created by dboberic on 27/07/2017.
  */
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class Membership {
+public class WarningCounter {
+
+
     private String library;
-    private String memberType; // description
-    private String userCateg; //desc
-    private Double cost;
+    private String warningType;
+    private String warnYear;
+    private Integer lastNo;
+
 }

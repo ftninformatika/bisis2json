@@ -9,6 +9,9 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -21,7 +24,7 @@ public class Lending implements Serializable {
   @JsonSerialize(using = IsoLocalDateSerializer.class)
   private LocalDate lendDate;
 
-  private String location;
+  private String location; //desc
 
   @JsonSerialize(using = IsoLocalDateSerializer.class)
   private LocalDate returnDate;
@@ -35,6 +38,9 @@ public class Lending implements Serializable {
   private String librarianLend;
   private String librarianReturn;
   private String librarianResume;
+
+
+  private List<Warning> warnings = new ArrayList<>();
  
 
     

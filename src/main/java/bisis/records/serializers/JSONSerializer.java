@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import bisis.records.Record;
 
+import java.util.List;
 import java.util.Map;
 
 public class JSONSerializer {
@@ -19,7 +20,7 @@ public class JSONSerializer {
     }
   }
 
-  public static String toElasticJson(Map<String, String> recMap) {
+  public static String toElasticJson(Map<String, List<String>> recMap) {
     try {
       return mapper.writeValueAsString(recMap);
     } catch (JsonProcessingException e) {

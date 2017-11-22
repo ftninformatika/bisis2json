@@ -15,22 +15,23 @@ import java.util.List;
 @NoArgsConstructor
 public class Member implements Serializable {
 
+  private String inUseBy;
   private Organization organization;
-  private String languages;
-  private String educationLevel;
+  private String language; //desc
+  private String educationLevel; //desc
   private MembershipType membershipType;
   private UserCategory userCategory;
   private CorporateMember corporateMember;
-  private Integer groups;
   private String userId;
   private String firstName;
   private String lastName;
   private String parentName;
   private String address;
   private String city;
-  private Integer zip;
+  private String zip;
   private String phone;
-  private String email;
+  private String email; // ovo je username za prijavljivanje
+  private String password;
   private String jmbg;
   private Integer docId;
   private String docNo;
@@ -39,7 +40,7 @@ public class Member implements Serializable {
   private String gender;
   private String age;
   private String secAddress;
-  private Integer secZip;
+  private String secZip;
   private String secCity;
   private String secPhone;
   private String note;
@@ -49,11 +50,11 @@ public class Member implements Serializable {
   private String title;
   private String indexNo;
   private Integer classNo;
-  private String pass;
   private String blockReason;
-  
-  private List<Lending> lendings = new ArrayList<>();
+  private String pin;
+
   private List<Signing> signings = new ArrayList<>();
+  //private List<Lending> lendings = new ArrayList<>();
   private List<Duplicate> duplicates = new ArrayList<>();
   private List<PictureBook> picturebooks = new ArrayList<>();
   

@@ -11,7 +11,9 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import bisis.circ.*;
 import org.apache.commons.cli.CommandLine;
@@ -27,6 +29,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 public class ExportUsers {
   
   public static void main(String[] args) {
+    //MongoClient mc = new MongoClient("localhost",27017);
     Options options = new Options();
     options.addOption("a", "address", true,
         "MySQL server address (default: localhost)");
@@ -173,12 +176,11 @@ public class ExportUsers {
       }
       rCpm.close();
 
-      member.setGroups(rset.getInt("groups")); //visak?
 
       languagePS.setInt(1, rset.getInt("languages"));
       ResultSet rL = languagePS.executeQuery();
       if(rL.next()){
-        member.setLanguages(rL.getString("name"));
+        member.setLanguage(rL.getString("name"));
       }
       rL.close();
 
@@ -195,7 +197,7 @@ public class ExportUsers {
       member.setParentName(rset.getString("parent_name"));
       member.setAddress(rset.getString("address"));
       member.setCity(rset.getString("city"));
-      member.setZip(rset.getInt("zip"));
+      member.setZip(rset.getString("zip"));
       member.setPhone(rset.getString("phone"));
       member.setEmail(rset.getString("email"));
       member.setJmbg(rset.getString("jmbg"));
@@ -206,7 +208,7 @@ public class ExportUsers {
       member.setGender(rset.getString("gender"));
       member.setAge(rset.getString("age"));
       member.setSecAddress(rset.getString("sec_address"));
-      member.setSecZip(rset.getInt("sec_zip"));
+      member.setSecZip(rset.getString("sec_zip"));
       member.setSecCity(rset.getString("sec_city"));
       member.setSecPhone(rset.getString("sec_phone"));
       member.setNote(rset.getString("note"));
@@ -216,37 +218,30 @@ public class ExportUsers {
       member.setTitle(rset.getString("title"));
       member.setIndexNo(rset.getString("index_no"));
       member.setClassNo(rset.getInt("class_no"));
-      member.setPass(rset.getString("pass"));
+      member.setPin(rset.getString("pass"));
       member.setBlockReason(rset.getString("block_reason"));
 
-      /*lendingPS.setInt(1, rset.getInt("sys_id"));  Ovo smo rekli u posebnu kolekciju
-      ResultSet r1 = lendingPS.executeQuery();
-      while (r1.next()) {
-        Lending lending = new Lending();
-        lending.setId(r1.getInt("id"));
-        lending.setCtlgNo(r1.getString("ctlg_no"));
-        lending.setLendDate(getDate(r1, "lend_date"));
-        lending.setLocation(r1.getInt("location"));
-        lending.setReturnDate(getDate(r1, "return_date"));
-        lending.setResumeDate(getDate(r1, "resume_date"));
-        lending.setDeadline(getDate(r1, "deadline"));
-        lending.setLibrarianLend(r1.getString("librarian_lend"));
-        lending.setLibrarianReturn(r1.getString("librarian_return"));
-        lending.setLibrarianResume(r1.getString("librarian_resume"));
-        member.getLending().add(lending);
-      }
-      r1.close();*/
 
       signingPS.setInt(1, rset.getInt("sys_id"));
       ResultSet r2 = signingPS.executeQuery();
+
+      Statement stmt2 = conn.createStatement();
+      ResultSet locationRs = stmt2.executeQuery("SELECT * from location");
+      Map<Integer, String> locationsMap = new HashMap<>();
+
+      while (locationRs.next()){
+        locationsMap.put(locationRs.getInt("id") , locationRs.getString("name"));
+      }
+      stmt2.close();
+
       while (r2.next()) {
         Signing signing = new Signing();
-        signing.setId(r2.getInt("id"));
         signing.setSignDate(getDate(r2, "sign_date"));
-        signing.setLocation(r2.getInt("location"));
+
+        signing.setLocation(locationsMap.get(r2.getInt("location")));
         signing.setUntilDate(getDate(r2, "until_date"));
-        signing.setCost(r2.getBigDecimal("cost"));
-        signing.setReceiptId(r2.getString("receipt_id"));
+        signing.setCost(r2.getDouble("cost"));
+        signing.setReceipt(r2.getString("receipt_id"));
         signing.setLibrarian(r2.getString("librarian"));
         member.getSignings().add(signing);
       }
@@ -275,11 +270,11 @@ public class ExportUsers {
         pictureBooks.add(p);
       }
       member.setPicturebooks(pictureBooks);
-
       members.add(member);
     }
     rset.close();
     stmt.close();
+
     //lendingPS.close();
     signingPS.close();
     organizationPS.close();

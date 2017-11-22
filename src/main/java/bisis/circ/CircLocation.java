@@ -12,7 +12,7 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class CircLocation {
-    private String _id;
+
     private String library;
     private String locationCode;
     private String description;

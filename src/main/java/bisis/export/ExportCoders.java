@@ -298,7 +298,10 @@ public class ExportCoders {
         List<Coder> coders = new ArrayList<>();
         while(rs.next()) {
             Coder c = new Coder();
-            c.setCoder_id(rs.getString(cols[0]));
+            String cid = rs.getString(cols[0]);
+            if (cid.length() == 1)
+                cid = "0" + cid;
+            c.setCoder_id(cid);
             c.setDescription(rs.getString(cols[1]));
             c.setLibrary(libName);
             coders.add(c);

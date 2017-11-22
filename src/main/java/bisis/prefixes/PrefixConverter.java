@@ -9,11 +9,17 @@ import java.util.*;
 
 public class PrefixConverter {
 
-  public static Map<String, String> toMap(Record rec, String stRashod) {
-    HashMap<String, String> retVal = new HashMap<>();
+  public static Map<String, List<String>> toMap(Record rec, String stRashod) {
+    HashMap<String, List<String>> retVal = new HashMap<>();
     List<PrefixValue> prefixes = toPrefixes(rec, stRashod);
     for (PrefixValue pv: prefixes) {
-      retVal.put(pv.prefName, pv.value);
+      if(retVal.containsKey(pv.prefName))
+        retVal.get(pv.prefName).add(pv.value);
+      else{
+        retVal.put(pv.prefName, new ArrayList<>());
+        retVal.get(pv.prefName).add(pv.value);
+      }
+      //retVal.put(pv.prefName, pv.value);
     }
     return retVal;
   }
@@ -22,6 +28,9 @@ public class PrefixConverter {
     List<PrefixValue> retVal = new ArrayList<>();
     int brRashod = 0;
     boolean activ = true;
+
+
+
     for (int i = 0; i < rec.getFieldCount(); i++) {
       Field field = rec.getField(i);
       fieldToPrefixes(retVal, field);
@@ -85,6 +94,7 @@ public class PrefixConverter {
       dest.add(new PrefixValue("DB", dateFormat.format(p.getDatumRacuna())));
     if (p.getDatumStatusa() != null)
       dest.add(new PrefixValue("DS", dateFormat.format(p.getDatumStatusa())));
+
   }
 
   private static void indeksirajSvesku(List dest, Sveska s) {
