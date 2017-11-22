@@ -77,7 +77,7 @@ public class ExportReportsConfig {
                 //System.out.println(propName + " - " +((IniPreferences) prefs).node(nodeName).get(propName,null));
                 if(propName.equals("class")) {
                     String name =  ((IniPreferences) prefs).node(nodeName).get(propName, null);
-                    name = name.substring(name.lastIndexOf("."));
+                    name = name.substring(name.lastIndexOf(".") + 1);
                     String className = "com.ftninformatika.bisis." + library + "." + name;
                     report.put("className", className);
                     continue;
