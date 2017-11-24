@@ -83,24 +83,24 @@ public class Mysql2MongoBisisMigrationTool {
                 mongo = new MongoClient( new MongoClientURI("mongodb://" + mongoUsername + ":" + mongoPassword + "@" + mongoAddres + ":" + mongoPort + "/" + mongoName));
 
             //create directory where exported json files will live
-            FileUtils.createDir("export");
+            String exportDir = "export" + library.toUpperCase();
+            FileUtils.createDir(exportDir);
 
             // main args for exports
-            String[] exportRecArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-f", "json", "-o", "export/exportedRecords.json"};
-            String[] exportCodersArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-l", library};
-            String[] exportLendingsArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", "export/exportedLendings.json"};
-            String[] exportUsersArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", "export/exportedLendings.json", "-l", library};
-            String[] exportItemAvailibilityArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", "export/exportedLendings.json"};
-            String[] exportClientConfigArgs = new String[]{"-c", pathToInnis + "/client-config.ini", "-o", "export/config.json", "-r", pathToInnis + "/reports.ini", "-l", library};
+            String[] exportRecArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-f", "json", "-o", exportDir+"/exportedRecords.json"};
+            String[] exportCodersArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-l", library, "-o", exportDir};
+            String[] exportLendingsArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", exportDir+"/exportedLendings.json"};
+            String[] exportUsersArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", exportDir+"/exportedMembers.json", "-l", library};
+            String[] exportItemAvailibilityArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", exportDir+"/exportedItemAvailabilities.json"};
+            String[] exportClientConfigArgs = new String[]{"-c", pathToInnis + "/client-config.ini", "-o", exportDir+"/config.json", "-r", pathToInnis + "/reports.ini", "-l", library};
 
             //exports
-//            ExportRecords.main(exportRecArgs);
-//            ExportCoders.main(exportCodersArgs);
-//            ExportLendings.main(exportLendingsArgs);
-//            ExportUsers.main(exportUsersArgs);
-//            ExportItemAvailability.main(exportItemAvailibilityArgs);
+            ExportRecords.main(exportRecArgs);
+            ExportCoders.main(exportCodersArgs);
+            ExportLendings.main(exportLendingsArgs);
+            ExportUsers.main(exportUsersArgs);
+            ExportItemAvailability.main(exportItemAvailibilityArgs);
             ExportClientConfig.main(exportClientConfigArgs);
-            //ExportReportsConfig.main(exportReportsConfig);
 
 
 

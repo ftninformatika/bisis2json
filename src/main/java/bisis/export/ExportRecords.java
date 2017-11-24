@@ -76,7 +76,7 @@ public class ExportRecords {
     }
     try {
       PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), "UTF8")));
-      PrintWriter outElastic = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream("elastic"+outputFile), "UTF8")));
+      PrintWriter outElastic = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile.substring(0,outputFile.lastIndexOf(".")) + "Elastic.json"), "UTF8")));
       if ("xml".equals(format))
         out.println("<?xml version=\"1.0\"?>\n<records>");
       Connection conn = DriverManager.getConnection("jdbc:mysql://" + address

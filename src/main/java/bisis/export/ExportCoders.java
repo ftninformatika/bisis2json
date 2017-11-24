@@ -33,12 +33,15 @@ public class ExportCoders {
                 "Password default(bisis)");
         options.addOption("l", "library", true,
                 "Library code (gbns)");
+        options.addOption("o", "output", true,
+                "Output directory");
         CommandLineParser parser = new GnuParser();
         String address = "localhost";
         String port = "3306";
         String database = "bisis";
         String username = "bisis";
         String password = "bisis";
+        String outputDir = "";
         String library = "";
         try {
             CommandLine cmd = parser.parse(options, args);
@@ -56,6 +59,10 @@ public class ExportCoders {
                 library = cmd.getOptionValue("l");
             else
                 throw new Exception("Specify library code!");
+            if (cmd.hasOption("o"))
+                outputDir = cmd.getOptionValue("o");
+            else
+                throw new Exception("Specify output directory!");
 
         } catch (Exception ex) {
             System.err.println("Invalid parameter(s), reason: " + ex.getMessage());
@@ -63,8 +70,8 @@ public class ExportCoders {
             formatter.printHelp("bisis2json-export-coders", options);
             return;
         }
-        String codersOutputDirName = "export/coders_json_output";
-        String circCodersOutputDirName = "export/circ_coders_json_output";
+        String codersOutputDirName = outputDir+"/coders_json_output";
+        String circCodersOutputDirName = outputDir+"/circ_coders_json_output";
 
         try {
             Connection conn = DriverManager.getConnection("jdbc:mysql://" + address
