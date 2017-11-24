@@ -79,6 +79,16 @@ task fatJarReportsConfig(type: Jar){
     archiveName 'bisis2json-export-reports-config.jar'
 }
 
+task fatJarBisisMigrate(type: Jar){
+    manifest {
+        attributes 'Main-Class': 'bisis.export.Mysql2MongoBisisMigrationTool'
+    }
+    from sourceSets.main.output
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
+    with jar
+    archiveName 'bisis-migrate.jar'
+}
+
 repositories {
     mavenCentral()
 }
@@ -105,5 +115,5 @@ dependencies {
 configurations.archives.artifacts.clear();
 
 artifacts {
-    archives fatJarRecords, fatJarUsers, fatJarLendings, fatJarClientConfig, fatJarCoders, fatJarItemAvailabilities, fatJarReportsConfig
+    archives fatJarRecords, fatJarUsers, fatJarLendings, fatJarClientConfig, fatJarCoders, fatJarItemAvailabilities, fatJarReportsConfig, fatJarBisisMigrate
 }

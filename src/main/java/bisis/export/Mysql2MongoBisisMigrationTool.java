@@ -18,18 +18,7 @@ public class Mysql2MongoBisisMigrationTool {
 
     public static void main(String[] args){
         Options options = new Options();
-        options.addOption("l", "library", true, "Library name (prefix): gbns, tfzr...");
-        options.addOption("a", "mysqladress", true, "MySQL server address (default: localhost");
-        options.addOption("p", "mysqlport", true,"MySQL server port (default: 3306");
-        options.addOption("n","mysqdblname", true, "MySQL database name (default: bisis)");
-        options.addOption("u","mysqlusername", true, "MySQL server username (default: bisis");
-        options.addOption("w","mysqlpassword", true, "MySQL server password (default: bisis");
-        options.addOption("f", "pathtoinnis", true, "Path to folder that conatins reports.ini and client-config.ini");
-        options.addOption("ma","mongoaddress", true, "MongoDB server address (default: localhost");
-        options.addOption("mp", "mongoport", true, "MongoDB server port (default: 27017)");
-        options.addOption("mn", "mongodbname", true, "MongoDB name (default: bisis)");
-        options.addOption("mu", "mongousername", true, "MongoDB server username (default: --empty--");
-        options.addOption("m2", "mongopassword", true, "MongoDB server password (default: --empty--");
+        initOptions(options);
 
         String library = "";
         String mysqlAddress = "localhost";
@@ -39,7 +28,7 @@ public class Mysql2MongoBisisMigrationTool {
         String mysqlPassword = "bisis";
         String pathToInnis = "";
         String mongoAddres = "localhost";
-        String mongoPort = "3306";
+        String mongoPort = "27017";
         String mongoName = "bisis";
         String mongoUsername = "";
         String mongoPassword = "";
@@ -48,10 +37,14 @@ public class Mysql2MongoBisisMigrationTool {
 
         try {
             CommandLine cmd = parser.parse(options, args);
+            if (cmd.hasOption("h")){
+                printHelp(options);
+                return;
+            }
             if (cmd.hasOption("l"))
                 library = cmd.getOptionValue("l");
             else
-                throw new Exception("Please specify library name");
+                throw new Exception("Please specify library name, for help  input parameter -h (or --help)");
             if (cmd.hasOption("a"))
                 mysqlAddress = cmd.getOptionValue("a");
             if (cmd.hasOption("p"))
@@ -65,7 +58,7 @@ public class Mysql2MongoBisisMigrationTool {
             if (cmd.hasOption("f"))
                 pathToInnis = cmd.getOptionValue("f");
             else
-                throw new Exception("Please specify path to folder containing reports.ini and client-config.ini");
+                throw new Exception("Please specify path to folder containing reports.ini and client-config.ini, for help  input parameter -h (or --help)");
             if (cmd.hasOption("ma"))
                 mongoAddres = cmd.getOptionValue("ma");
             if (cmd.hasOption("mp"))
@@ -79,13 +72,31 @@ public class Mysql2MongoBisisMigrationTool {
 
             Connection mysqlConn = DriverManager.getConnection("jdbc:mysql://" + mysqlAddress
                     + ":" + mysqlPort + "/" + mysqlDbName + "?useSSL=false&serverTimezone=CET", mysqlUsername, mysqlPassword);
+
             MongoClient mongo = null;
             if (mongoUsername.equals("") && mongoPassword.equals(""))
                 mongo = new MongoClient( mongoAddres , Integer.parseInt(mongoPort) );
             else
-                mongo = new MongoClient( new MongoClientURI("mongodb://" + mongoUsername + ":" + mongoPassword + "@" + mongoAddres + ":" + mongoPort + "/data"));
+                mongo = new MongoClient( new MongoClientURI("mongodb://" + mongoUsername + ":" + mongoPassword + "@" + mongoAddres + ":" + mongoPort + "/" + mongoName));
 
-            
+            // main args for exports
+            String[] exportRecArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-f", "json", "-o", "exportedRecords.json"};
+            String[] exportCodersArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-l", library};
+            String[] exportLendingsArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", "exportedLendings.json"};
+            String[] exportUsersArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", "exportedLendings.json", "-l", library};
+            String[] exportItemAvailibilityArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", "exportedLendings.json"};
+            String[] exportClientConfigArgs = new String[]{"-i", pathToInnis + "/client-config.ini", "-o", "config.json"};
+            String[] exportReportsConfig = new String[]{"-f", pathToInnis + "/reports.ini", "-l", library};
+
+            //exports
+            ExportRecords.main(exportRecArgs);
+            ExportCoders.main(exportCodersArgs);
+            ExportLendings.main(exportLendingsArgs);
+            ExportUsers.main(exportUsersArgs);
+            ExportItemAvailability.main(exportItemAvailibilityArgs);
+            ExportClientConfig.main(exportClientConfigArgs);
+            ExportReportsConfig.main(exportReportsConfig);
+
         } catch (ParseException e) {
             e.printStackTrace();
             LOGGER.log(Level.SEVERE, e.toString(), e);
@@ -95,6 +106,30 @@ public class Mysql2MongoBisisMigrationTool {
         }
 
 
+
         //MongoClient mongo = new MongoClient( "localhost" , 27017 );
     }
+
+    private static void initOptions(Options options){
+        options.addOption("l", "library", true, "Library name (prefix): gbns, tfzr... MANDATORY!");
+        options.addOption("a", "mysqladress", true, "MySQL server address (default: localhost)");
+        options.addOption("p", "mysqlport", true,"MySQL server port (default: 3306)");
+        options.addOption("n","mysqdblname", true, "MySQL database name (default: bisis)");
+        options.addOption("u","mysqlusername", true, "MySQL server username (default: bisis)");
+        options.addOption("w","mysqlpassword", true, "MySQL server password (default: bisis)");
+        options.addOption("f", "pathtoinnis", true, "Path to folder that conatins reports.ini and client-config.ini MADNDATORY!");
+        options.addOption("ma","mongoaddress", true, "MongoDB server address (default: localhost");
+        options.addOption("mp", "mongoport", true, "MongoDB server port (default: 27017)");
+        options.addOption("mn", "mongodbname", true, "MongoDB name (default: bisis)");
+        options.addOption("mu", "mongousername", true, "MongoDB server username (default: --empty--)");
+        options.addOption("mw", "mongopassword", true, "MongoDB server password (default: --empty--)");
+        options.addOption("h", "help", false, "Help");
+    }
+
+    public static void printHelp(Options options){
+        for (Object o: options.getOptions())
+            System.out.println("* Short param: -" + ((Option) o).getOpt().toString() + "; Long param: --" + ((Option) o).getLongOpt().toString() + "; Description: " + ((Option) o).getDescription().toString());
+
+    }
+
 }
