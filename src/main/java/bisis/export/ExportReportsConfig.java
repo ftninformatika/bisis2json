@@ -1,6 +1,5 @@
 package bisis.export;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -71,7 +70,6 @@ public class ExportReportsConfig {
             JSONObject report = new JSONObject();
 
             for (String propName: ((IniPreferences) prefs).node(nodeName).keys()){
-                //System.out.println(propName + " - " +((IniPreferences) prefs).node(nodeName).get(propName,null));
                 if(propName.equals("class")) {
                     String name =  ((IniPreferences) prefs).node(nodeName).get(propName, null);
                     name = name.substring(name.lastIndexOf(".") + 1);
@@ -107,12 +105,6 @@ public class ExportReportsConfig {
             parsedJson.put(report);
         }
         return parsedJson.toList();
-//        PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream("reportsConfig.json"), "UTF8")));
-//        out.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(parsedJson.toList()));
-//        out.close();
     }
 
-
-
-    static ObjectMapper mapper = new ObjectMapper();
 }

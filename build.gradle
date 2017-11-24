@@ -69,15 +69,6 @@ task fatJarItemAvailabilities(type: Jar){
     archiveName 'bisis2json-export-item-availabilities.jar'
 }
 
-task fatJarReportsConfig(type: Jar){
-    manifest {
-        attributes 'Main-Class': 'bisis.export.ExportReportsConfig'
-    }
-    from sourceSets.main.output
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
-    with jar
-    archiveName 'bisis2json-export-reports-config.jar'
-}
 
 task fatJarBisisMigrate(type: Jar){
     manifest {
@@ -115,5 +106,5 @@ dependencies {
 configurations.archives.artifacts.clear();
 
 artifacts {
-    archives fatJarRecords, fatJarUsers, fatJarLendings, fatJarClientConfig, fatJarCoders, fatJarItemAvailabilities, fatJarReportsConfig, fatJarBisisMigrate
+    archives fatJarRecords, fatJarUsers, fatJarLendings, fatJarClientConfig, fatJarCoders, fatJarItemAvailabilities, fatJarBisisMigrate
 }

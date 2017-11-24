@@ -258,6 +258,34 @@ public class FileUtils {
     String temp = file.getAbsolutePath();
     return temp.substring(temp.lastIndexOf(fileSep) + 1);
   }
+
+  /**
+   *
+   * @param dirName
+   * @return true if folder is created or alredy exists, false if not
+   */
+  public static boolean createDir(String dirName){
+    File theDir = new File(dirName);
+
+    // if the directory does not exist, create it
+    if (!theDir.exists()) {
+      boolean result = false;
+
+      try{
+        theDir.mkdir();
+        result = true;
+      }
+      catch(SecurityException se){
+        //handle it
+        return false;
+      }
+      if(result) {
+        System.out.println("DIR " + dirName + " created");
+        return true;
+      }
+    }
+    return true;
+  }
   
   private static char fileSep = System.getProperty("file.separator").charAt(0);
 }

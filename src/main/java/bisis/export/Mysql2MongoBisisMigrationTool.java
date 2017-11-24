@@ -1,5 +1,6 @@
 package bisis.export;
 
+import bisis.utils.FileUtils;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import org.apache.commons.cli.*;
@@ -32,6 +33,8 @@ public class Mysql2MongoBisisMigrationTool {
         String mongoName = "bisis";
         String mongoUsername = "";
         String mongoPassword = "";
+
+
 
         CommandLineParser parser = new GnuParser();
 
@@ -79,13 +82,16 @@ public class Mysql2MongoBisisMigrationTool {
             else
                 mongo = new MongoClient( new MongoClientURI("mongodb://" + mongoUsername + ":" + mongoPassword + "@" + mongoAddres + ":" + mongoPort + "/" + mongoName));
 
+            //create directory where exported json files will live
+            FileUtils.createDir("export");
+
             // main args for exports
-            String[] exportRecArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-f", "json", "-o", "exportedRecords.json"};
+            String[] exportRecArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-f", "json", "-o", "export/exportedRecords.json"};
             String[] exportCodersArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-l", library};
-            String[] exportLendingsArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", "exportedLendings.json"};
-            String[] exportUsersArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", "exportedLendings.json", "-l", library};
-            String[] exportItemAvailibilityArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", "exportedLendings.json"};
-            String[] exportClientConfigArgs = new String[]{"-c", pathToInnis + "/client-config.ini", "-o", "config.json", "-r", pathToInnis + "/reports.ini", "-l", library};
+            String[] exportLendingsArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", "export/exportedLendings.json"};
+            String[] exportUsersArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", "export/exportedLendings.json", "-l", library};
+            String[] exportItemAvailibilityArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", "export/exportedLendings.json"};
+            String[] exportClientConfigArgs = new String[]{"-c", pathToInnis + "/client-config.ini", "-o", "export/config.json", "-r", pathToInnis + "/reports.ini", "-l", library};
 
             //exports
 //            ExportRecords.main(exportRecArgs);
@@ -108,12 +114,8 @@ public class Mysql2MongoBisisMigrationTool {
 
 
 
-        //MongoClient mongo = new MongoClient( "localhost" , 27017 );
     }
 
-    private static void mongoImport(MongoClient mongoClient){
-
-    }
 
     private static void initOptions(Options options){
         options.addOption("l", "library", true, "Library name (prefix): gbns, tfzr... MANDATORY!");

@@ -1,0 +1,229 @@
+{
+  "reports" : [ {
+    "invnumpattern" : "^0100.*",
+    "reportName" : "StatistikaNacinaNabavkePoFondovimaMes",
+    "className" : "com.ftninformatika.bisis.gbns.StatistikaNacinaNabavkePoFondovima",
+    "type" : "month",
+    "menuitem" : "Broj inventarisanih jedinica|prema načinu nabavke po fondovima|Mesecni",
+    "jasper" : "/jaspers/gbns/StatistikaNacinaNabavkePoFondovima.jasper"
+  }, {
+    "invnumpattern" : "^0100.*",
+    "reportName" : "StatistikaNacinaNabavkePoFondovimaGod",
+    "className" : "com.ftninformatika.bisis.gbns.StatistikaNacinaNabavkePoFondovima",
+    "type" : "year",
+    "menuitem" : "Broj inventarisanih jedinica|prema načinu nabavke po fondovima|Godisnji",
+    "jasper" : "/jaspers/gbns/StatistikaNacinaNabavkePoFondovima.jasper"
+  }, {
+    "invnumpattern" : "^0100.*",
+    "reportName" : "BrojInventarnihJedPoFondovimaMes",
+    "className" : "com.ftninformatika.bisis.gbns.StatistikaPoFondovima",
+    "type" : "month",
+    "menuitem" : "Broj inventarisanih jedinica|prema fondovima|Mesecni",
+    "jasper" : "/jaspers/gbns/StatistikaPoFondovima.jasper"
+  }, {
+    "invnumpattern" : "^0100.*",
+    "reportName" : "BrojInventarnihJedPoFondovimaGod",
+    "className" : "com.ftninformatika.bisis.gbns.StatistikaPoFondovima",
+    "type" : "year",
+    "menuitem" : "Broj inventarisanih jedinica|prema fondovima|Godisnji",
+    "jasper" : "/jaspers/gbns/StatistikaPoFondovima.jasper"
+  }, {
+    "invnumpattern" : "^0100.*",
+    "reportName" : "BrojInventarnihJedPoInvKnjigMes",
+    "className" : "com.ftninformatika.bisis.gbns.StatistikaPoInventarnimKnjigama",
+    "type" : "month",
+    "menuitem" : "Broj inventarisanih jedinica|prema inventarnim knjigama|Mesecni",
+    "jasper" : "/jaspers/gbns/StatistikaPoInventarnimKnjigama.jasper"
+  }, {
+    "invnumpattern" : "^0100.*",
+    "reportName" : "BrojInventarnihJedPoInvKnjigGod",
+    "className" : "com.ftninformatika.bisis.gbns.StatistikaPoInventarnimKnjigama",
+    "type" : "year",
+    "menuitem" : "Broj inventarisanih jedinica|prema inventarnim knjigama|Godisnji",
+    "jasper" : "/jaspers/gbns/StatistikaPoInventarnimKnjigama.jasper"
+  }, {
+    "invnumpattern" : "^0100.*",
+    "reportName" : "BrojInventarnihJedPoNacinuNabavkeMes",
+    "className" : "com.ftninformatika.bisis.gbns.StatistikaPoNacinuNabavke",
+    "type" : "month",
+    "menuitem" : "Broj inventarisanih jedinica|prema načinu nabavke|Mesecni",
+    "jasper" : "/jaspers/gbns/StatistikaPoNacinuNabavke.jasper"
+  }, {
+    "invnumpattern" : "^0100.*",
+    "reportName" : "BrojInventarnihJedPoNacinuNabavkeGod",
+    "className" : "com.ftninformatika.bisis.gbns.StatistikaPoNacinuNabavke",
+    "type" : "year",
+    "menuitem" : "Broj inventarisanih jedinica|prema načinu nabavke|Godisnji",
+    "jasper" : "/jaspers/gbns/StatistikaPoNacinuNabavke.jasper"
+  }, {
+    "invnumpattern" : "^0100.*",
+    "reportName" : "BrojInventarnihJedPoUDKMes",
+    "className" : "com.ftninformatika.bisis.gbns.StatistikaPoUDK",
+    "type" : "month",
+    "menuitem" : "Broj inventarisanih jedinica|prema UDK|Mesecni",
+    "jasper" : "/jaspers/gbns/StatistikaPoUDK.jasper"
+  }, {
+    "invnumpattern" : "^0100.*",
+    "reportName" : "BrojInventarnihJedPoUDKGod",
+    "className" : "com.ftninformatika.bisis.gbns.StatistikaPoUDK",
+    "type" : "year",
+    "menuitem" : "Broj inventarisanih jedinica|prema UDK|Godisnji",
+    "jasper" : "/jaspers/gbns/StatistikaPoUDK.jasper"
+  }, {
+    "invnumpattern" : "^0100.*",
+    "reportName" : "FinansijskiIzvestajGod",
+    "className" : "com.ftninformatika.bisis.gbns.FinansijskiIzvestaj",
+    "type" : "year",
+    "menuitem" : "Finansijski izvestaj|Godisnji",
+    "jasper" : "/jaspers/gbns/FinansijskiIzvestaj.jasper"
+  }, {
+    "invnumpattern" : "^0100.*",
+    "reportName" : "FinansijskiIzvestajMes",
+    "className" : "com.ftninformatika.bisis.gbns.FinansijskiIzvestaj",
+    "type" : "month",
+    "menuitem" : "Finansijski izvestaj|Mesecni",
+    "jasper" : "/jaspers/gbns/FinansijskiIzvestaj.jasper"
+  }, {
+    "invnumpattern" : "^0130.*",
+    "reportName" : "InvKnjigaMonografskeDB",
+    "className" : "com.ftninformatika.bisis.gbns.InvKnjigaMonografske",
+    "type" : "year",
+    "menuitem" : "Inventarna knjiga|Dečiji fond|Po brojevima",
+    "jasper" : "/jaspers/gbns/InvKnjigaMonografske.jasper"
+  }, {
+    "invnumpattern" : "^0130.*",
+    "reportName" : "InvKnjigaMonografskeDG",
+    "className" : "com.ftninformatika.bisis.gbns.InvKnjigaMonografske",
+    "type" : "year",
+    "menuitem" : "Inventarna knjiga|Dečiji fond|Po godinama",
+    "jasper" : "/jaspers/gbns/InvKnjigaMonografske.jasper"
+  }, {
+    "invnumpattern" : "^0160.*",
+    "reportName" : "InvKnjigaMonografskeLB",
+    "className" : "com.ftninformatika.bisis.gbns.InvKnjigaMonografske",
+    "type" : "year",
+    "menuitem" : "Inventarna knjiga|Legati|Po brojevima",
+    "jasper" : "/jaspers/gbns/InvKnjigaMonografske.jasper"
+  }, {
+    "invnumpattern" : "^0160.*",
+    "reportName" : "InvKnjigaMonografskeLG",
+    "className" : "com.ftninformatika.bisis.gbns.InvKnjigaMonografske",
+    "type" : "year",
+    "menuitem" : "Inventarna knjiga|Legati|Po godinamа",
+    "jasper" : "/jaspers/gbns/InvKnjigaMonografske.jasper"
+  }, {
+    "invnumpattern" : "^0100.*",
+    "reportName" : "InvKnjigaMonografskeOG",
+    "className" : "com.ftninformatika.bisis.gbns.InvKnjigaMonografske",
+    "type" : "year",
+    "menuitem" : "Inventarna knjiga|Opšti fond|Po godinama",
+    "jasper" : "/jaspers/gbns/InvKnjigaMonografske.jasper"
+  }, {
+    "invnumpattern" : "^0100.*",
+    "reportName" : "InvKnjigaMonografskeOB",
+    "className" : "com.ftninformatika.bisis.gbns.InvKnjigaMonografske",
+    "type" : "year",
+    "menuitem" : "Inventarna knjiga|Opšti fond|Po brojevima",
+    "jasper" : "/jaspers/gbns/InvKnjigaMonografske.jasper"
+  }, {
+    "invnumpattern" : "^0121.*",
+    "reportName" : "InvKnjigaMonografskePB",
+    "className" : "com.ftninformatika.bisis.gbns.InvKnjigaMonografske",
+    "type" : "year",
+    "menuitem" : "Inventarna knjiga|Priručnici|Po brojevima",
+    "jasper" : "/jaspers/gbns/InvKnjigaMonografske.jasper"
+  }, {
+    "invnumpattern" : "^0121.*",
+    "reportName" : "InvKnjigaMonografskePG",
+    "className" : "com.ftninformatika.bisis.gbns.InvKnjigaMonografske",
+    "type" : "year",
+    "menuitem" : "Inventarna knjiga|Priručnici|Po godinama",
+    "jasper" : "/jaspers/gbns/InvKnjigaMonografske.jasper"
+  }, {
+    "invnumpattern" : "^0120.*",
+    "reportName" : "InvKnjigaMonografskeZB",
+    "className" : "com.ftninformatika.bisis.gbns.InvKnjigaMonografske",
+    "type" : "year",
+    "menuitem" : "Inventarna knjiga|Zavičajni fond|Po brojevima",
+    "jasper" : "/jaspers/gbns/InvKnjigaMonografske.jasper"
+  }, {
+    "invnumpattern" : "^0120.*",
+    "reportName" : "InvKnjigaMonografskeZG",
+    "className" : "com.ftninformatika.bisis.gbns.InvKnjigaMonografske",
+    "type" : "year",
+    "menuitem" : "Inventarna knjiga|Zavičajni fond|Po godinama",
+    "jasper" : "/jaspers/gbns/InvKnjigaMonografske.jasper"
+  }, {
+    "invnumpattern" : "^0100.*",
+    "reportName" : "StanjeFondaGodine",
+    "className" : "com.ftninformatika.bisis.gbns.StanjeFonda",
+    "type" : "year",
+    "menuitem" : "Stanje Fonda|Po godinama",
+    "jasper" : "/jaspers/gbns/StanjeFonda.jasper"
+  }, {
+    "invnumpattern" : "^0100.*",
+    "reportName" : "StanjeFondaSve",
+    "className" : "com.ftninformatika.bisis.gbns.StanjeFonda",
+    "type" : "whole",
+    "menuitem" : "Stanje Fonda|Ceo fond",
+    "jasper" : "/jaspers/gbns/StanjeFonda.jasper"
+  } ],
+  "filestorageEnabled" : "no",
+  "barcodeUsersNarrowbar" : "2",
+  "databaseArchiveEnabled" : "no",
+  "databaseArchiveDriver" : "com.mysql.jdbc.Driver",
+  "barcodeUsersPageCode" : "1250",
+  "cataloguingReportset" : "gbbg",
+  "commandsrvService" : "http://147.91.218.23/commandsrv/Service",
+  "barcodeLibrary1" : "Biblioteka",
+  "barcodeLabelWidth" : "456",
+  "databaseUsername" : "bisis",
+  "bookcardsTranslateY" : "5",
+  "bookcardsTranslateX" : "15",
+  "barcodeOptionName" : "library1",
+  "barcodeLabelfont" : "3",
+  "filestorageFilemgr" : "http://localhost/bisis/FileMgr",
+  "bookcardsFontSize" : "-1",
+  "barcodeUsersWidebar" : "2",
+  "cataloguingInvbrSubStr" : "1 4",
+  "00:1D:60:39:53:62Remote" : "no",
+  "barcodeUsersLinelength" : "19",
+  "barcodeUsersBarwidth" : "50",
+  "barcodeSigfont" : "3",
+  "cataloguingPrimerciModel" : "0 1 2 3 13 10 11",
+  "databaseArchiveUsername" : "bisis",
+  "barcodePort" : "lpt",
+  "barcodeLabelResolution" : "203",
+  "libraryName" : "gbns",
+  "reportsReportServletURL" : "http://localhost/bisis-reports/ReportServlet",
+  "bookcardsLocale" : "gbns",
+  "bookcardsNextPage" : "Još...",
+  "networkServerList" : "http://bisis.uns.ac.rs/servers/bisisXMLM/servers.xml",
+  "barcodePageCode" : "1250",
+  "cataloguingDefaultGodinaInvKnj" : "00",
+  "barcodeBarwidth" : "140",
+  "bookcardsBrRedova" : "13",
+  "pincodeLibrary" : "Библиотека шабачка",
+  "barcodeUsersLabelHeight" : "0",
+  "cataloguingGodineModel" : "0 1 2 3 12 13 15",
+  "barcodeUsersLabelResolution" : "203",
+  "cataloguingDefaultPrimerakInvKnj" : "00",
+  "databaseUrl" : "jdbc:mysql://localhost/bisisgbns",
+  "barcodeWidebar" : "3",
+  "pincodeEnabled" : "no",
+  "cataloguingDefaultSveskaInvKnj" : "99",
+  "databaseArchivePassword" : "bisis",
+  "databaseArchiveUrl" : "jdbc:mysql://localhost/archive",
+  "00:1D:60:39:53:62Service" : "http://147.91.218.22/commandsrv/Service",
+  "textsrvRecmgr" : "http://localhost/bisis/RecMgr",
+  "cataloguingValidator" : "com.gint.app.bisis4.client.editor.validation.GBValidator",
+  "commandsrvRemote" : "no",
+  "barcodeUsersLabelWidth" : "300",
+  "barcodeLabelHeight" : "0",
+  "textsrvStandalone" : "yes",
+  "barcodeWrap" : "23",
+  "barcodeNarrowbar" : "2",
+  "bookcardsCurrentType" : "monografski",
+  "databaseDriver" : "com.mysql.jdbc.Driver",
+  "databasePassword" : "bisis"
+}

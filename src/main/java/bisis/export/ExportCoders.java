@@ -3,6 +3,7 @@ package bisis.export;
 import bisis.circ.*;
 import bisis.coders.Coder;
 import bisis.coders.ItemStatus;
+import bisis.utils.FileUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -62,16 +63,16 @@ public class ExportCoders {
             formatter.printHelp("bisis2json-export-coders", options);
             return;
         }
-        String codersOutputDirName = "coders_json_output";
-        String circCodersOutputDirName = "circ_coders_json_output";
+        String codersOutputDirName = "export/coders_json_output";
+        String circCodersOutputDirName = "export/circ_coders_json_output";
 
         try {
             Connection conn = DriverManager.getConnection("jdbc:mysql://" + address
                     + ":" + port + "/" + database + "?useSSL=false&serverTimezone=CET", username, password);
-            if(createDir(codersOutputDirName)) {
+            if(FileUtils.createDir(codersOutputDirName)) {
                 exportCoders1(conn, library, codersOutputDirName);
             }
-            if(createDir(circCodersOutputDirName)){
+            if(FileUtils.createDir(circCodersOutputDirName)){
                 exportCircCoders(conn, library, circCodersOutputDirName);
             }
             else
@@ -350,29 +351,7 @@ public class ExportCoders {
     }
 
 
-    private static boolean createDir(String dirName){
-        File theDir = new File(dirName);
 
-        // if the directory does not exist, create it
-        if (!theDir.exists()) {
-            System.out.println("creating directory: " + theDir.getName());
-            boolean result = false;
-
-            try{
-                theDir.mkdir();
-                result = true;
-            }
-            catch(SecurityException se){
-                //handle it
-                return false;
-            }
-            if(result) {
-                System.out.println("DIR " + dirName + " created");
-                return true;
-            }
-        }
-        return true;
-    }
 
     private static LocalDate getDate(ResultSet rset, String columnName)  {
 
