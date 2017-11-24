@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -22,7 +23,7 @@ import java.util.prefs.Preferences;
  */
 public class ExportReportsConfig {
 
-    public static void main(String[] args) {
+    public static List<Object> export(String[] args) {
         Options options = new Options();
         options.addOption("f", "file", true,
                 "Path to \'reports.ini\'");
@@ -43,15 +44,18 @@ public class ExportReportsConfig {
             else
                 throw new Exception("Specify library code!");
 
-            parseReports(file, library);
+            List<Object> retVal = parseReports(file, library);
+            System.out.println("Sucessfully parsed reports.ini configuration for library: " + library);
+            return retVal;
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
 
 
     }
 
-    private static void parseReports(String reportsIniPath, String library) throws IOException, BackingStoreException {
+    private static List<Object> parseReports(String reportsIniPath, String library) throws IOException, BackingStoreException {
         Ini ini = new Ini(new File(reportsIniPath));
         Preferences prefs = new IniPreferences(ini);
 
@@ -102,10 +106,10 @@ public class ExportReportsConfig {
             }
             parsedJson.put(report);
         }
-
-        PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream("reportsConfig.json"), "UTF8")));
-        out.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(parsedJson.toList()));
-        out.close();
+        return parsedJson.toList();
+//        PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream("reportsConfig.json"), "UTF8")));
+//        out.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(parsedJson.toList()));
+//        out.close();
     }
 
 

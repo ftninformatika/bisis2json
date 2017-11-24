@@ -4,31 +4,43 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
+import org.json.JSONObject;
 
 import java.io.*;
+import java.util.List;
 
 /**
  * Created by Petar on 8/30/2017.
  */
 public class ExportClientConfig {
 
+    static ObjectMapper mapper = new ObjectMapper();
 
     public static void main(String[] args){
         Options options = new Options();
-        options.addOption("i", "input", true,
+        options.addOption("c", "cliconf", true,
                 "Path to client-config.ini file");
+        options.addOption("l", "library", true,
+                "Library name(code): gbns, bgb, gbsa...");
+        options.addOption("r", "repconf", true,
+                "Path to reports.ini file");
         options.addOption("o", "output", true,
                 "Output file");
 
         CommandLineParser parser = new GnuParser();
         String input = "";
+        String inputr = "";
         String output = "";
         try {
             CommandLine cmd = parser.parse(options, args);
-            if (cmd.hasOption("i"))
-                input = cmd.getOptionValue("i");
+            if (cmd.hasOption("c"))
+                input = cmd.getOptionValue("c");
             else
-                throw new Exception("Specify input file");
+                throw new Exception("Specify path to client-config.ini file");
+            if (cmd.hasOption("r"))
+                inputr = cmd.getOptionValue("r");
+            else
+                throw new Exception("Specify path to reports.ini file");
             if (cmd.hasOption("o"))
                 output = cmd.getOptionValue("o");
             else
@@ -42,14 +54,14 @@ public class ExportClientConfig {
         try {
 
             PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output), "UTF8")));
-            export(input, out, output);
+            export(input, inputr, out, output);
             out.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static void export(String input, PrintWriter out, String outputPath) throws Exception {
+    private static void export(String input, String inputr, PrintWriter out, String outputPath) throws Exception {
         FileInputStream fis = new FileInputStream(input);
 
         BufferedReader br = new BufferedReader(new InputStreamReader(fis));
@@ -77,7 +89,13 @@ public class ExportClientConfig {
         outString.replace(lastComma, lastComma+1, "\n}");
 
         if (isJSONValid(outString.toString())) {
-            out.write(outString.toString());
+
+            //collecting reports.ini configuration
+            List<Object> reportsConfList = ExportReportsConfig.export(new String[]{"-f", inputr, "-l", "gbns"});
+            JSONObject jo = new JSONObject(outString.toString());
+            jo.put("reports", reportsConfList);
+            out.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jo.toMap()));
+            out.close();
             System.out.println("Successfully parsed client-config.ini to " + outputPath + "\n");
         }
         else

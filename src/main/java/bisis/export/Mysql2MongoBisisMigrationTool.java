@@ -85,17 +85,18 @@ public class Mysql2MongoBisisMigrationTool {
             String[] exportLendingsArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", "exportedLendings.json"};
             String[] exportUsersArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", "exportedLendings.json", "-l", library};
             String[] exportItemAvailibilityArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", "exportedLendings.json"};
-            String[] exportClientConfigArgs = new String[]{"-i", pathToInnis + "/client-config.ini", "-o", "config.json"};
-            String[] exportReportsConfig = new String[]{"-f", pathToInnis + "/reports.ini", "-l", library};
+            String[] exportClientConfigArgs = new String[]{"-c", pathToInnis + "/client-config.ini", "-o", "config.json", "-r", pathToInnis + "/reports.ini", "-l", library};
 
             //exports
-            ExportRecords.main(exportRecArgs);
-            ExportCoders.main(exportCodersArgs);
-            ExportLendings.main(exportLendingsArgs);
-            ExportUsers.main(exportUsersArgs);
-            ExportItemAvailability.main(exportItemAvailibilityArgs);
+//            ExportRecords.main(exportRecArgs);
+//            ExportCoders.main(exportCodersArgs);
+//            ExportLendings.main(exportLendingsArgs);
+//            ExportUsers.main(exportUsersArgs);
+//            ExportItemAvailability.main(exportItemAvailibilityArgs);
             ExportClientConfig.main(exportClientConfigArgs);
-            ExportReportsConfig.main(exportReportsConfig);
+            //ExportReportsConfig.main(exportReportsConfig);
+
+
 
         } catch (ParseException e) {
             e.printStackTrace();
@@ -108,6 +109,10 @@ public class Mysql2MongoBisisMigrationTool {
 
 
         //MongoClient mongo = new MongoClient( "localhost" , 27017 );
+    }
+
+    private static void mongoImport(MongoClient mongoClient){
+
     }
 
     private static void initOptions(Options options){
