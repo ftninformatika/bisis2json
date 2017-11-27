@@ -32,7 +32,7 @@ Parametri:
 * -n, --mysqdblname, MySQL database name (default: bisis)
 * -u, --mysqlusername, MySQL server username (default: bisis)
 * -w, --mysqlpassword, MySQL server password (default: bisis)
-* -f, --pathtoinnis, Path to folder that conatins reports.ini and client-config.ini MADNDATORY!"
+* -f, --pathtoinnis, Path to folder that conatins reports.ini and client-config.ini MADNDATORY!
 * -ma, --mongoaddress, MongoDB server address (default: localhost)
 * -mp, --mongoport, MongoDB server port (default: 27017)
 * -mn, --mongodbname, MongoDB name (default: bisis)
