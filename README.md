@@ -20,7 +20,7 @@ Rezultat ce biti sedam jar- ova u `build/libs` folderu:
 
 
 ## Kompletan prepis
-Izgenerisani `bisi-migrate.jar` je aplikacija u koju su integrisani svi eksporti + import u MongoDB.
+Izgenerisani `bisis-migrate.jar` je aplikacija u koju su integrisani svi eksporti + import u MongoDB.
 
 Neophodno za rad:
 * `mongoimport` u sistemskim varijablama (poziva se pri importu)
