@@ -7,13 +7,23 @@ import bisis.utils.FileUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.mongodb.BasicDBObject;
+import com.mongodb.client.MongoCollection;
+import jdk.nashorn.internal.parser.JSONParser;
 import org.apache.commons.cli.*;
+import org.bson.Document;
+import org.bson.types.ObjectId;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Petar on 8/31/2017.
@@ -183,6 +193,7 @@ public class ExportCoders {
         rs = statement.executeQuery("SELECT * from organization");
         {
             List<Organization> organizations = new ArrayList<>();
+            JSONArray idMigrationMap = new JSONArray();
             while (rs.next()){
                 Organization m = new Organization();
                 m.setLibrary(library);
@@ -191,8 +202,15 @@ public class ExportCoders {
                 m.setCity(rs.getString("city"));
                 m.setName(rs.getString("name"));
                 organizations.add(m);
+
+                try {
+                    idMigrationMap.put(insertOrganization(m, rs.getInt("id")));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
             writeToFile(circCodersOutputDirName + "/organizations.json", mapper.writeValueAsString(organizations));
+            writeToFile(circCodersOutputDirName + "/organization_id-id.json", mapper.writeValueAsString(idMigrationMap.toList()));
         }
 
         rs = statement.executeQuery("SELECT * from places");
@@ -349,6 +367,22 @@ public class ExportCoders {
             e.printStackTrace();
             return "";
         }
+    }
+
+    public static JSONObject insertOrganization(Organization o, Integer id) throws IOException {
+        JSONObject retVal = new JSONObject();
+
+        MongoCollection<Document> orgs = Mysql2MongoBisisMigrationTool.mdb.getCollection("coders.organization");
+        Document ob = new Document();
+        ob.putAll(mapper.readValue(mapper.writeValueAsString(o), HashMap.class));
+        ObjectId oid = new ObjectId();
+        ob.put("_id", oid);
+        orgs.insertOne(ob);
+        retVal.put("_id", oid);
+        retVal.put("id", id);
+
+        return retVal;
+
     }
 
     private static ObjectMapper mapper = new ObjectMapper();

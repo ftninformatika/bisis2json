@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.InsertManyOptions;
 import org.apache.commons.io.IOUtils;
 import org.bson.Document;
 import org.json.JSONArray;
@@ -13,6 +14,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -34,14 +36,18 @@ public class MongoImporter {
 
     public void importRecords() throws Exception {
 
+        InputStream is = new FileInputStream("export" + library.toUpperCase() + "/exportedRecords.json");
+        JSONArray json = new JSONArray(IOUtils.toString(is, "UTF-8"));
+
+
+
+
         MongoCollection<Document> collection = database.getCollection(library + "_records");
         if (collection !=  null || collection.count() > 0){
             throw new Exception("Documents already exists in this collection!");
         }
         else{
-            InputStream is = new FileInputStream("export" + library.toUpperCase() + "/exportedRecords.json");
-            JSONArray json = new JSONArray(IOUtils.toString(is, "UTF-8"));
-            System.out.println("adasdas");
+
 
         }
     }

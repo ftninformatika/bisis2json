@@ -1,8 +1,10 @@
 package bisis.export;
 
 import bisis.utils.FileUtils;
+import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoDatabase;
 import org.apache.commons.cli.*;
 
 import java.sql.Connection;
@@ -16,6 +18,8 @@ import java.util.logging.Logger;
 public class Mysql2MongoBisisMigrationTool {
 
     private static final Logger LOGGER = Logger.getLogger( Mysql2MongoBisisMigrationTool.class.getName() );
+    public static MongoClient mongo = null;
+    public static MongoDatabase mdb = null;
 
     public static void main(String[] args){
         Options options = new Options();
@@ -76,11 +80,13 @@ public class Mysql2MongoBisisMigrationTool {
             Connection mysqlConn = DriverManager.getConnection("jdbc:mysql://" + mysqlAddress
                     + ":" + mysqlPort + "/" + mysqlDbName + "?useSSL=false&serverTimezone=CET", mysqlUsername, mysqlPassword);
 
-            MongoClient mongo = null;
+
             if (mongoUsername.equals("") && mongoPassword.equals(""))
                 mongo = new MongoClient( mongoAddres , Integer.parseInt(mongoPort) );
             else
                 mongo = new MongoClient( new MongoClientURI("mongodb://" + mongoUsername + ":" + mongoPassword + "@" + mongoAddres + ":" + mongoPort + "/" + mongoName));
+            mdb = mongo.getDatabase(mongoName);
+
 
             //create directory where exported json files will live
             String exportDir = "export" + library.toUpperCase();
@@ -95,13 +101,15 @@ public class Mysql2MongoBisisMigrationTool {
             String[] exportClientConfigArgs = new String[]{"-c", pathToInnis + "/client-config.ini", "-o", exportDir+"/config.json", "-r", pathToInnis + "/reports.ini", "-l", library};
 
             //exports
-            ExportRecords.main(exportRecArgs);
+//            ExportRecords.main(exportRecArgs);
             ExportCoders.main(exportCodersArgs);
-            ExportLendings.main(exportLendingsArgs);
-            ExportUsers.main(exportUsersArgs);
-            ExportItemAvailability.main(exportItemAvailibilityArgs);
-            ExportClientConfig.main(exportClientConfigArgs);
+//            ExportLendings.main(exportLendingsArgs);
+            //ExportUsers.main(exportUsersArgs);
+//            ExportItemAvailability.main(exportItemAvailibilityArgs);
+//            ExportClientConfig.main(exportClientConfigArgs);
 
+//            MongoImporter mongoImporter = new MongoImporter(mongo, library, mongoName);
+//            mongoImporter.importRecords();
 
 
         } catch (ParseException e) {

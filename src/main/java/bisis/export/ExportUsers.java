@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 import bisis.circ.*;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -25,6 +27,7 @@ import org.apache.commons.cli.Options;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.bson.Document;
 
 public class ExportUsers {
   
@@ -293,6 +296,12 @@ public class ExportUsers {
     System.out.println("Total members exported: " + userCount);
     
   }
+
+//  private static void insertInMongo(String lib, String jsonMemberString, Integer userId){
+//    MongoCollection<Document> coll = Mysql2MongoBisisMigrationTool.mdb.getCollection(lib + "_members");
+//    coll.insertOne(Document.parse(jsonMemberString));
+//
+//  }
   
   private static LocalDate getDate(ResultSet rset, String columnName)  {
 
