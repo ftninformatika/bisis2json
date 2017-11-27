@@ -1,21 +1,16 @@
 package bisis.export;
 
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import bisis.circ.*;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import org.apache.commons.cli.CommandLine;
@@ -99,7 +94,7 @@ public class ExportUsers {
     Statement stmt = conn.createStatement();
     //PreparedStatement lendingPS = conn.prepareStatement("SELECT id, ctlg_no, lend_date, location, return_date, resume_date, deadline, librarian_lend, librarian_return, librarian_resume FROM lending WHERE sys_id=?");
     PreparedStatement signingPS = conn.prepareStatement("SELECT id, sign_date, location, until_date, cost, receipt_id, librarian FROM signing WHERE sys_id=?");
-    PreparedStatement organizationPS = conn.prepareStatement("SELECT address, name, city, zip from organization where id=?");
+    PreparedStatement organizationPS = conn.prepareStatement("SELECT id, address, name, city, zip from organization where id=?");
     PreparedStatement membershipTypePS = conn.prepareStatement("SELECT name, period from mmbr_types where id=?");
     PreparedStatement userCategoryPS = conn.prepareStatement("SELECT name, titles_no, period, max_period from user_categs where id=?");
     PreparedStatement corporateMemberPS = conn.prepareStatement("SELECT * from groups where user_id=?");
@@ -118,8 +113,12 @@ public class ExportUsers {
       //Organization
       organizationPS.setInt(1, rset.getInt("organization"));
       ResultSet rOrg = organizationPS.executeQuery();
+      String organizationsMapJson = new Scanner(new File("export" + library.toUpperCase() + "/circ_coders_json_output/organization_id-id.json")).useDelimiter("\\Z").next();
+      Map<Integer, String> orgMap = mapper.readValue(organizationsMapJson, new TypeReference<Map<Integer, String>>(){});
       if(rOrg.next()) {
+
         Organization org = new Organization();
+        org.set_id(orgMap.get(rOrg.getInt("id")));
         org.setName(rOrg.getString("name"));
         org.setAddress(rOrg.getString("address"));
         org.setCity(rOrg.getString("city"));

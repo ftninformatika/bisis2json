@@ -92,10 +92,6 @@ public class ExportRecords {
       System.out.println("Exporting " + format.toUpperCase() + " to " + outputFile);
       DBStorage storage = new DBStorage();
       int i = 0;
-      boolean firstRec = true;
-      if ("json".equals(format)) //pocetak
-        out.println("[");
-
       for (int id: docIDs) {
         Record rec = storage.get(conn, id);
         if (rec == null){
@@ -106,15 +102,8 @@ public class ExportRecords {
         rec.pack();
         if ("xml".equals(format))
           out.println(LooseXMLSerializer.toLooseXML(rec));
-        else {
-          if(firstRec) {
-            firstRec = false;
-            //continue;
-          }
-          else
-            out.println(" ,");
-          out.println(JSONSerializer.toJSON(rec));
-        }
+        else
+          out.println(JSONSerializer.toJSON(rec) );
         outElastic.write(JSONSerializer.toElasticJson(PrefixConverter.toMap(rec, null)));
         if (i % 1000 == 0)
           System.out.println(Integer.toString(i) + " records exported");
@@ -122,8 +111,6 @@ public class ExportRecords {
       }
       if ("xml".equals(format))
         out.println("</records>");
-      else
-        out.println("]");
       System.out.println("Total " + Integer.toString(i) + " records exported.");
       conn.close();
       out.close();

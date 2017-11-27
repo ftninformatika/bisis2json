@@ -18,11 +18,9 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.sql.*;
+import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -193,7 +191,7 @@ public class ExportCoders {
         rs = statement.executeQuery("SELECT * from organization");
         {
             List<Organization> organizations = new ArrayList<>();
-            JSONArray idMigrationMap = new JSONArray();
+            Map<Integer, String> idMigrationMap = new HashMap<>();
             while (rs.next()){
                 Organization m = new Organization();
                 m.setLibrary(library);
@@ -204,13 +202,13 @@ public class ExportCoders {
                 organizations.add(m);
 
                 try {
-                    idMigrationMap.put(insertOrganization(m, rs.getInt("id")));
+                    idMigrationMap.put(rs.getInt("id"),insertOrganization(m, rs.getInt("id")));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
             writeToFile(circCodersOutputDirName + "/organizations.json", mapper.writeValueAsString(organizations));
-            writeToFile(circCodersOutputDirName + "/organization_id-id.json", mapper.writeValueAsString(idMigrationMap.toList()));
+            writeToFile(circCodersOutputDirName + "/organization_id-id.json", mapper.writeValueAsString(idMigrationMap));
         }
 
         rs = statement.executeQuery("SELECT * from places");
@@ -270,6 +268,21 @@ public class ExportCoders {
             writeToFile(circCodersOutputDirName + "/circLocations.json", mapper.writeValueAsString(circLocations));
         }
 
+        //circ-_config
+        rs = statement.executeQuery("SELECT * FROM configs");
+        {
+            CircConfig c = new CircConfig();
+            c.setLibrary(library);
+            while(rs.next()){
+                if(rs.getString("name").equals("circ-options"))
+                    c.setCircOptionsXML(rs.getString("text"));
+
+                if(rs.getString("name").equals("circ-validator"))
+                    c.setValidatorOptionsXML(rs.getString("text"));
+            }
+            writeToFile(circCodersOutputDirName + "/circConfigs.json", mapper.writeValueAsString(c));
+        }
+
         System.out.println("Coders successfully exported!");
 
 
@@ -285,7 +298,10 @@ public class ExportCoders {
     private static void exportCoders1(Connection conn, String lib, String outputDirName) throws SQLException, FileNotFoundException, UnsupportedEncodingException {
         String[] tableNames = { "invknj", "nacin_nabavke", "dostupnost", "povez", "sigformat", "interna_oznaka", "status_primerka", "location", "podlokacija" };
 
+
+
         for (String coderName: tableNames) {
+
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * from " + coderName);
             ResultSetMetaData rsmd = rs.getMetaData();
@@ -369,8 +385,7 @@ public class ExportCoders {
         }
     }
 
-    public static JSONObject insertOrganization(Organization o, Integer id) throws IOException {
-        JSONObject retVal = new JSONObject();
+    public static String insertOrganization(Organization o, Integer id) throws IOException {
 
         MongoCollection<Document> orgs = Mysql2MongoBisisMigrationTool.mdb.getCollection("coders.organization");
         Document ob = new Document();
@@ -378,10 +393,7 @@ public class ExportCoders {
         ObjectId oid = new ObjectId();
         ob.put("_id", oid);
         orgs.insertOne(ob);
-        retVal.put("_id", oid);
-        retVal.put("id", id);
-
-        return retVal;
+        return oid.toString();
 
     }
 

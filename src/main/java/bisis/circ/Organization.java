@@ -15,6 +15,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Organization {
 
+    private String _id;
     private String library;
     private String name;
     private String address;

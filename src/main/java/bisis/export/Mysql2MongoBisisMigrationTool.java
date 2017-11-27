@@ -5,6 +5,7 @@ import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoDatabase;
+import com.sun.xml.internal.ws.wsdl.writer.document.Import;
 import org.apache.commons.cli.*;
 
 import java.sql.Connection;
@@ -101,16 +102,15 @@ public class Mysql2MongoBisisMigrationTool {
             String[] exportClientConfigArgs = new String[]{"-c", pathToInnis + "/client-config.ini", "-o", exportDir+"/config.json", "-r", pathToInnis + "/reports.ini", "-l", library};
 
             //exports
-//            ExportRecords.main(exportRecArgs);
+            ExportRecords.main(exportRecArgs);
             ExportCoders.main(exportCodersArgs);
-//            ExportLendings.main(exportLendingsArgs);
-            //ExportUsers.main(exportUsersArgs);
-//            ExportItemAvailability.main(exportItemAvailibilityArgs);
-//            ExportClientConfig.main(exportClientConfigArgs);
+            ExportLendings.main(exportLendingsArgs);
+            ExportUsers.main(exportUsersArgs);
+            ExportItemAvailability.main(exportItemAvailibilityArgs);
+            ExportClientConfig.main(exportClientConfigArgs);
 
-//            MongoImporter mongoImporter = new MongoImporter(mongo, library, mongoName);
-//            mongoImporter.importRecords();
-
+            ImportUtil iu = new ImportUtil(mongoAddres, mongoPort, library, mongoName, mongoUsername, mongoPassword);
+            iu.importAll();
 
         } catch (ParseException e) {
             e.printStackTrace();
