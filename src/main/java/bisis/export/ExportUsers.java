@@ -301,9 +301,8 @@ public class ExportUsers {
 //    coll.insertOne(Document.parse(jsonMemberString));
 //
 //  }
-  
-  private static LocalDate getDate(ResultSet rset, String columnName)  {
 
+  private static LocalDate getDate(ResultSet rset, String columnName)  {
     try {
       java.sql.Date date = rset.getDate(columnName);
       if (date == null)
@@ -314,7 +313,6 @@ public class ExportUsers {
       e.printStackTrace();
       return null;
     }
-
   }
 
   private static String toJSON(Member member) {
@@ -327,7 +325,6 @@ public class ExportUsers {
   }
   
   private static ObjectMapper mapper = new ObjectMapper();
-  
   static {
     mapper.enable(SerializationFeature.INDENT_OUTPUT);
   }

@@ -282,10 +282,7 @@ public class ExportCoders {
             }
             writeToFile(circCodersOutputDirName + "/circConfigs.json", mapper.writeValueAsString(c));
         }
-
         System.out.println("Coders successfully exported!");
-
-
     }
 
     private static void writeToFile(String filePath, String jsonString) throws FileNotFoundException, UnsupportedEncodingException {

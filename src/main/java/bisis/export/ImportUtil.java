@@ -1,5 +1,12 @@
 package bisis.export;
 
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.IndexModel;
+import com.mongodb.client.model.Indexes;
+import org.bson.RawBsonDocument;
+import org.bson.conversions.Bson;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,14 +24,16 @@ public class ImportUtil {
     static String dbname;
     static String uname;
     static String pass;
+    static MongoClient mongoClient;
 
-    public ImportUtil( String host, String port, String lib, String dbname, String uname, String pass){
+    public ImportUtil( String host, String port, String lib, String dbname, String uname, String pass, MongoClient mongoClient){
         this.lib = lib;
         this.host = host;
         this.port = port;
         this.dbname = dbname;
         this.uname = uname;
         this.pass = pass;
+        this.mongoClient = mongoClient;
     }
 
    public static void importMembers() throws IOException, InterruptedException {
@@ -182,6 +191,12 @@ public class ImportUtil {
         importLendings();
         importItemAvailibilities();
         importConfig();
+    }
+
+    public static void indexField(String collName, String fieldName){
+        System.out.println("Indexing collection: " + collName + ", field: " + fieldName);
+        MongoDatabase mdb = mongoClient.getDatabase(dbname);
+        mdb.getCollection(collName).createIndex(Indexes.ascending(fieldName));
     }
 
     private static Map<String, String> initCodersMap(){

@@ -109,8 +109,9 @@ public class Mysql2MongoBisisMigrationTool {
             ExportItemAvailability.main(exportItemAvailibilityArgs);
             ExportClientConfig.main(exportClientConfigArgs);
 
-            ImportUtil iu = new ImportUtil(mongoAddres, mongoPort, library, mongoName, mongoUsername, mongoPassword);
+            ImportUtil iu = new ImportUtil(mongoAddres, mongoPort, library, mongoName, mongoUsername, mongoPassword, mongo);
             iu.importAll();
+            iu.indexField(library + "_itemAvailability", "recordID");
 
         } catch (ParseException e) {
             e.printStackTrace();
