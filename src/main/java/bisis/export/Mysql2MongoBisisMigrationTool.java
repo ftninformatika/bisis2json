@@ -1,11 +1,9 @@
 package bisis.export;
 
 import bisis.utils.FileUtils;
-import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoDatabase;
-import com.sun.xml.internal.ws.wsdl.writer.document.Import;
 import org.apache.commons.cli.*;
 
 import java.sql.Connection;
@@ -39,8 +37,6 @@ public class Mysql2MongoBisisMigrationTool {
         String mongoUsername = "";
         String mongoPassword = "";
 
-
-
         CommandLineParser parser = new GnuParser();
 
         try {
@@ -65,7 +61,7 @@ public class Mysql2MongoBisisMigrationTool {
                 mysqlPassword = cmd.getOptionValue("w");
             if (cmd.hasOption("f"))
                 pathToInnis = cmd.getOptionValue("f");
-            else
+            else if (!cmd.hasOption("d"))
                 throw new Exception("Please specify path to folder containing reports.ini and client-config.ini, for help  input parameter -h (or --help)");
             if (cmd.hasOption("ma"))
                 mongoAddres = cmd.getOptionValue("ma");
@@ -78,15 +74,26 @@ public class Mysql2MongoBisisMigrationTool {
             if (cmd.hasOption("mw"))
                 mongoPassword = cmd.getOptionValue("mw");
 
-            Connection mysqlConn = DriverManager.getConnection("jdbc:mysql://" + mysqlAddress
-                    + ":" + mysqlPort + "/" + mysqlDbName + "?useSSL=false&serverTimezone=CET", mysqlUsername, mysqlPassword);
-
-
             if (mongoUsername.equals("") && mongoPassword.equals(""))
                 mongo = new MongoClient( mongoAddres , Integer.parseInt(mongoPort) );
             else
                 mongo = new MongoClient( new MongoClientURI("mongodb://" + mongoUsername + ":" + mongoPassword + "@" + mongoAddres + ":" + mongoPort + "/" + mongoName));
             mdb = mongo.getDatabase(mongoName);
+            MongoUtil iu = new MongoUtil(mongoAddres, mongoPort, library, mongoName, mongoUsername, mongoPassword, mongo);
+
+            //Drop all data mode
+            if (cmd.hasOption("d")){
+                iu.dropLibraryData();
+                return;
+            }
+
+
+            if(!iu.isMongoImportInstalled()){
+                System.out.println("Please install mongoimport your machine and put it in PATH variables!");
+            }
+
+            Connection mysqlConn = DriverManager.getConnection("jdbc:mysql://" + mysqlAddress
+                    + ":" + mysqlPort + "/" + mysqlDbName + "?useSSL=false&serverTimezone=CET", mysqlUsername, mysqlPassword);
 
 
             //create directory where exported json files will live
@@ -102,16 +109,30 @@ public class Mysql2MongoBisisMigrationTool {
             String[] exportClientConfigArgs = new String[]{"-c", pathToInnis + "/client-config.ini", "-o", exportDir+"/config.json", "-r", pathToInnis + "/reports.ini", "-l", library};
 
             //exports
-            ExportRecords.main(exportRecArgs);
-            ExportCoders.main(exportCodersArgs);
-            ExportLendings.main(exportLendingsArgs);
-            ExportUsers.main(exportUsersArgs);
-            ExportItemAvailability.main(exportItemAvailibilityArgs);
-            ExportClientConfig.main(exportClientConfigArgs);
+//            ExportRecords.main(exportRecArgs);
+//            ExportCoders.main(exportCodersArgs);
+//            ExportLendings.main(exportLendingsArgs);
+//            ExportUsers.main(exportUsersArgs);
+//            ExportItemAvailability.main(exportItemAvailibilityArgs);
+//            ExportClientConfig.main(exportClientConfigArgs);
 
-            ImportUtil iu = new ImportUtil(mongoAddres, mongoPort, library, mongoName, mongoUsername, mongoPassword, mongo);
-            iu.importAll();
-            iu.indexField(library + "_itemAvailability", "recordID");
+            //import all in MongoDB
+//            iu.importAll();
+
+            //index required fields
+            iu.indexField(library + "_itemAvailability", "recordID",true, false);
+            iu.indexField(library + "_lendings", "ctlgNo", true, false);
+            iu.indexField(library + "_lendings", "lendDate", false, false);
+            iu.indexField(library + "_lendings", "returnDate", false, false);
+            iu.indexField(library + "_lendings", "resumeDate", false, false);
+            iu.indexField(library + "_lendings", "deadline", false, false);
+            iu.indexField(library + "_members", "userId", true, true);
+            iu.indexField(library + "_members", "signings.firstName", true, false);
+            iu.indexField(library + "_memebers", "signings.lastName", true, false);
+            iu.indexField(library + "_members", "signings.signDate", false, false);
+
+
+
 
         } catch (ParseException e) {
             e.printStackTrace();
@@ -133,13 +154,14 @@ public class Mysql2MongoBisisMigrationTool {
         options.addOption("n","mysqdblname", true, "MySQL database name (default: bisis)");
         options.addOption("u","mysqlusername", true, "MySQL server username (default: bisis)");
         options.addOption("w","mysqlpassword", true, "MySQL server password (default: bisis)");
-        options.addOption("f", "pathtoinnis", true, "Path to folder that conatins reports.ini and client-config.ini MADNDATORY!");
+        options.addOption("f", "pathtoinnis", true, "Path to folder that conatins reports.ini and client-config.ini MADNDATORY if not dropall!");
         options.addOption("ma","mongoaddress", true, "MongoDB server address (default: localhost");
         options.addOption("mp", "mongoport", true, "MongoDB server port (default: 27017)");
         options.addOption("mn", "mongodbname", true, "MongoDB name (default: bisis)");
         options.addOption("mu", "mongousername", true, "MongoDB server username (default: --empty--)");
         options.addOption("mw", "mongopassword", true, "MongoDB server password (default: --empty--)");
         options.addOption("h", "help", false, "Help");
+        options.addOption("d", "dropall", false, "Drop all data on MongoDB server for desired library. PRIORITY PARAM if selected!");
     }
 
     public static void printHelp(Options options){

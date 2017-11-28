@@ -1,22 +1,22 @@
 package bisis.export;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.IndexModel;
+import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
-import org.bson.RawBsonDocument;
-import org.bson.conversions.Bson;
-
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Created by Petar on 11/27/2017.
+ * Helper class for Importing, Indexing, Dropping...data manipulation in mongodb
  */
-public class ImportUtil {
+public class MongoUtil {
 
     static String lib;
     static String host;
@@ -25,8 +25,9 @@ public class ImportUtil {
     static String uname;
     static String pass;
     static MongoClient mongoClient;
+    static String os = System.getProperty("os.name");
 
-    public ImportUtil( String host, String port, String lib, String dbname, String uname, String pass, MongoClient mongoClient){
+    public MongoUtil(String host, String port, String lib, String dbname, String uname, String pass, MongoClient mongoClient){
         this.lib = lib;
         this.host = host;
         this.port = port;
@@ -36,6 +37,42 @@ public class ImportUtil {
         this.mongoClient = mongoClient;
     }
 
+    /***
+     *
+     * @return true if mongoimport exists on machine and in PATH variables, false the opposite
+     */
+    public static boolean isMongoImportInstalled(){
+        ProcessBuilder builder = new ProcessBuilder("mongoimport");
+        builder.redirectErrorStream(true);
+        Process process = null;
+        try {
+            process = builder.start();
+        } catch (IOException e) {
+//            System.out.println("Please install mongoimport on your machine and put it in the PATH variables!");
+//            e.printStackTrace();
+            return false;
+        }
+        InputStream is = process.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+        String line = null;
+        try {
+            while ((line = reader.readLine()) != null) {
+               // System.out.println(line);
+            }
+        } catch (IOException e) {
+//            System.out.println("Please install mongoimport on your machine and put it in the PATH variables!2");
+//            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    /***
+     * Import memebers from json file to mongo using mongoimport
+     * @throws IOException
+     * @throws InterruptedException
+     */
    public static void importMembers() throws IOException, InterruptedException {
 
        String command = "";
@@ -63,6 +100,11 @@ public class ImportUtil {
        }
    }
 
+    /***
+     * Import records from json file to mongo using mongoimport
+     * @throws IOException
+     * @throws InterruptedException
+     */
    public static void importRecords() throws IOException, InterruptedException {
        String command = "";
        if (uname != null && !uname.equals("") && pass != null && !pass.equals(""))
@@ -89,6 +131,11 @@ public class ImportUtil {
        }
    }
 
+    /***
+     * Import lendings from json file to mongo using mongoimport
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public static void importLendings() throws IOException, InterruptedException {
         String command = "";
         if (uname != null && !uname.equals("") && pass != null && !pass.equals(""))
@@ -115,6 +162,11 @@ public class ImportUtil {
         }
     }
 
+    /***
+     * Import itemAvailibility from file to mongo using mongoimport
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public static void importItemAvailibilities() throws IOException, InterruptedException {
         String command = "";
         if (uname != null && !uname.equals("") && pass != null && !pass.equals(""))
@@ -141,6 +193,11 @@ public class ImportUtil {
         }
     }
 
+    /***
+     * Import config from json file to mongo using mongoimport
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public static void importConfig() throws IOException, InterruptedException {
         String command = "";
         if (uname != null && !uname.equals("") && pass != null && !pass.equals(""))
@@ -152,6 +209,11 @@ public class ImportUtil {
 
     }
 
+    /***
+     * Import coders from json file to mongo using mongoimport
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public static void importCoders() throws IOException, InterruptedException {
         String command = "";
         Map<String, String> codersMap = initCodersMap();
@@ -184,6 +246,11 @@ public class ImportUtil {
 
     }
 
+    /***
+     * Call all available imports
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public static void importAll() throws IOException, InterruptedException {
         importCoders();
         importMembers();
@@ -193,12 +260,31 @@ public class ImportUtil {
         importConfig();
     }
 
-    public static void indexField(String collName, String fieldName){
+    /***
+     *
+     * @param collName - collection name
+     * @param fieldName - field which will be indexed
+     * @param ascending - is index ascending?
+     * @param unique - is index unique
+     */
+    public static void indexField(String collName, String fieldName, boolean ascending, boolean unique){
         System.out.println("Indexing collection: " + collName + ", field: " + fieldName);
         MongoDatabase mdb = mongoClient.getDatabase(dbname);
-        mdb.getCollection(collName).createIndex(Indexes.ascending(fieldName));
+        if (!unique) {
+            if (ascending)
+                mdb.getCollection(collName).createIndex(Indexes.ascending(fieldName));
+            else
+                mdb.getCollection(collName).createIndex(Indexes.descending(fieldName));
+        }
+        else {
+                mdb.getCollection(collName).createIndex(new BasicDBObject(fieldName, 1), new IndexOptions().unique(true));
+        }
     }
 
+    /***
+     *
+     * @return Map, where key is coder collection name in mongoDb, value is path to .json from which data will be parsed
+     */
     private static Map<String, String> initCodersMap(){
         Map<String, String> codersMap = new HashMap<>();
         codersMap.put("coders.accessionReg", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\invknj.json --jsonArray");
@@ -224,5 +310,39 @@ public class ImportUtil {
         codersMap.put("coders.warning_type", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\circ_coders_json_output\\warningTypes.json --jsonArray");
 
         return codersMap;
+    }
+
+    /***
+     * Drop all data for selected library
+     */
+    public static void dropLibraryData(){
+        System.out.println("Application mode DROP ALL DATA for library " + lib);
+        MongoDatabase mdb = mongoClient.getDatabase(dbname);
+        mdb.getCollection(lib + "_lendings").drop();
+        mdb.getCollection(lib + "_records").drop();
+        mdb.getCollection(lib + "_members").drop();
+        mdb.getCollection(lib + "_itemAvailability").drop();
+
+        mdb.getCollection("configs").deleteMany(new BasicDBObject("libraryName", lib));
+        mdb.getCollection("coders.warning_type").deleteMany(new BasicDBObject("library", lib));
+        mdb.getCollection("coders.user_categ").deleteMany(new BasicDBObject("library", lib));
+        mdb.getCollection("coders.sublocation").deleteMany(new BasicDBObject("library", lib));
+        mdb.getCollection("coders.status").deleteMany(new BasicDBObject("library", lib));
+        mdb.getCollection("coders.organization").deleteMany(new BasicDBObject("library", lib));
+        mdb.getCollection("coders.membership_type").deleteMany(new BasicDBObject("library", lib));
+        mdb.getCollection("coders.membership").deleteMany(new BasicDBObject("library", lib));
+        mdb.getCollection("coders.location").deleteMany(new BasicDBObject("library", lib));
+        mdb.getCollection("coders.language").deleteMany(new BasicDBObject("library", lib));
+        mdb.getCollection("coders.internalMark").deleteMany(new BasicDBObject("library", lib));
+        mdb.getCollection("coders.format").deleteMany(new BasicDBObject("library", lib));
+        mdb.getCollection("coders.education").deleteMany(new BasicDBObject("library", lib));
+        mdb.getCollection("coders.corporate_member").deleteMany(new BasicDBObject("library", lib));
+        mdb.getCollection("coders.circ_config").deleteMany(new BasicDBObject("library", lib));
+        mdb.getCollection("coders.circ_location").deleteMany(new BasicDBObject("library", lib));
+        mdb.getCollection("coders.binding").deleteMany(new BasicDBObject("library", lib));
+        mdb.getCollection("coders.availability").deleteMany(new BasicDBObject("library", lib));
+        mdb.getCollection("coders.acquisition").deleteMany(new BasicDBObject("library", lib));
+        mdb.getCollection("coders.accessionReg").deleteMany(new BasicDBObject("library", lib));
+        System.out.println("All data for library: " + lib + " has been dropped. \nExiting application.");
     }
 }
