@@ -84,12 +84,13 @@ public class Mysql2MongoBisisMigrationTool {
             //Drop all data mode
             if (cmd.hasOption("d")){
                 iu.dropLibraryData();
-                return;
+                System.exit(0);
             }
 
-
+            //Check if mongoimport is installed
             if(!iu.isMongoImportInstalled()){
-                System.out.println("Please install mongoimport your machine and put it in PATH variables!");
+                System.out.println("Please install mongoimport on your machine and put it in PATH variables!");
+                System.exit(0);
             }
 
             Connection mysqlConn = DriverManager.getConnection("jdbc:mysql://" + mysqlAddress
@@ -109,15 +110,15 @@ public class Mysql2MongoBisisMigrationTool {
             String[] exportClientConfigArgs = new String[]{"-c", pathToInnis + "/client-config.ini", "-o", exportDir+"/config.json", "-r", pathToInnis + "/reports.ini", "-l", library};
 
             //exports
-//            ExportRecords.main(exportRecArgs);
-//            ExportCoders.main(exportCodersArgs);
-//            ExportLendings.main(exportLendingsArgs);
-//            ExportUsers.main(exportUsersArgs);
-//            ExportItemAvailability.main(exportItemAvailibilityArgs);
-//            ExportClientConfig.main(exportClientConfigArgs);
+            ExportRecords.main(exportRecArgs);
+            ExportCoders.main(exportCodersArgs);
+            ExportLendings.main(exportLendingsArgs);
+            ExportUsers.main(exportUsersArgs);
+            ExportItemAvailability.main(exportItemAvailibilityArgs);
+            ExportClientConfig.main(exportClientConfigArgs);
 
             //import all in MongoDB
-//            iu.importAll();
+            iu.importAll();
 
             //index required fields
             iu.indexField(library + "_itemAvailability", "recordID",true, false);
@@ -142,29 +143,32 @@ public class Mysql2MongoBisisMigrationTool {
             LOGGER.log(Level.SEVERE, e.toString(), e);
         }
 
-
-
     }
 
 
     private static void initOptions(Options options){
         options.addOption("l", "library", true, "Library name (prefix): gbns, tfzr... MANDATORY!");
+        options.addOption("f", "pathtoinnis", true, "Path to folder that conatins reports.ini and client-config.ini MADNDATORY if not dropall!");
+
         options.addOption("a", "mysqladress", true, "MySQL server address (default: localhost)");
         options.addOption("p", "mysqlport", true,"MySQL server port (default: 3306)");
         options.addOption("n","mysqdblname", true, "MySQL database name (default: bisis)");
         options.addOption("u","mysqlusername", true, "MySQL server username (default: bisis)");
         options.addOption("w","mysqlpassword", true, "MySQL server password (default: bisis)");
-        options.addOption("f", "pathtoinnis", true, "Path to folder that conatins reports.ini and client-config.ini MADNDATORY if not dropall!");
+
         options.addOption("ma","mongoaddress", true, "MongoDB server address (default: localhost");
         options.addOption("mp", "mongoport", true, "MongoDB server port (default: 27017)");
         options.addOption("mn", "mongodbname", true, "MongoDB name (default: bisis)");
         options.addOption("mu", "mongousername", true, "MongoDB server username (default: --empty--)");
         options.addOption("mw", "mongopassword", true, "MongoDB server password (default: --empty--)");
+
         options.addOption("h", "help", false, "Help");
         options.addOption("d", "dropall", false, "Drop all data on MongoDB server for desired library. PRIORITY PARAM if selected!");
     }
 
     public static void printHelp(Options options){
+        System.out.println("Tool from migrating bisis from MySQL to Mongo.");
+        System.out.println("*requirement: installed mongoimport on machine and put in PATH variables\nParameters:");
         for (Object o: options.getOptions())
             System.out.println("* Short param: -" + ((Option) o).getOpt().toString() + "; Long param: --" + ((Option) o).getLongOpt().toString() + "; Description: " + ((Option) o).getDescription().toString());
 
