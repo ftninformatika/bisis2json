@@ -5,10 +5,13 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import com.sun.nio.zipfs.ZipPath;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +29,7 @@ public class MongoUtil {
     static String pass;
     static MongoClient mongoClient;
     static String os = System.getProperty("os.name");
+    static Map<String, String> coderMap;
 
     public MongoUtil(String host, String port, String lib, String dbname, String uname, String pass, MongoClient mongoClient){
         this.lib = lib;
@@ -58,7 +62,7 @@ public class MongoUtil {
         String line = null;
         try {
             while ((line = reader.readLine()) != null) {
-               // System.out.println(line);
+                System.out.println(line);
             }
         } catch (IOException e) {
 //            System.out.println("Please install mongoimport on your machine and put it in the PATH variables!2");
@@ -73,7 +77,7 @@ public class MongoUtil {
      * @throws IOException
      * @throws InterruptedException
      */
-   public static void importMembers() throws IOException, InterruptedException {
+   public  void importMembers() throws IOException, InterruptedException {
 
        String command = "";
        if (uname != null && !uname.equals("") && pass != null && !pass.equals(""))
@@ -105,7 +109,7 @@ public class MongoUtil {
      * @throws IOException
      * @throws InterruptedException
      */
-   public static void importRecords() throws IOException, InterruptedException {
+   public  void importRecords() throws IOException, InterruptedException {
        String command = "";
        if (uname != null && !uname.equals("") && pass != null && !pass.equals(""))
            command = "mongoimport --host " + host +" --port " + port + " --db " + dbname + " --username " + uname + " --password " + pass +" --collection " + lib + "_records" + " --file " + System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\exportedRecords.json";
@@ -136,7 +140,7 @@ public class MongoUtil {
      * @throws IOException
      * @throws InterruptedException
      */
-    public static void importLendings() throws IOException, InterruptedException {
+    public  void importLendings() throws IOException, InterruptedException {
         String command = "";
         if (uname != null && !uname.equals("") && pass != null && !pass.equals(""))
             command = "mongoimport --host " + host +" --port " + port + " --db " + dbname + " --username " + uname + " --password " + pass +" --collection " + lib + "_lendings" + " --file " + System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\exportedLendings.json";
@@ -167,7 +171,7 @@ public class MongoUtil {
      * @throws IOException
      * @throws InterruptedException
      */
-    public static void importItemAvailibilities() throws IOException, InterruptedException {
+    public  void importItemAvailibilities() throws IOException, InterruptedException {
         String command = "";
         if (uname != null && !uname.equals("") && pass != null && !pass.equals(""))
             command = "mongoimport --host " + host +" --port " + port + " --db " + dbname + " --username " + uname + " --password " + pass +" --collection " + lib + "_itemAvailability" + " --file " + System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\exportedItemAvailabilities.json";
@@ -198,7 +202,7 @@ public class MongoUtil {
      * @throws IOException
      * @throws InterruptedException
      */
-    public static void importConfig() throws IOException, InterruptedException {
+    public  void importConfig() throws IOException, InterruptedException {
         String command = "";
         if (uname != null && !uname.equals("") && pass != null && !pass.equals(""))
             command = "mongoimport --host " + host +" --port " + port + " --db " + dbname + " --username " + uname + " --password " + pass +" --collection configs" + " --file " + System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\config.json";
@@ -214,11 +218,11 @@ public class MongoUtil {
      * @throws IOException
      * @throws InterruptedException
      */
-    public static void importCoders() throws IOException, InterruptedException {
+    public  void importCoders() throws IOException, InterruptedException {
         String command = "";
-        Map<String, String> codersMap = initCodersMap();
+        coderMap = initCodersMap();
 
-        for (Map.Entry<String, String> entry: codersMap.entrySet()){
+        for (Map.Entry<String, String> entry: coderMap.entrySet()){
 
             if (uname != null && !uname.equals("") && pass != null && !pass.equals(""))
                 command = "mongoimport --host " + host +" --port " + port + " --db " + dbname + " --username " + uname + " --password " + pass +" --collection " + entry.getKey() + " --file " + entry.getValue();
@@ -251,7 +255,11 @@ public class MongoUtil {
      * @throws IOException
      * @throws InterruptedException
      */
-    public static void importAll() throws IOException, InterruptedException {
+    public  void importAll() throws IOException, InterruptedException {
+
+        //check if export files are generated, exit app if not
+        exportExists();
+
         importCoders();
         importMembers();
         importRecords();
@@ -267,7 +275,7 @@ public class MongoUtil {
      * @param ascending - is index ascending?
      * @param unique - is index unique
      */
-    public static void indexField(String collName, String fieldName, boolean ascending, boolean unique){
+    public  void indexField(String collName, String fieldName, boolean ascending, boolean unique){
         System.out.println("Indexing collection: " + collName + ", field: " + fieldName);
         MongoDatabase mdb = mongoClient.getDatabase(dbname);
         if (!unique) {
@@ -285,7 +293,7 @@ public class MongoUtil {
      *
      * @return Map, where key is coder collection name in mongoDb, value is path to .json from which data will be parsed
      */
-    private static Map<String, String> initCodersMap(){
+    private  Map<String, String> initCodersMap(){
         Map<String, String> codersMap = new HashMap<>();
         codersMap.put("coders.accessionReg", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\invknj.json --jsonArray");
         codersMap.put("coders.acquisition", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\nacin_nabavke.json --jsonArray");
@@ -304,7 +312,7 @@ public class MongoUtil {
         codersMap.put("coders.membership", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\circ_coders_json_output\\memberships.json --jsonArray");
         codersMap.put("coders.membership_type", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\circ_coders_json_output\\membershipTypes.json --jsonArray");
         //organization se importuje odmah po eksportu, zbog organization(_id) u member- u!!
-        //codersMap.put("coders.organization", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\circ_coders_json_output\\organizations.json --jsonArray");
+        codersMap.put("coders.organization", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\circ_coders_json_output\\organizations.json --jsonArray");
         codersMap.put("coders.place", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\circ_coders_json_output\\places.json --jsonArray");
         codersMap.put("coders.user_categ", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\circ_coders_json_output\\userCategories.json --jsonArray");
         codersMap.put("coders.warning_type", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\circ_coders_json_output\\warningTypes.json --jsonArray");
@@ -315,7 +323,7 @@ public class MongoUtil {
     /***
      * Drop all data for selected library
      */
-    public static void dropLibraryData(){
+    public  void dropLibraryData(){
         System.out.println("Application mode DROP ALL DATA for library " + lib);
         MongoDatabase mdb = mongoClient.getDatabase(dbname);
         mdb.getCollection(lib + "_lendings").drop();
@@ -344,5 +352,44 @@ public class MongoUtil {
         mdb.getCollection("coders.acquisition").deleteMany(new BasicDBObject("library", lib));
         mdb.getCollection("coders.accessionReg").deleteMany(new BasicDBObject("library", lib));
         System.out.println("All data for library: " + lib + " has been dropped. \nExiting application.");
+    }
+
+    private  void exportExists(){
+
+        File rec = new File("export" + lib.toUpperCase() + "exportedRecords.json");
+        File mem = new File("export" + lib.toUpperCase() + "exportedMembers.json");
+        File len = new File("export" + lib.toUpperCase() + "exportedLendings.json");
+        File ia = new File("export" + lib.toUpperCase() + "exportedItemAvailibilities.json");
+        File con = new File("export" + lib.toUpperCase() + "config.json");
+
+        if (!rec.exists()){
+            System.out.println("Records export file is missing, exiting application.");
+            System.exit(0);
+        }
+        if (!mem.exists()){
+            System.out.println("Members export file is missing, exiting application.");
+            System.exit(0);
+        }
+        if (!len.exists()){
+            System.out.println("Lendings export file is missing, exiting application.");
+            System.exit(0);
+        }
+        if (!ia.exists()){
+            System.out.println("ItemAvailability export file is missing, exiting application.");
+            System.exit(0);
+        }
+        if (!rec.exists()){
+            System.out.println("Config export file is missing, exiting application.");
+            System.exit(0);
+        }
+
+        for (Map.Entry<String, String> entry: coderMap.entrySet()){
+            File f = new File(entry.getValue());
+            if (!f.exists()){
+                System.out.println("Some export files are missing, exiting application.");
+                System.exit(0);
+            }
+        }
+
     }
 }

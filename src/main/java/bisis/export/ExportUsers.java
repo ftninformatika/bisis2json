@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 public class ExportUsers {
   
@@ -115,6 +116,8 @@ public class ExportUsers {
       ResultSet rOrg = organizationPS.executeQuery();
       String organizationsMapJson = new Scanner(new File("export" + library.toUpperCase() + "/circ_coders_json_output/organization_id-id.json")).useDelimiter("\\Z").next();
       Map<Integer, String> orgMap = mapper.readValue(organizationsMapJson, new TypeReference<Map<Integer, String>>(){});
+      //MongoCollection<Document> orgs = Mysql2MongoBisisMigrationTool.mdb.getCollection("coders.organziation");
+
       if(rOrg.next()) {
 
         Organization org = new Organization();

@@ -194,6 +194,7 @@ public class ExportCoders {
             Map<Integer, String> idMigrationMap = new HashMap<>();
             while (rs.next()){
                 Organization m = new Organization();
+                m.set_id(ObjectId.get().toHexString());
                 m.setLibrary(library);
                 m.setZip(rs.getString("zip"));
                 m.setAddress(rs.getString("address"));
@@ -201,11 +202,8 @@ public class ExportCoders {
                 m.setName(rs.getString("name"));
                 organizations.add(m);
 
-                try {
-                    idMigrationMap.put(rs.getInt("id"),insertOrganization(m, rs.getInt("id")));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                idMigrationMap.put(rs.getInt("id"),m.get_id());
+
             }
             writeToFile(circCodersOutputDirName + "/organizations.json", mapper.writeValueAsString(organizations));
             writeToFile(circCodersOutputDirName + "/organization_id-id.json", mapper.writeValueAsString(idMigrationMap));
@@ -380,18 +378,6 @@ public class ExportCoders {
             e.printStackTrace();
             return "";
         }
-    }
-
-    public static String insertOrganization(Organization o, Integer id) throws IOException {
-
-        MongoCollection<Document> orgs = Mysql2MongoBisisMigrationTool.mdb.getCollection("coders.organization");
-        Document ob = new Document();
-        ob.putAll(mapper.readValue(mapper.writeValueAsString(o), HashMap.class));
-        ObjectId oid = new ObjectId();
-        ob.put("_id", oid);
-        orgs.insertOne(ob);
-        return oid.toString();
-
     }
 
     private static ObjectMapper mapper = new ObjectMapper();

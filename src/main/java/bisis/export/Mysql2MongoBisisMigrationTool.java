@@ -61,7 +61,7 @@ public class Mysql2MongoBisisMigrationTool {
                 mysqlPassword = cmd.getOptionValue("w");
             if (cmd.hasOption("f"))
                 pathToInnis = cmd.getOptionValue("f");
-            else if (!cmd.hasOption("d"))
+            else if (!cmd.hasOption("d") && cmd.hasOption("e")) //if not drop mode selected and export is selected
                 throw new Exception("Please specify path to folder containing reports.ini and client-config.ini, for help  input parameter -h (or --help)");
             if (cmd.hasOption("ma"))
                 mongoAddres = cmd.getOptionValue("ma");
@@ -73,6 +73,11 @@ public class Mysql2MongoBisisMigrationTool {
                 mongoUsername = cmd.getOptionValue("mu");
             if (cmd.hasOption("mw"))
                 mongoPassword = cmd.getOptionValue("mw");
+
+            if (!cmd.hasOption("h") && !cmd.hasOption("i") && !cmd.hasOption("e") && !cmd.hasOption("d")){
+                System.out.println("Please select one of the tool mods: -i for import, -e for export, -d for drop data, -h help.");
+                System.exit(0);
+            }
 
             if (mongoUsername.equals("") && mongoPassword.equals(""))
                 mongo = new MongoClient( mongoAddres , Integer.parseInt(mongoPort) );
@@ -87,60 +92,62 @@ public class Mysql2MongoBisisMigrationTool {
                 System.exit(0);
             }
 
-            //Check if mongoimport is installed
-            if(!iu.isMongoImportInstalled()){
-                System.out.println("Please install mongoimport on your machine and put it in PATH variables!");
-                System.exit(0);
+
+            if (cmd.hasOption("e")) {
+                //create directory where exported json files will live
+                String exportDir = "export" + library.toUpperCase();
+                FileUtils.createDir(exportDir);
+
+                // main args for exports
+                String[] exportRecArgs = new String[]{"-a", mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-f", "json", "-o", exportDir + "/exportedRecords.json"};
+                String[] exportCodersArgs = new String[]{"-a", mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-l", library, "-o", exportDir};
+                String[] exportLendingsArgs = new String[]{"-a", mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", exportDir + "/exportedLendings.json"};
+                String[] exportUsersArgs = new String[]{"-a", mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", exportDir + "/exportedMembers.json", "-l", library};
+                String[] exportItemAvailibilityArgs = new String[]{"-a", mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", exportDir + "/exportedItemAvailabilities.json"};
+                String[] exportClientConfigArgs = new String[]{"-c", pathToInnis + "/client-config.ini", "-o", exportDir + "/config.json", "-r", pathToInnis + "/reports.ini", "-l", library};
+
+                //exports
+                ExportRecords.main(exportRecArgs);
+                ExportCoders.main(exportCodersArgs);
+                ExportLendings.main(exportLendingsArgs);
+                ExportUsers.main(exportUsersArgs);
+                ExportItemAvailability.main(exportItemAvailibilityArgs);
+                ExportClientConfig.main(exportClientConfigArgs);
             }
-
-            Connection mysqlConn = DriverManager.getConnection("jdbc:mysql://" + mysqlAddress
-                    + ":" + mysqlPort + "/" + mysqlDbName + "?useSSL=false&serverTimezone=CET", mysqlUsername, mysqlPassword);
-
-
-            //create directory where exported json files will live
-            String exportDir = "export" + library.toUpperCase();
-            FileUtils.createDir(exportDir);
-
-            // main args for exports
-            String[] exportRecArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-f", "json", "-o", exportDir+"/exportedRecords.json"};
-            String[] exportCodersArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-l", library, "-o", exportDir};
-            String[] exportLendingsArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", exportDir+"/exportedLendings.json"};
-            String[] exportUsersArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", exportDir+"/exportedMembers.json", "-l", library};
-            String[] exportItemAvailibilityArgs = new String[]{"-a" , mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", exportDir+"/exportedItemAvailabilities.json"};
-            String[] exportClientConfigArgs = new String[]{"-c", pathToInnis + "/client-config.ini", "-o", exportDir+"/config.json", "-r", pathToInnis + "/reports.ini", "-l", library};
-
-            //exports
-            ExportRecords.main(exportRecArgs);
-            ExportCoders.main(exportCodersArgs);
-            ExportLendings.main(exportLendingsArgs);
-            ExportUsers.main(exportUsersArgs);
-            ExportItemAvailability.main(exportItemAvailibilityArgs);
-            ExportClientConfig.main(exportClientConfigArgs);
-
             //import all in MongoDB
-            iu.importAll();
+          if (cmd.hasOption("i")) {
+
+              //Check if mongoimport is installed
+              if(!MongoUtil.isMongoImportInstalled()){
+                  System.out.println("Please install mongoimport on your machine and put it in PATH variables!");
+                  System.exit(0);
+              }
+
+              iu.importAll();
 
             //index required fields
-            iu.indexField(library + "_itemAvailability", "recordID",true, false);
-            iu.indexField(library + "_lendings", "ctlgNo", true, false);
-            iu.indexField(library + "_lendings", "lendDate", false, false);
-            iu.indexField(library + "_lendings", "returnDate", false, false);
-            iu.indexField(library + "_lendings", "resumeDate", false, false);
-            iu.indexField(library + "_lendings", "deadline", false, false);
-            iu.indexField(library + "_members", "userId", true, true);
-            iu.indexField(library + "_members", "signings.firstName", true, false);
-            iu.indexField(library + "_memebers", "signings.lastName", true, false);
-            iu.indexField(library + "_members", "signings.signDate", false, false);
-
+              iu.indexField(library + "_itemAvailability", "recordID", true, false);
+              iu.indexField(library + "_lendings", "ctlgNo", true, false);
+              iu.indexField(library + "_lendings", "lendDate", false, false);
+              iu.indexField(library + "_lendings", "returnDate", false, false);
+              iu.indexField(library + "_lendings", "resumeDate", false, false);
+              iu.indexField(library + "_lendings", "deadline", false, false);
+              iu.indexField(library + "_members", "userId", true, true);
+              iu.indexField(library + "_members", "signings.firstName", true, false);
+              iu.indexField(library + "_members", "signings.lastName", true, false);
+              iu.indexField(library + "_members", "signings.signDate", false, false);
+          }
 
 
 
         } catch (ParseException e) {
             e.printStackTrace();
             LOGGER.log(Level.SEVERE, e.toString(), e);
+            System.exit(0);
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.log(Level.SEVERE, e.toString(), e);
+            System.exit(0);
         }
 
     }
@@ -164,10 +171,13 @@ public class Mysql2MongoBisisMigrationTool {
 
         options.addOption("h", "help", false, "Help");
         options.addOption("d", "dropall", false, "Drop all data on MongoDB server for desired library. PRIORITY PARAM if selected!");
+        options.addOption("i", "import", false, "If import is selected");
+        options.addOption("e", "export", false, "If export is selected");
+
     }
 
     public static void printHelp(Options options){
-        System.out.println("Tool from migrating bisis from MySQL to Mongo.");
+        System.out.println("\n\nTool for migrating bisis from MySQL to Mongo.");
         System.out.println("*requirement: installed mongoimport on machine and put in PATH variables\nParameters:");
         for (Object o: options.getOptions())
             System.out.println("* Short param: -" + ((Option) o).getOpt().toString() + "; Long param: --" + ((Option) o).getLongOpt().toString() + "; Description: " + ((Option) o).getDescription().toString());
