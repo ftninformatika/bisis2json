@@ -28,7 +28,6 @@ public class MongoUtil {
     static String uname;
     static String pass;
     static MongoClient mongoClient;
-    static String os = System.getProperty("os.name");
     static Map<String, String> coderMap;
 
     public MongoUtil(String host, String port, String lib, String dbname, String uname, String pass, MongoClient mongoClient){
@@ -295,15 +294,15 @@ public class MongoUtil {
      */
     private  Map<String, String> initCodersMap(){
         Map<String, String> codersMap = new HashMap<>();
-        codersMap.put("coders.accessionReg", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\invknj.json --jsonArray");
-        codersMap.put("coders.acquisition", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\nacin_nabavke.json --jsonArray");
-        codersMap.put("coders.availability", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\dostupnost.json --jsonArray");
-        codersMap.put("coders.binding", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\povez.json --jsonArray");
+        codersMap.put("coders.accessionReg", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\Invknj.json --jsonArray");
+        codersMap.put("coders.acquisition", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\Nacin_Nabavke.json --jsonArray");
+        codersMap.put("coders.availability", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\Dostupnost.json --jsonArray");
+        codersMap.put("coders.binding", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\Povez.json --jsonArray");
         codersMap.put("coders.location", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\location.json --jsonArray");
-        codersMap.put("coders.sublocation", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\podlokacija.json --jsonArray");
-        codersMap.put("coders.status", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\status_primerka.json --jsonArray");
-        codersMap.put("coders.format", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\sigformat.json --jsonArray");
-        codersMap.put("coders.internalMark", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\interna_oznaka.json --jsonArray");
+        codersMap.put("coders.sublocation", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\Podlokacija.json --jsonArray");
+        codersMap.put("coders.status", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\Status_Primerka.json --jsonArray");
+        codersMap.put("coders.format", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\SigFormat.json --jsonArray");
+        codersMap.put("coders.internalMark", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\Interna_oznaka.json --jsonArray");
         codersMap.put("coders.circ_config", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\circ_coders_json_output\\circConfigs.json");
         codersMap.put("coders.circ_location", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\circ_coders_json_output\\circLocations.json --jsonArray");
         codersMap.put("coders.corporate_member", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\circ_coders_json_output\\corporateMember.json --jsonArray");

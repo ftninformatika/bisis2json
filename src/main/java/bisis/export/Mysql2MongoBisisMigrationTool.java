@@ -21,6 +21,7 @@ public class Mysql2MongoBisisMigrationTool {
     private static final Logger LOGGER = Logger.getLogger( Mysql2MongoBisisMigrationTool.class.getName() );
     public static MongoClient mongo = null;
     public static MongoDatabase mdb = null;
+    static String os = System.getProperty("os.name");
 
     public static void main(String[] args){
         Options options = new Options();
@@ -109,16 +110,19 @@ public class Mysql2MongoBisisMigrationTool {
                 String[] exportClientConfigArgs = new String[]{"-c", pathToInnis + "/client-config.ini", "-o", exportDir + "/config.json", "-r", pathToInnis + "/reports.ini", "-l", library};
 
                 //exports
-//                ExportRecords.main(exportRecArgs);
-//                ExportCoders.main(exportCodersArgs);
-//                ExportLendings.main(exportLendingsArgs);
-//                ExportUsers.main(exportUsersArgs);
-//                ExportItemAvailability.main(exportItemAvailibilityArgs);
-//                ExportClientConfig.main(exportClientConfigArgs);
+                ExportRecords.main(exportRecArgs);
+                ExportCoders.main(exportCodersArgs);
+                ExportLendings.main(exportLendingsArgs);
+                ExportUsers.main(exportUsersArgs);
+                ExportItemAvailability.main(exportItemAvailibilityArgs);
+                ExportClientConfig.main(exportClientConfigArgs);
 
-                if(cmd.hasOption("z")) //zip if selected
+                if(cmd.hasOption("z")) { //zip if selected
+                    System.out.println("Archiving: export" + library.toUpperCase() + ".zip");
                     ZipUtil.pack(new File("export" + library.toUpperCase()), new File("export" + library.toUpperCase() + ".zip"));
-            }
+                    System.out.println("Archived");
+                    }
+                }
             //import all in MongoDB
           if (cmd.hasOption("i")) {
 

@@ -291,7 +291,7 @@ public class ExportCoders {
 
 
     private static void exportCoders1(Connection conn, String lib, String outputDirName) throws SQLException, FileNotFoundException, UnsupportedEncodingException {
-        String[] tableNames = { "invknj", "nacin_nabavke", "dostupnost", "povez", "sigformat", "interna_oznaka", "status_primerka", "location", "podlokacija" };
+        String[] tableNames = { "Invknj", "Nacin_nabavke", "Dostupnost", "Povez", "SigFormat", "Interna_oznaka", "Status_Primerka", "location", "Podlokacija" };
 
 
 

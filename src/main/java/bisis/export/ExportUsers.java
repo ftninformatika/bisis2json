@@ -299,12 +299,6 @@ public class ExportUsers {
     
   }
 
-//  private static void insertInMongo(String lib, String jsonMemberString, Integer userId){
-//    MongoCollection<Document> coll = Mysql2MongoBisisMigrationTool.mdb.getCollection(lib + "_members");
-//    coll.insertOne(Document.parse(jsonMemberString));
-//
-//  }
-
   private static LocalDate getDate(ResultSet rset, String columnName)  {
     try {
       java.sql.Date date = rset.getDate(columnName);

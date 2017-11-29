@@ -77,7 +77,7 @@ public class ExportItemAvailability {
     public static void export(Connection conn, PrintWriter outputFile) throws SQLException {
 
         Statement stmt = conn.createStatement();
-        ResultSet rsetOdlj = stmt.executeQuery("SELECT * FROM odeljenje");
+        ResultSet rsetOdlj = stmt.executeQuery("SELECT * FROM Odeljenje");
 
         Map<String, String> libDepartments = new HashMap<>();
         while (rsetOdlj.next()){
@@ -85,7 +85,7 @@ public class ExportItemAvailability {
         }
 
 
-        ResultSet rset = stmt.executeQuery("SELECT * FROM primerci");
+        ResultSet rset = stmt.executeQuery("SELECT * FROM Primerci");
         int primerciCount = 0;
 
         while(rset.next()){
