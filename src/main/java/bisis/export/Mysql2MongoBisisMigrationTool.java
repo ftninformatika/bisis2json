@@ -5,7 +5,9 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoDatabase;
 import org.apache.commons.cli.*;
+import org.zeroturnaround.zip.ZipUtil;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.logging.Level;
@@ -107,12 +109,15 @@ public class Mysql2MongoBisisMigrationTool {
                 String[] exportClientConfigArgs = new String[]{"-c", pathToInnis + "/client-config.ini", "-o", exportDir + "/config.json", "-r", pathToInnis + "/reports.ini", "-l", library};
 
                 //exports
-                ExportRecords.main(exportRecArgs);
-                ExportCoders.main(exportCodersArgs);
-                ExportLendings.main(exportLendingsArgs);
-                ExportUsers.main(exportUsersArgs);
-                ExportItemAvailability.main(exportItemAvailibilityArgs);
-                ExportClientConfig.main(exportClientConfigArgs);
+//                ExportRecords.main(exportRecArgs);
+//                ExportCoders.main(exportCodersArgs);
+//                ExportLendings.main(exportLendingsArgs);
+//                ExportUsers.main(exportUsersArgs);
+//                ExportItemAvailability.main(exportItemAvailibilityArgs);
+//                ExportClientConfig.main(exportClientConfigArgs);
+
+                if(cmd.hasOption("z")) //zip if selected
+                    ZipUtil.pack(new File("export" + library.toUpperCase()), new File("export" + library.toUpperCase() + ".zip"));
             }
             //import all in MongoDB
           if (cmd.hasOption("i")) {
@@ -173,6 +178,7 @@ public class Mysql2MongoBisisMigrationTool {
         options.addOption("d", "dropall", false, "Drop all data on MongoDB server for desired library. PRIORITY PARAM if selected!");
         options.addOption("i", "import", false, "If import is selected");
         options.addOption("e", "export", false, "If export is selected");
+        options.addOption("z", "archive", false, "Archive after export.");
 
     }
 

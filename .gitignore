@@ -53,3 +53,4 @@ nbdist/
 # PMD
 .pmd
 *.json
+exportGBNS.zip

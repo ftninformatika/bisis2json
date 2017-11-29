@@ -356,11 +356,11 @@ public class MongoUtil {
 
     private  void exportExists(){
 
-        File rec = new File("export" + lib.toUpperCase() + "exportedRecords.json");
-        File mem = new File("export" + lib.toUpperCase() + "exportedMembers.json");
-        File len = new File("export" + lib.toUpperCase() + "exportedLendings.json");
-        File ia = new File("export" + lib.toUpperCase() + "exportedItemAvailibilities.json");
-        File con = new File("export" + lib.toUpperCase() + "config.json");
+        File rec = new File("export" + lib.toUpperCase() + "\\exportedRecords.json");
+        File mem = new File("export" + lib.toUpperCase() + "\\exportedMembers.json");
+        File len = new File("export" + lib.toUpperCase() + "\\exportedLendings.json");
+        File ia = new File("export" + lib.toUpperCase() + "\\exportedItemAvailabilities.json");
+        File con = new File("export" + lib.toUpperCase() + "\\config.json");
 
         if (!rec.exists()){
             System.out.println("Records export file is missing, exiting application.");
