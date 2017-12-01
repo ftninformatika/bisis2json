@@ -83,6 +83,8 @@ public class Mysql2MongoBisisMigrationTool {
             }
 
             if (cmd.hasOption("e")) {//export mode
+                Connection conn = DriverManager.getConnection("jdbc:mysql://" + mysqlAddress
+                        + ":" + mysqlPort + "/" + mysqlDbName + "?useSSL=false&serverTimezone=CET", mysqlUsername, mysqlPassword);
 
                 //create directory where exported json files will live
                 String exportDir = "export" + library.toUpperCase();
@@ -97,12 +99,13 @@ public class Mysql2MongoBisisMigrationTool {
                 String[] exportClientConfigArgs = new String[]{"-c", pathToInnis + "/client-config.ini", "-o", exportDir + "/config.json", "-r", pathToInnis + "/reports.ini", "-l", library};
 
                 //exports
-                ExportRecords.main(exportRecArgs);
-                ExportCoders.main(exportCodersArgs);
-                ExportLendings.main(exportLendingsArgs);
-                ExportUsers.main(exportUsersArgs);
-                ExportItemAvailability.main(exportItemAvailibilityArgs);
-                ExportClientConfig.main(exportClientConfigArgs);
+//                ExportRecords.main(exportRecArgs);
+//                ExportCoders.main(exportCodersArgs);
+//                ExportLendings.main(exportLendingsArgs);
+//                ExportUsers.main(exportUsersArgs);
+//                ExportItemAvailability.main(exportItemAvailibilityArgs);
+//                ExportClientConfig.main(exportClientConfigArgs);
+                  ExportLibrarians.export(library, conn);
 
                 if(cmd.hasOption("z")) { //zip if selected
                     System.out.println("Archiving: export" + library.toUpperCase() + ".zip");

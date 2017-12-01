@@ -17,6 +17,8 @@ import java.util.jar.JarFile;
  */
 public class FileUtils {
 
+
+
   /** Reads a character file into a string. Assumes default
    *  character encoding in the file. Returns <code>null</code> if
    *  any of the exceptions is thrown.
@@ -24,6 +26,8 @@ public class FileUtils {
    *  @param fileName The name of the file to read.
    *  @return The read file
    */
+
+
   public static String readTextFile(String fileName) {
     String lineSep = System.getProperty("line.separator");
     StringBuffer retVal = new StringBuffer();
