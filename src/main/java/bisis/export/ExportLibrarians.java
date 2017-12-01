@@ -1,18 +1,22 @@
 package bisis.export;
 
+import bisis.librarian.ProcessType;
+import bisis.librarian.ProcessTypeBuilder;
+import bisis.librarian.ProcessTypeCatalog;
 import bisis.librarian.dto.LibrarianContextDTO;
 import bisis.librarian.dto.LibrarianDTO;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
+import bisis.librarian.dto.ProcessTypeDTO;
 import bisis.utils.FileUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.bson.types.ObjectId;
 import org.jdom2.*;
 import org.jdom2.input.SAXBuilder;
 
@@ -21,13 +25,23 @@ import org.jdom2.input.SAXBuilder;
  */
 public class ExportLibrarians {
 
+    private static Map<String, ProcessTypeDTO> processTypes = new HashMap<>();
+
     public static void export(String lib, Connection conn){
         Statement st = null;
         try {
             st = conn.createStatement();
-            ResultSet rs = st.executeQuery("SELECT * from Bibliotekari");
-            PreparedStatement pTp = conn.prepareStatement("SELECT * from Tipovi_obrade");
 
+            ResultSet rs = st.executeQuery("SELECT * from Tipovi_obrade");
+            processTypes = new HashMap<String, ProcessTypeDTO>();
+            while (rs.next()){
+                ProcessTypeDTO ptd = ProcessTypeBuilder.buildDTOFromProcessType(ProcessTypeBuilder.getProcessType(rs.getString("tipobr_spec")));
+                ptd.setLibName(lib);
+                ptd.set_id(new ObjectId().toHexString());
+                processTypes.put(ptd.getName(), ptd);
+            }
+
+            rs = st.executeQuery("SELECT * from Bibliotekari");
             List<LibrarianDTO> librarians = new ArrayList<>();
             while(rs.next()){
                 LibrarianDTO l = new LibrarianDTO();
@@ -43,8 +57,10 @@ public class ExportLibrarians {
                 l.setBiblioteka(lib);
                 LibrarianContextDTO cntx = null;
 
+                ProcessTypeCatalog processTypeCatalog = new ProcessTypeCatalog();
+                processTypeCatalog.init(conn);
                 try {
-                    cntx = makeContextFromXML(rs.getString("context"));
+                    cntx = makeContextFromXML(rs.getString("context"), processTypeCatalog, lib);
                 } catch (JDOMException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -52,10 +68,11 @@ public class ExportLibrarians {
                 }
                 l.setContext(cntx);
                 librarians.add(l);
+
             }
+            FileUtils.writeTextFile("export" + lib.toUpperCase() + "/coders_json_output/processTypes.json", mapper.writeValueAsString(processTypes.values().toArray()));
             FileUtils.writeTextFile("export" + lib.toUpperCase() + "/librarians.json", mapper.writeValueAsString(librarians));
             rs.close();
-            pTp.close();
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (JsonProcessingException e) {
@@ -64,7 +81,7 @@ public class ExportLibrarians {
 
     }
 
-    private static LibrarianContextDTO makeContextFromXML(String xmlContext) throws JDOMException, IOException {
+    private static LibrarianContextDTO makeContextFromXML(String xmlContext, ProcessTypeCatalog processTypeCatalog, String lib) throws JDOMException, IOException {
         LibrarianContextDTO retVal = new LibrarianContextDTO();
 
         SAXBuilder saxBuilder = new SAXBuilder();
@@ -77,7 +94,25 @@ public class ExportLibrarians {
         retVal.setPref4(classElement.getChild("prefixes").getAttribute("pref4").getValue());
         retVal.setPref5(classElement.getChild("prefixes").getAttribute("pref5").getValue());
 
+        //svi tipovi obrade
+        if (classElement.getChildren("process-type").size() > 0){
+            for (Element e: classElement.getChildren("process-type")){
+                if(e.getAttribute("name").isSpecified()) {
+                    ProcessTypeDTO pt = processTypes.get(e.getAttribute("name").getValue());
+                    if (pt != null)
+                        retVal.getProcessTypes().add(pt);
+                  }
+            }
+        }
 
+        //default tip
+        if ((Arrays.asList(classElement.getChildren().stream().map(i -> i.getName()).toArray()).contains("default-process-type"))) {
+            ProcessTypeDTO processTypeDTO = processTypes.get(classElement.getChild("default-process-type").getAttribute("name").getValue());
+            if(processTypeDTO != null) {
+                processTypeDTO.setLibName(lib);
+                retVal.setDefaultProcessType(processTypeDTO);
+            }
+        }
 
         return retVal;
     }

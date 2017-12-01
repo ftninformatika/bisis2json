@@ -16,7 +16,6 @@ import lombok.Setter;
 //@Document(collection = "librarians")
 public class LibrarianDTO {
 
-    /*@Id*/ private String _id;
     private String username;
     private String password;
     private String ime;

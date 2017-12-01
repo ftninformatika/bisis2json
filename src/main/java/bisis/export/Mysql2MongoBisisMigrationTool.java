@@ -99,12 +99,12 @@ public class Mysql2MongoBisisMigrationTool {
                 String[] exportClientConfigArgs = new String[]{"-c", pathToInnis + "/client-config.ini", "-o", exportDir + "/config.json", "-r", pathToInnis + "/reports.ini", "-l", library};
 
                 //exports
-//                ExportRecords.main(exportRecArgs);
-//                ExportCoders.main(exportCodersArgs);
-//                ExportLendings.main(exportLendingsArgs);
-//                ExportUsers.main(exportUsersArgs);
-//                ExportItemAvailability.main(exportItemAvailibilityArgs);
-//                ExportClientConfig.main(exportClientConfigArgs);
+                ExportRecords.main(exportRecArgs);
+                ExportCoders.main(exportCodersArgs);
+                ExportLendings.main(exportLendingsArgs);
+                ExportUsers.main(exportUsersArgs);
+                ExportItemAvailability.main(exportItemAvailibilityArgs);
+                ExportClientConfig.main(exportClientConfigArgs);
                   ExportLibrarians.export(library, conn);
 
                 if(cmd.hasOption("z")) { //zip if selected
@@ -120,7 +120,7 @@ public class Mysql2MongoBisisMigrationTool {
                 mongo = new MongoClient( new MongoClientURI("mongodb://" + mongoUsername + ":" + mongoPassword + "@" + mongoAddres + ":" + mongoPort + "/" + mongoName));
             mdb = mongo.getDatabase(mongoName);
             MongoUtil iu = new MongoUtil(mongoAddres, mongoPort, library, mongoName, mongoUsername, mongoPassword, mongo);
-
+            //iu.importLibrarians();
             //Drop all data mode
             if (cmd.hasOption("d")){
                 iu.dropLibraryData();

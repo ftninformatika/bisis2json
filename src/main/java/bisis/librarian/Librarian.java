@@ -11,7 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Librarian {
 
-  /*@Id*/ private String _id;
   private String username;
   private String password;
   private String ime;

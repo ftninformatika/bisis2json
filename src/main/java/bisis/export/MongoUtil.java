@@ -135,6 +135,33 @@ public class MongoUtil {
        }
    }
 
+   public void importLibrarians() throws IOException {
+       String command = "";
+
+       if (uname != null && !uname.equals("") && pass != null && !pass.equals(""))
+           command = "mongoimport --host " + host +" --port " + port + " --db " + dbname + " --username " + uname + " --password " + pass +" --collection librarians" + " --file " + System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\librarians.json --jsonArray";
+       else
+           command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection  librarians" + " --file " + System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\librarians.json --jsonArray";
+
+       Process p = Runtime.getRuntime().exec("cmd /c " + command);
+       System.out.println("Importing librarians");
+       BufferedReader stdInput = new BufferedReader(new
+               InputStreamReader(p.getInputStream()));
+
+       BufferedReader stdError = new BufferedReader(new
+               InputStreamReader(p.getErrorStream()));
+
+       //print stream
+       String s = null;
+       while ((s = stdInput.readLine()) != null) {
+           System.out.println(s);
+       }
+
+       while ((s = stdError.readLine()) != null) {
+           System.out.println(s);
+       }
+   }
+
     /***
      * Import lendings from json file to mongo using mongoimport
      * @throws IOException
@@ -265,6 +292,7 @@ public class MongoUtil {
         importLendings();
         importItemAvailibilities();
         importConfig();
+        importLibrarians();
     }
 
     /***
@@ -300,6 +328,7 @@ public class MongoUtil {
         codersMap.put("coders.binding", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\Povez.json");
         codersMap.put("coders.location", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\location.json");
         codersMap.put("coders.sublocation", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\Podlokacija.json");
+        codersMap.put("coders.process_types", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\processTypes.json");
         codersMap.put("coders.status", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\Status_Primerka.json ");
         codersMap.put("coders.format", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\SigFormat.json");
         codersMap.put("coders.internalMark", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\Interna_oznaka.json");
@@ -359,6 +388,7 @@ public class MongoUtil {
         File len = new File("export" + lib.toUpperCase() + "\\exportedLendings.json");
         File ia = new File("export" + lib.toUpperCase() + "\\exportedItemAvailabilities.json");
         File con = new File("export" + lib.toUpperCase() + "\\config.json");
+        File lib = new File("export" + this.lib.toUpperCase() + "\\librarians.json");
 
         if (!rec.exists()){
             System.out.println("Records export file is missing, exiting application.");
@@ -376,8 +406,12 @@ public class MongoUtil {
             System.out.println("ItemAvailability export file is missing, exiting application.");
             System.exit(0);
         }
-        if (!rec.exists()){
+        if (!con.exists()){
             System.out.println("Config export file is missing, exiting application.");
+            System.exit(0);
+        }
+        if (!lib.exists()){
+            System.out.println("Librarians export file is missing, exiting application.");
             System.exit(0);
         }
 

@@ -14,7 +14,7 @@ public class LibrarianManager {
     public static Librarian initializeLibrarianFromDTO(LibrarianDTO librarianDTO){
 
         Librarian retVal = new Librarian();
-        retVal.set_id(librarianDTO.get_id());
+        //retVal.set_id(librarianDTO.get_id());
         retVal.setUsername(librarianDTO.getUsername());
         retVal.setPassword(librarianDTO.getPassword());
         retVal.setIme(librarianDTO.getIme());
@@ -34,7 +34,7 @@ public class LibrarianManager {
     public static LibrarianDTO initializeDTOFromLibrarian(Librarian lib) {
 
         LibrarianDTO retVal = new LibrarianDTO();
-        retVal.set_id(lib.get_id());
+        //retVal.set_id(lib.get_id());
         retVal.setUsername(lib.getUsername());
         retVal.setPassword(lib.getPassword());
         retVal.setIme(lib.getIme());
