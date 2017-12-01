@@ -21,14 +21,14 @@ import java.util.Map;
  */
 public class MongoUtil {
 
-    static String lib;
-    static String host;
-    static String port;
-    static String dbname;
-    static String uname;
-    static String pass;
-    static MongoClient mongoClient;
-    static Map<String, String> coderMap;
+    String lib;
+    String host;
+    String port;
+    String dbname;
+    String uname;
+    String pass;
+    MongoClient mongoClient;
+    Map<String, String> coderMap;
 
     public MongoUtil(String host, String port, String lib, String dbname, String uname, String pass, MongoClient mongoClient){
         this.lib = lib;

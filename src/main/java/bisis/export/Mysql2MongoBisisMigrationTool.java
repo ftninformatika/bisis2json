@@ -64,7 +64,7 @@ public class Mysql2MongoBisisMigrationTool {
                 mysqlPassword = cmd.getOptionValue("w");
             if (cmd.hasOption("f"))
                 pathToInnis = cmd.getOptionValue("f");
-            else if (!cmd.hasOption("d") && cmd.hasOption("e")) //if not drop mode selected and export is selected
+            else if (cmd.hasOption("e")) //if not drop mode selected and export is selected
                 throw new Exception("Please specify path to folder containing reports.ini and client-config.ini, for help  input parameter -h (or --help)");
             if (cmd.hasOption("ma"))
                 mongoAddres = cmd.getOptionValue("ma");
@@ -82,21 +82,8 @@ public class Mysql2MongoBisisMigrationTool {
                 System.exit(0);
             }
 
-            if (mongoUsername.equals("") && mongoPassword.equals(""))
-                mongo = new MongoClient( mongoAddres , Integer.parseInt(mongoPort) );
-            else
-                mongo = new MongoClient( new MongoClientURI("mongodb://" + mongoUsername + ":" + mongoPassword + "@" + mongoAddres + ":" + mongoPort + "/" + mongoName));
-            mdb = mongo.getDatabase(mongoName);
-            MongoUtil iu = new MongoUtil(mongoAddres, mongoPort, library, mongoName, mongoUsername, mongoPassword, mongo);
+            if (cmd.hasOption("e")) {//export mode
 
-            //Drop all data mode
-            if (cmd.hasOption("d")){
-                iu.dropLibraryData();
-                System.exit(0);
-            }
-
-
-            if (cmd.hasOption("e")) {
                 //create directory where exported json files will live
                 String exportDir = "export" + library.toUpperCase();
                 FileUtils.createDir(exportDir);
@@ -123,6 +110,20 @@ public class Mysql2MongoBisisMigrationTool {
                     System.out.println("Archived");
                     }
                 }
+
+            if (mongoUsername.equals("") && mongoPassword.equals(""))
+                mongo = new MongoClient( mongoAddres , Integer.parseInt(mongoPort) );
+            else
+                mongo = new MongoClient( new MongoClientURI("mongodb://" + mongoUsername + ":" + mongoPassword + "@" + mongoAddres + ":" + mongoPort + "/" + mongoName));
+            mdb = mongo.getDatabase(mongoName);
+            MongoUtil iu = new MongoUtil(mongoAddres, mongoPort, library, mongoName, mongoUsername, mongoPassword, mongo);
+
+            //Drop all data mode
+            if (cmd.hasOption("d")){
+                iu.dropLibraryData();
+                System.exit(0);
+            }
+
             //import all in MongoDB
           if (cmd.hasOption("i")) {
 
