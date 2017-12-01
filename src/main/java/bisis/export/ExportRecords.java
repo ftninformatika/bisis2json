@@ -24,41 +24,18 @@ import bisis.records.serializers.LooseXMLSerializer;
 import bisis.textsrv.DBStorage;
 
 public class ExportRecords {
-  public static void main(String[] args) {
+  public static void main(Connection conn, String[] args) {
     Options options = new Options();
-    options.addOption("a", "address", true,
-        "MySQL server address (default: localhost)");
-    options.addOption("p", "port", true, "MySQL server port (default: 3306)");
-    options.addOption("d", "database", true,
-        "MySQL database name (default: bisis)");
-    options.addOption("u", "username", true,
-        "MySQL server username (default: bisis)");
-    options.addOption("w", "password", true,
-        "MySQL server password (default: bisis)");
     options.addOption("f", "format", true,
         "Export format: xml or json (default: xml)");
     options.addOption("o", "output", true,
         "Output file");
     CommandLineParser parser = new GnuParser();
-    String address = "localhost";
-    String port = "3306";
-    String database = "bisis";
-    String username = "bisis";
-    String password = "bisis";
     String format = "json";
     String outputFile = "";
+
     try {
       CommandLine cmd = parser.parse(options, args);
-      if (cmd.hasOption("a"))
-        address = cmd.getOptionValue("a");
-      if (cmd.hasOption("p"))
-        port = cmd.getOptionValue("p");
-      if (cmd.hasOption("d"))
-        database = cmd.getOptionValue("d");
-      if (cmd.hasOption("u"))
-        username = cmd.getOptionValue("u");
-      if (cmd.hasOption("w"))
-        password = cmd.getOptionValue("w");
       if (cmd.hasOption("f")) {
         format = cmd.getOptionValue("f").toLowerCase();
         if (!"xml".equals(format) && !"json".equals(format))
@@ -79,8 +56,6 @@ public class ExportRecords {
       PrintWriter outElastic = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile.substring(0,outputFile.lastIndexOf(".")) + "Elastic.json"), "UTF8")));
       if ("xml".equals(format))
         out.println("<?xml version=\"1.0\"?>\n<records>");
-      Connection conn = DriverManager.getConnection("jdbc:mysql://" + address
-          + ":" + port + "/" + database + "?useSSL=false&serverTimezone=CET", username, password);
       List<Integer> docIDs = new ArrayList<Integer>();
       Statement stmt = conn.createStatement();
       ResultSet rset = stmt.executeQuery("SELECT record_id FROM Records");
@@ -112,7 +87,6 @@ public class ExportRecords {
       if ("xml".equals(format))
         out.println("</records>");
       System.out.println("Total " + Integer.toString(i) + " records exported.");
-      conn.close();
       out.close();
       outElastic.close();
     } catch (Exception e) {

@@ -28,41 +28,20 @@ import java.util.stream.Collectors;
  */
 public class ExportCoders {
 
-    public static void main(String[] args){
+    public static void main(Connection conn, String[] args){
 
         Options options = new Options();
-        options.addOption("a","Address", true,"MySQL server address (default: localhost");
-        options.addOption("p", "port", true, "MySQL server port (default: 3306)");
-        options.addOption("d", "database", true,
-                "MySQL database name (default: bisis)");
-        options.addOption("u", "username", true,
-                "MySQL server username (default: bisis)");
-        options.addOption("w", "password", true,
-                "Password default(bisis)");
+
         options.addOption("l", "library", true,
                 "Library code (gbns)");
         options.addOption("o", "output", true,
                 "Output directory");
         CommandLineParser parser = new GnuParser();
-        String address = "localhost";
-        String port = "3306";
-        String database = "bisis";
-        String username = "bisis";
-        String password = "bisis";
+
         String outputDir = "";
         String library = "";
         try {
             CommandLine cmd = parser.parse(options, args);
-            if (cmd.hasOption("a"))
-                address = cmd.getOptionValue("a");
-            if (cmd.hasOption("p"))
-                port = cmd.getOptionValue("p");
-            if (cmd.hasOption("d"))
-                database = cmd.getOptionValue("d");
-            if (cmd.hasOption("u"))
-                username = cmd.getOptionValue("u");
-            if (cmd.hasOption("w"))
-                password = cmd.getOptionValue("w");
             if (cmd.hasOption("l"))
                 library = cmd.getOptionValue("l");
             else
@@ -82,8 +61,7 @@ public class ExportCoders {
         String circCodersOutputDirName = outputDir+"/circ_coders_json_output";
 
         try {
-            Connection conn = DriverManager.getConnection("jdbc:mysql://" + address
-                    + ":" + port + "/" + database + "?useSSL=false&serverTimezone=CET", username, password);
+
             if(FileUtils.createDir(codersOutputDirName)) {
                 exportCoders1(conn, library, codersOutputDirName);
             }

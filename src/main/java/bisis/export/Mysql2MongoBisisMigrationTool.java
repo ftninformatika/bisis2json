@@ -91,22 +91,22 @@ public class Mysql2MongoBisisMigrationTool {
                 FileUtils.createDir(exportDir);
 
                 // main args for exports
-                String[] exportRecArgs = new String[]{"-a", mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-f", "json", "-o", exportDir + "/exportedRecords.json"};
-                String[] exportCodersArgs = new String[]{"-a", mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-l", library, "-o", exportDir};
-                String[] exportLendingsArgs = new String[]{"-a", mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", exportDir + "/exportedLendings.json"};
-                String[] exportUsersArgs = new String[]{"-a", mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", exportDir + "/exportedMembers.json", "-l", library};
-                String[] exportItemAvailibilityArgs = new String[]{"-a", mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", exportDir + "/exportedItemAvailabilities.json"};
-                String[] exportClientConfigArgs = new String[]{"-c", pathToInnis + "/client-config.ini", "-o", exportDir + "/config.json", "-r", pathToInnis + "/reports.ini", "-l", library};
+                //String[] exportCodersArgs = new String[]{"-a", mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-l", library, "-o", exportDir};
+                //String[] exportLendingsArgs = new String[]{"-a", mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", exportDir + "/exportedLendings.json"};
+                //String[] exportUsersArgs = new String[]{"-a", mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", exportDir + "/exportedMembers.json", "-l", library};
+                //String[] exportItemAvailibilityArgs = new String[]{"-a", mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", exportDir + "/exportedItemAvailabilities.json"};
+                //String[] exportClientConfigArgs = new String[]{"-c", pathToInnis + "/client-config.ini", "-o", exportDir + "/config.json", "-r", pathToInnis + "/reports.ini", "-l", library};
 
                 //exports
-                ExportRecords.main(exportRecArgs);
-                ExportCoders.main(exportCodersArgs);
-                ExportLendings.main(exportLendingsArgs);
-                ExportUsers.main(exportUsersArgs);
-                ExportItemAvailability.main(exportItemAvailibilityArgs);
-                ExportClientConfig.main(exportClientConfigArgs);
-                  ExportLibrarians.export(library, conn);
+                ExportRecords.main(conn, new String[]{"-f", "json", "-o", exportDir + "/exportedRecords.json"});
+                ExportCoders.main(conn, new String[]{"-l", library, "-o", exportDir});
+                ExportLendings.main(conn,  new String[]{"-o", exportDir + "/exportedLendings.json"});
+                ExportUsers.main(conn, new String[]{"-o", exportDir + "/exportedMembers.json", "-l", library});
+                ExportItemAvailability.main(conn, new String[]{"-o", exportDir + "/exportedItemAvailabilities.json"});
+                ExportClientConfig.main(new String[]{"-c", pathToInnis + "/client-config.ini", "-o", exportDir + "/config.json", "-r", pathToInnis + "/reports.ini", "-l", library});
+                ExportLibrarians.export(library, conn);
 
+                conn.close();
                 if(cmd.hasOption("z")) { //zip if selected
                     System.out.println("Archiving: export" + library.toUpperCase() + ".zip");
                     ZipUtil.pack(new File("export" + library.toUpperCase()), new File("export" + library.toUpperCase() + ".zip"));
@@ -120,11 +120,10 @@ public class Mysql2MongoBisisMigrationTool {
                 mongo = new MongoClient( new MongoClientURI("mongodb://" + mongoUsername + ":" + mongoPassword + "@" + mongoAddres + ":" + mongoPort + "/" + mongoName));
             mdb = mongo.getDatabase(mongoName);
             MongoUtil iu = new MongoUtil(mongoAddres, mongoPort, library, mongoName, mongoUsername, mongoPassword, mongo);
-            //iu.importLibrarians();
             //Drop all data mode
             if (cmd.hasOption("d")){
                 iu.dropLibraryData();
-                System.exit(0);
+                //System.exit(0);
             }
 
             //import all in MongoDB
