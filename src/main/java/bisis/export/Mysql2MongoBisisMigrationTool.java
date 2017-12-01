@@ -46,7 +46,7 @@ public class Mysql2MongoBisisMigrationTool {
             CommandLine cmd = parser.parse(options, args);
             if (cmd.hasOption("h")){
                 printHelp(options);
-                return;
+                System.exit(0);
             }
             if (cmd.hasOption("l"))
                 library = cmd.getOptionValue("l");
@@ -90,15 +90,8 @@ public class Mysql2MongoBisisMigrationTool {
                 String exportDir = "export" + library.toUpperCase();
                 FileUtils.createDir(exportDir);
 
-                // main args for exports
-                //String[] exportCodersArgs = new String[]{"-a", mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-l", library, "-o", exportDir};
-                //String[] exportLendingsArgs = new String[]{"-a", mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", exportDir + "/exportedLendings.json"};
-                //String[] exportUsersArgs = new String[]{"-a", mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", exportDir + "/exportedMembers.json", "-l", library};
-                //String[] exportItemAvailibilityArgs = new String[]{"-a", mysqlAddress, "-p", mysqlPort, "-d", mysqlDbName, "-u", mysqlUsername, "-w", mysqlPassword, "-o", exportDir + "/exportedItemAvailabilities.json"};
-                //String[] exportClientConfigArgs = new String[]{"-c", pathToInnis + "/client-config.ini", "-o", exportDir + "/config.json", "-r", pathToInnis + "/reports.ini", "-l", library};
-
                 //exports
-                ExportRecords.main(conn, new String[]{"-f", "json", "-o", exportDir + "/exportedRecords.json"});
+                ExportRecords.main(conn,"json",  exportDir + "/exportedRecords.json");
                 ExportCoders.main(conn, new String[]{"-l", library, "-o", exportDir});
                 ExportLendings.main(conn,  new String[]{"-o", exportDir + "/exportedLendings.json"});
                 ExportUsers.main(conn, new String[]{"-o", exportDir + "/exportedMembers.json", "-l", library});

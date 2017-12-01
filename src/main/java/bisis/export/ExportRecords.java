@@ -24,33 +24,18 @@ import bisis.records.serializers.LooseXMLSerializer;
 import bisis.textsrv.DBStorage;
 
 public class ExportRecords {
-  public static void main(Connection conn, String[] args) {
-    Options options = new Options();
-    options.addOption("f", "format", true,
-        "Export format: xml or json (default: xml)");
-    options.addOption("o", "output", true,
-        "Output file");
-    CommandLineParser parser = new GnuParser();
-    String format = "json";
-    String outputFile = "";
+  public static void main(Connection conn, String format, String outputFile) {
 
     try {
-      CommandLine cmd = parser.parse(options, args);
-      if (cmd.hasOption("f")) {
-        format = cmd.getOptionValue("f").toLowerCase();
         if (!"xml".equals(format) && !"json".equals(format))
           throw new Exception("Invalid format specified.");
-      }
-      if (cmd.hasOption("o"))
-        outputFile = cmd.getOptionValue("o");
-      else
+      if (outputFile == null || outputFile.equals(""))
         throw new Exception("Output file not specified.");
     } catch (Exception ex) {
       System.err.println("Invalid parameter(s), reason: " + ex.getMessage());
-      HelpFormatter formatter = new HelpFormatter();
-      formatter.printHelp("bisis2json-export-records", options);
       return;
     }
+
     try {
       PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), "UTF8")));
       PrintWriter outElastic = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile.substring(0,outputFile.lastIndexOf(".")) + "Elastic.json"), "UTF8")));
