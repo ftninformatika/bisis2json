@@ -73,7 +73,7 @@ public class ExportUsers {
     PreparedStatement signingPS = conn.prepareStatement("SELECT id, sign_date, location, until_date, cost, receipt_id, librarian FROM signing WHERE sys_id=?");
     PreparedStatement organizationPS = conn.prepareStatement("SELECT id, address, name, city, zip from organization where id=?");
     PreparedStatement membershipTypePS = conn.prepareStatement("SELECT name, period from mmbr_types where id=?");
-    PreparedStatement userCategoryPS = conn.prepareStatement("SELECT name, titles_no, period, max_period from user_categs where id=?");
+    PreparedStatement userCategoryPS = conn.prepareStatement("SELECT * from user_categs where id=?");
     PreparedStatement corporateMemberPS = conn.prepareStatement("SELECT * from groups where user_id=?");
     PreparedStatement duplicatesPS = conn.prepareStatement("SELECT * from duplicate where id=?");
     PreparedStatement picturebooksPS = conn.prepareStatement("SELECT * from picturebooks where id=?");
@@ -127,7 +127,10 @@ public class ExportUsers {
         uC.setDescription(rUc.getString("name"));
         uC.setTitlesNo(rUc.getInt("titles_no"));
         uC.setPeriod(rUc.getInt("period"));
-        uC.setMaxPeriod(rUc.getInt("max_period"));
+        if (ExportCoders.hasColumn(rUc, "max_period"))
+          uC.setMaxPeriod(rUc.getInt("max_period"));
+        else
+          uC.setMaxPeriod(5000);
         member.setUserCategory(uC);
       }
       rUc.close();
@@ -283,7 +286,8 @@ public class ExportUsers {
       return date.toLocalDate();
     }
     catch (Exception e) {
-      e.printStackTrace();
+      //e.printStackTrace();
+      System.out.println("Tried parsing date 00-00-0000, parsed null ");
       return null;
     }
   }

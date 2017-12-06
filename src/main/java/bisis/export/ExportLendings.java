@@ -104,7 +104,8 @@ public class ExportLendings {
             return date.toLocalDate();
         }
         catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            System.out.println("Tried parsing date 00-00-0000, parsed null ");
             return null;
         }
 

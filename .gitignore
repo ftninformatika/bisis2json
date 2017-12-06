@@ -58,3 +58,5 @@ exportTFZR.zip
 client-config.ini
 *.zip
 reports.ini
+problemIdsGBNS.txt
+bisis-migrate.jar

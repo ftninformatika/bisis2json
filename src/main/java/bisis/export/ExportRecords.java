@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bisis.prefixes.PrefixConverter;
+import bisis.utils.FileUtils;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -52,12 +53,16 @@ public class ExportRecords {
       System.out.println("Exporting " + format.toUpperCase() + " to " + outputFile);
       DBStorage storage = new DBStorage();
       int i = 0;
+
+      ArrayList<String> errIDs = new ArrayList<>();
       for (int id: docIDs) {
         Record rec = storage.get(conn, id);
         if (rec == null){
           System.out.println("Problem parsing record with ID: " + id );
+          errIDs.add( "" + id);
           continue;
         }
+
 
         rec.pack();
         if ("xml".equals(format))
@@ -69,6 +74,7 @@ public class ExportRecords {
           System.out.println(Integer.toString(i) + " records exported");
         i++;
       }
+      FileUtils.writeTextFile("problemIds.txt",errIDs.toString());
       if ("xml".equals(format))
         out.println("</records>");
       System.out.println("Total " + Integer.toString(i) + " records exported.");
