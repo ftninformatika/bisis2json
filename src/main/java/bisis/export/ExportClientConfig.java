@@ -16,7 +16,7 @@ public class ExportClientConfig {
 
     static ObjectMapper mapper = new ObjectMapper();
 
-    public static void main(String[] args){
+    public static void export(String[] args){
         Options options = new Options();
         options.addOption("c", "cliconf", true,
                 "Path to client-config.ini file");

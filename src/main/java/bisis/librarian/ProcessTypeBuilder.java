@@ -11,6 +11,8 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 
@@ -95,16 +97,29 @@ public class ProcessTypeBuilder extends DefaultHandler {
       retVal.setName(pt.getName());
       retVal.setLibName(pt.getLibName());
 
-      if (pt.getInitialSubfields() != null && pt.getInitialSubfields().size() > 0)
-        retVal.setInitialFields(pt.getInitialSubfields().stream()
-                                   .map(i -> new USubfieldDTO(i.getOwner().getName(), i.getName()))
-                                   .collect(Collectors.toList()));
+      ArrayList<USubfieldDTO> inital = new ArrayList<>();
+      if (pt.getInitialSubfields() != null && pt.getInitialSubfields().size() > 0) {
+          for (USubfield us: pt.getInitialSubfields()){
+              if (us != null)
+                inital.add(new USubfieldDTO(us.getOwner().getName(), us.getName()));
+          }
+      }
+//        retVal.setInitialFields(pt.getInitialSubfields().stream()
+//                                   .map(i -> new USubfieldDTO(i.getOwner().getName(), i.getName()))
+//                                   .collect(Collectors.toList()));
+      retVal.setInitialFields(inital);
 
-
-      if (pt.getMandatorySubfields() != null && pt.getMandatorySubfields().size() > 0)
-          retVal.setMandatoryFields(pt.getMandatorySubfields().stream()
-                  .map(i -> new USubfieldDTO(i.getOwner().getName(), i.getName()))
-                  .collect(Collectors.toList()));
+      ArrayList<USubfieldDTO> man = new ArrayList<>();
+      if (pt.getMandatorySubfields() != null && pt.getMandatorySubfields().size() > 0){
+          for (USubfield us: pt.getMandatorySubfields()) {
+              if (us != null)
+                man.add(new USubfieldDTO(us.getOwner().getName(), us.getName()));
+          }
+      }
+      retVal.setMandatoryFields(man);
+//          retVal.setMandatoryFields(pt.getMandatorySubfields().stream()
+//                  .map(i -> new USubfieldDTO(i.getOwner().getName(), i.getName()))
+//                  .collect(Collectors.toList()));
 
     return retVal;
   }

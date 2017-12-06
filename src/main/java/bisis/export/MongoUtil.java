@@ -255,6 +255,7 @@ public class MongoUtil {
             else
                 command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection " + entry.getKey() + " --file " + entry.getValue() + " --jsonArray";
             System.out.println("Importing coder: " + entry.getKey());
+
             Process p = Runtime.getRuntime().exec("cmd /c " + command);
 
             BufferedReader stdInput = new BufferedReader(new
@@ -357,6 +358,7 @@ public class MongoUtil {
         mdb.getCollection(lib + "_records").drop();
         mdb.getCollection(lib + "_members").drop();
         mdb.getCollection(lib + "_itemAvailability").drop();
+        mdb.getCollection("librarians").deleteMany(new BasicDBObject("biblioteka", lib));
 
         mdb.getCollection("configs").deleteMany(new BasicDBObject("libraryName", lib));
         mdb.getCollection("coders.warning_type").deleteMany(new BasicDBObject("library", lib));
@@ -378,6 +380,7 @@ public class MongoUtil {
         mdb.getCollection("coders.availability").deleteMany(new BasicDBObject("library", lib));
         mdb.getCollection("coders.acquisition").deleteMany(new BasicDBObject("library", lib));
         mdb.getCollection("coders.accessionReg").deleteMany(new BasicDBObject("library", lib));
+        mdb.getCollection("coders.process_types").deleteMany(new BasicDBObject("libName", lib));
         System.out.println("All data for library: " + lib + " has been dropped. \nExiting application.");
     }
 

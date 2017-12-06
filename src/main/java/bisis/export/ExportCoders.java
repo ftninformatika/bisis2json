@@ -210,8 +210,10 @@ public class ExportCoders {
                 m.setTitlesNo(rs.getInt("titles_no"));
                 m.setPeriod(rs.getInt("period"));
 
-                Integer max_period = rs.getInt("max_period");
-                m.setMaxPeriod(max_period);
+                if (hasColumn(rs, "max_period"))
+                    m.setMaxPeriod(rs.getInt("max_period"));
+                else
+                    m.setMaxPeriod(5000);
                 userCategories.add(m);
             }
             writeToFile(circCodersOutputDirName + "/userCategories.json", mapper.writeValueAsString(userCategories));
@@ -256,7 +258,7 @@ public class ExportCoders {
                 if(rs.getString("name").equals("circ-validator"))
                     c.setValidatorOptionsXML(rs.getString("text"));
             }
-            writeToFile(circCodersOutputDirName + "/circConfigs.json", mapper.writeValueAsString(c));
+            writeToFile(circCodersOutputDirName + "/circConfigs.json", "[" + mapper.writeValueAsString(c) + "]");
         }
         System.out.println("Coders successfully exported!");
     }
@@ -265,6 +267,17 @@ public class ExportCoders {
         PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(  filePath), "UTF8")));
         pw.write(jsonString);
         pw.close();
+    }
+
+    public static boolean hasColumn(ResultSet rs, String columnName) throws SQLException {
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int columns = rsmd.getColumnCount();
+        for (int x = 1; x <= columns; x++) {
+            if (columnName.equals(rsmd.getColumnName(x))) {
+                return true;
+            }
+        }
+        return false;
     }
 
 

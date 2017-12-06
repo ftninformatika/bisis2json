@@ -55,3 +55,6 @@ nbdist/
 *.json
 exportGBNS.zip
 exportTFZR.zip
+client-config.ini
+*.zip
+reports.ini
