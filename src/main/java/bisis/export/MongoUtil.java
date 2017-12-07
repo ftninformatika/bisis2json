@@ -323,27 +323,27 @@ public class MongoUtil {
      */
     private  Map<String, String> initCodersMap(){
         Map<String, String> codersMap = new HashMap<>();
-        codersMap.put("coders.accessionReg", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\Invknj.json");
-        codersMap.put("coders.acquisition", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\Nacin_Nabavke.json");
-        codersMap.put("coders.availability", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\Dostupnost.json");
-        codersMap.put("coders.binding", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\Povez.json");
-        codersMap.put("coders.location", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\location.json");
-        codersMap.put("coders.sublocation", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\Podlokacija.json");
-        codersMap.put("coders.process_types", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\processTypes.json");
-        codersMap.put("coders.status", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\Status_Primerka.json ");
-        codersMap.put("coders.format", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\SigFormat.json");
-        codersMap.put("coders.internalMark", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\coders_json_output\\Interna_oznaka.json");
-        codersMap.put("coders.circ_config", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\circ_coders_json_output\\circConfigs.json");
-        codersMap.put("coders.circ_location", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\circ_coders_json_output\\circLocations.json");
-        codersMap.put("coders.corporate_member", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\circ_coders_json_output\\corporateMember.json");
-        codersMap.put("coders.language", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\circ_coders_json_output\\languages.json");
-        codersMap.put("coders.education", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\circ_coders_json_output\\eduLvls.json");
-        codersMap.put("coders.membership", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\circ_coders_json_output\\memberships.json");
-        codersMap.put("coders.membership_type", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\circ_coders_json_output\\membershipTypes.json");
-        codersMap.put("coders.organization", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\circ_coders_json_output\\organizations.json");
-        codersMap.put("coders.place", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\circ_coders_json_output\\places.json");
-        codersMap.put("coders.user_categ", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\circ_coders_json_output\\userCategories.json");
-        codersMap.put("coders.warning_type", System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\circ_coders_json_output\\warningTypes.json");
+        codersMap.put("coders.accessionReg", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"Invknj.json");
+        codersMap.put("coders.acquisition", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"Nacin_Nabavke.json");
+        codersMap.put("coders.availability", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"Dostupnost.json");
+        codersMap.put("coders.binding", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"Povez.json");
+        codersMap.put("coders.location", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"location.json");
+        codersMap.put("coders.sublocation", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"Podlokacija.json");
+        codersMap.put("coders.process_types", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"processTypes.json");
+        codersMap.put("coders.status", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"Status_Primerka.json ");
+        codersMap.put("coders.format", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"SigFormat.json");
+        codersMap.put("coders.internalMark", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"Interna_oznaka.json");
+        codersMap.put("coders.circ_config", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"circ_coders_json_output"+ File.separator +"circConfigs.json");
+        codersMap.put("coders.circ_location", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"circ_coders_json_output"+ File.separator +"circLocations.json");
+        codersMap.put("coders.corporate_member", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"circ_coders_json_output"+ File.separator +"corporateMember.json");
+        codersMap.put("coders.language", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"circ_coders_json_output"+ File.separator +"languages.json");
+        codersMap.put("coders.education", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"circ_coders_json_output"+ File.separator +"eduLvls.json");
+        codersMap.put("coders.membership", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"circ_coders_json_output"+ File.separator +"memberships.json");
+        codersMap.put("coders.membership_type", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"circ_coders_json_output"+ File.separator +"membershipTypes.json");
+        codersMap.put("coders.organization", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"circ_coders_json_output"+ File.separator +"organizations.json");
+        codersMap.put("coders.place", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"circ_coders_json_output"+ File.separator +"places.json");
+        codersMap.put("coders.user_categ", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"circ_coders_json_output"+ File.separator +"userCategories.json");
+        codersMap.put("coders.warning_type", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"circ_coders_json_output"+ File.separator +"warningTypes.json");
 
         return codersMap;
     }
