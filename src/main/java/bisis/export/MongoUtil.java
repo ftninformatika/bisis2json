@@ -81,9 +81,9 @@ public class MongoUtil {
 
        String command = "";
        if (uname != null && !uname.equals("") && pass != null && !pass.equals(""))
-           command = "mongoimport --host " + host +" --port " + port + " --db " + dbname + " --username " + uname + " --password " + pass +" --collection " + lib + "_members" + " --file " + System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\exportedMembers.json";
+           command = "mongoimport --host " + host +" --port " + port + " --db " + dbname + " --username " + uname + " --password " + pass +" --collection " + lib + "_members" + " --file " + System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"exportedMembers.json";
        else
-           command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection " + lib + "_members" + " --file " + System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\exportedMembers.json";
+           command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection " + lib + "_members" + " --file " + System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"exportedMembers.json";
 
        Process p = Runtime.getRuntime().exec("cmd /c " + command);
        System.out.println("Importing memebers");
@@ -112,9 +112,9 @@ public class MongoUtil {
    public  void importRecords() throws IOException, InterruptedException {
        String command = "";
        if (uname != null && !uname.equals("") && pass != null && !pass.equals(""))
-           command = "mongoimport --host " + host +" --port " + port + " --db " + dbname + " --username " + uname + " --password " + pass +" --collection " + lib + "_records" + " --file " + System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\exportedRecords.json";
+           command = "mongoimport --host " + host +" --port " + port + " --db " + dbname + " --username " + uname + " --password " + pass +" --collection " + lib + "_records" + " --file " + System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"exportedRecords.json";
        else
-           command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection " + lib + "_records" + " --file " + System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\exportedRecords.json";
+           command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection " + lib + "_records" + " --file " + System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"exportedRecords.json";
 
        Process p = Runtime.getRuntime().exec("cmd /c " + command);
        System.out.println("Importing records");
@@ -139,9 +139,9 @@ public class MongoUtil {
        String command = "";
 
        if (uname != null && !uname.equals("") && pass != null && !pass.equals(""))
-           command = "mongoimport --host " + host +" --port " + port + " --db " + dbname + " --username " + uname + " --password " + pass +" --collection librarians" + " --file " + System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\librarians.json --jsonArray";
+           command = "mongoimport --host " + host +" --port " + port + " --db " + dbname + " --username " + uname + " --password " + pass +" --collection librarians" + " --file " + System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"librarians.json --jsonArray";
        else
-           command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection  librarians" + " --file " + System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\librarians.json --jsonArray";
+           command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection  librarians" + " --file " + System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"librarians.json --jsonArray";
 
        Process p = Runtime.getRuntime().exec("cmd /c " + command);
        System.out.println("Importing librarians");
@@ -170,9 +170,9 @@ public class MongoUtil {
     public  void importLendings() throws IOException, InterruptedException {
         String command = "";
         if (uname != null && !uname.equals("") && pass != null && !pass.equals(""))
-            command = "mongoimport --host " + host +" --port " + port + " --db " + dbname + " --username " + uname + " --password " + pass +" --collection " + lib + "_lendings" + " --file " + System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\exportedLendings.json";
+            command = "mongoimport --host " + host +" --port " + port + " --db " + dbname + " --username " + uname + " --password " + pass +" --collection " + lib + "_lendings" + " --file " + System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"exportedLendings.json";
         else
-            command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection " + lib + "_lendings" + " --file " + System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\exportedLendings.json";
+            command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection " + lib + "_lendings" + " --file " + System.getProperty("user.dir") +  File.separator +"export" + lib.toUpperCase() + File.separator +"exportedLendings.json";
         System.out.println("Importing lendings");
         Process p = Runtime.getRuntime().exec("cmd /c " + command);
 
@@ -201,9 +201,9 @@ public class MongoUtil {
     public  void importItemAvailibilities() throws IOException, InterruptedException {
         String command = "";
         if (uname != null && !uname.equals("") && pass != null && !pass.equals(""))
-            command = "mongoimport --host " + host +" --port " + port + " --db " + dbname + " --username " + uname + " --password " + pass +" --collection " + lib + "_itemAvailability" + " --file " + System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\exportedItemAvailabilities.json";
+            command = "mongoimport --host " + host +" --port " + port + " --db " + dbname + " --username " + uname + " --password " + pass +" --collection " + lib + "_itemAvailability" + " --file " + System.getProperty("user.dir") +  File.separator +"export" + lib.toUpperCase() +   File.separator +"exportedItemAvailabilities.json";
         else
-            command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection " + lib + "_itemAvailability" + " --file " + System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\exportedItemAvailabilities.json";
+            command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection " + lib + "_itemAvailability" + " --file " + System.getProperty("user.dir") +   File.separator +"export" + lib.toUpperCase() +   File.separator +"exportedItemAvailabilities.json";
         System.out.println("Importing item availabilities");
         Process p = Runtime.getRuntime().exec("cmd /c " + command);
 
@@ -232,9 +232,9 @@ public class MongoUtil {
     public  void importConfig() throws IOException, InterruptedException {
         String command = "";
         if (uname != null && !uname.equals("") && pass != null && !pass.equals(""))
-            command = "mongoimport --host " + host +" --port " + port + " --db " + dbname + " --username " + uname + " --password " + pass +" --collection configs" + " --file " + System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\config.json";
+            command = "mongoimport --host " + host +" --port " + port + " --db " + dbname + " --username " + uname + " --password " + pass +" --collection configs" + " --file " + System.getProperty("user.dir") +   File.separator +"export" + lib.toUpperCase() +  File.separator +"config.json";
         else
-            command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection configs" + " --file " + System.getProperty("user.dir") + "\\export" + lib.toUpperCase() + "\\config.json";
+            command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection configs" + " --file " + System.getProperty("user.dir") +  File.separator +"export" + lib.toUpperCase()  + File.separator +"config.json";
         System.out.println("Importing config");
         Process p = Runtime.getRuntime().exec("cmd /c " + command);
 
