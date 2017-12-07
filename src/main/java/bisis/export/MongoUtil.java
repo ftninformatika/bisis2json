@@ -41,7 +41,7 @@ public class MongoUtil {
         this.mongoClient = mongoClient;
         coderMap = initCodersMap();
         if (Mysql2MongoBisisMigrationTool.os.equals("Linux"))
-            runCmd = "/bin/bash -c ";
+            runCmd = "";
         else
             runCmd = "cmd /c ";
     }
