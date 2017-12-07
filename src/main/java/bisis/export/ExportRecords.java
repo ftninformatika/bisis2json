@@ -74,7 +74,7 @@ public class ExportRecords {
           System.out.println(Integer.toString(i) + " records exported");
         i++;
       }
-      FileUtils.writeTextFile("problemIds.txt",errIDs.toString());
+      FileUtils.writeTextFile("problemIds"+Mysql2MongoBisisMigrationTool.library.toUpperCase()+".txt",errIDs.toString());
       if ("xml".equals(format))
         out.println("</records>");
       System.out.println("Total " + Integer.toString(i) + " records exported.");

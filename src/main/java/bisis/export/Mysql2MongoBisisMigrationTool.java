@@ -22,12 +22,13 @@ public class Mysql2MongoBisisMigrationTool {
     public static MongoClient mongo = null;
     public static MongoDatabase mdb = null;
     static String os = System.getProperty("os.name");
+    static String library = "";
 
     public static void main(String[] args){
         Options options = new Options();
         initOptions(options);
 
-        String library = "";
+        //String library = "";
         String mysqlAddress = "localhost";
         String mysqlPort = "3306";
         String mysqlDbName = "bisis";
