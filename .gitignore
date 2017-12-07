@@ -60,3 +60,8 @@ client-config.ini
 reports.ini
 problemIdsGBNS.txt
 bisis-migrate.jar
+problemIdsGBSA.txt
+client-config.ini
+*.ini
+client-config.ini
+problemIds.txt

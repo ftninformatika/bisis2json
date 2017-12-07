@@ -58,6 +58,7 @@ public class ExportLendings {
         Statement stmt = conn.createStatement();
         ResultSet rset = stmt.executeQuery("SELECT * FROM lending");
         PreparedStatement userPS = conn.prepareStatement("SELECT user_id FROM users where sys_id = ?");
+        PreparedStatement locPS = conn.prepareStatement("SELECT name FROM location where id = ?");
         int lendingCount = 0;
 
         while(rset.next()){
@@ -81,10 +82,11 @@ public class ExportLendings {
             lending.setLibrarianResume(rset.getString("librarian_resume"));
 
             //za lokaciju da li ubacivati description ili coder_id????
-            if(rset.getInt("location") != 0 && rset.getInt("location") < 10)
-                lending.setLocation("0"+rset.getInt("location"));
-            else if(rset.getInt("location") != 0 && rset.getInt("location") >= 10 && rset.getInt("location") <= 99)
-                lending.setLocation(Integer.toString(rset.getInt("location")));
+            locPS.setInt(1, rset.getInt("location"));
+            ResultSet locRs = locPS.executeQuery();
+            if(locRs.next())
+                lending.setLocation(locRs.getString("name"));
+
 
             outputFile.write(toJSON(lending));
         }
