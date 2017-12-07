@@ -29,6 +29,7 @@ public class MongoUtil {
     String pass;
     MongoClient mongoClient;
     Map<String, String> coderMap;
+    String runCmd;
 
     public MongoUtil(String host, String port, String lib, String dbname, String uname, String pass, MongoClient mongoClient){
         this.lib = lib;
@@ -39,6 +40,10 @@ public class MongoUtil {
         this.pass = pass;
         this.mongoClient = mongoClient;
         coderMap = initCodersMap();
+        if (Mysql2MongoBisisMigrationTool.os.equals("Linux"))
+            runCmd = "/bin/bash -c ";
+        else
+            runCmd = "cmd /c ";
     }
 
     /***
@@ -85,7 +90,7 @@ public class MongoUtil {
        else
            command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection " + lib + "_members" + " --file " + System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"exportedMembers.json";
 
-       Process p = Runtime.getRuntime().exec("cmd /c " + command);
+       Process p = Runtime.getRuntime().exec(runCmd + command);
        System.out.println("Importing memebers");
        BufferedReader stdInput = new BufferedReader(new
                InputStreamReader(p.getInputStream()));
@@ -116,7 +121,7 @@ public class MongoUtil {
        else
            command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection " + lib + "_records" + " --file " + System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"exportedRecords.json";
 
-       Process p = Runtime.getRuntime().exec("cmd /c " + command);
+       Process p = Runtime.getRuntime().exec(runCmd + command);
        System.out.println("Importing records");
        BufferedReader stdInput = new BufferedReader(new
                InputStreamReader(p.getInputStream()));
@@ -143,7 +148,7 @@ public class MongoUtil {
        else
            command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection  librarians" + " --file " + System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"librarians.json --jsonArray";
 
-       Process p = Runtime.getRuntime().exec("cmd /c " + command);
+       Process p = Runtime.getRuntime().exec(runCmd + command);
        System.out.println("Importing librarians");
        BufferedReader stdInput = new BufferedReader(new
                InputStreamReader(p.getInputStream()));
@@ -174,7 +179,7 @@ public class MongoUtil {
         else
             command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection " + lib + "_lendings" + " --file " + System.getProperty("user.dir") +  File.separator +"export" + lib.toUpperCase() + File.separator +"exportedLendings.json";
         System.out.println("Importing lendings");
-        Process p = Runtime.getRuntime().exec("cmd /c " + command);
+        Process p = Runtime.getRuntime().exec(runCmd + command);
 
         BufferedReader stdInput = new BufferedReader(new
                 InputStreamReader(p.getInputStream()));
@@ -205,7 +210,7 @@ public class MongoUtil {
         else
             command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection " + lib + "_itemAvailability" + " --file " + System.getProperty("user.dir") +   File.separator +"export" + lib.toUpperCase() +   File.separator +"exportedItemAvailabilities.json";
         System.out.println("Importing item availabilities");
-        Process p = Runtime.getRuntime().exec("cmd /c " + command);
+        Process p = Runtime.getRuntime().exec(runCmd + command);
 
         BufferedReader stdInput = new BufferedReader(new
                 InputStreamReader(p.getInputStream()));
@@ -236,7 +241,7 @@ public class MongoUtil {
         else
             command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection configs" + " --file " + System.getProperty("user.dir") +  File.separator +"export" + lib.toUpperCase()  + File.separator +"config.json";
         System.out.println("Importing config");
-        Process p = Runtime.getRuntime().exec("cmd /c " + command);
+        Process p = Runtime.getRuntime().exec(runCmd + command);
 
     }
 
@@ -256,7 +261,7 @@ public class MongoUtil {
                 command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection " + entry.getKey() + " --file " + entry.getValue() + " --jsonArray";
             System.out.println("Importing coder: " + entry.getKey());
 
-            Process p = Runtime.getRuntime().exec("cmd /c " + command);
+            Process p = Runtime.getRuntime().exec(runCmd + command);
 
             BufferedReader stdInput = new BufferedReader(new
                     InputStreamReader(p.getInputStream()));
