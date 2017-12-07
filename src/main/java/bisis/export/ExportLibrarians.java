@@ -46,6 +46,7 @@ public class ExportLibrarians {
             while(rs.next()){
                 LibrarianDTO l = new LibrarianDTO();
                 l.setUsername(rs.getString("username") + "@" + lib);
+                l.getAuthorities().add("ROLE_ADMIN");
                 l.setIme(rs.getString("ime"));
                 l.setPassword(rs.getString("password"));
                 l.setPrezime(rs.getString("prezime"));

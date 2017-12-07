@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+
 /**
  * Created by Petar on 8/10/2017.
  */
@@ -18,6 +20,7 @@ public class LibrarianDTO {
 
     private String username;
     private String password;
+    private ArrayList<String> authorities = new ArrayList<>();
     private String ime;
     private String prezime;
     private String email;
