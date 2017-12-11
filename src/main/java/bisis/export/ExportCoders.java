@@ -239,7 +239,10 @@ public class ExportCoders {
                 CircLocation m = new CircLocation();
                 m.setLibrary(library);
                 m.setDescription(rs.getString("name"));
-                m.setLocationCode(rs.getString("id"));
+                String cid = rs.getString("id");
+                if (cid.length() == 1)
+                    cid = "0" + cid;
+                m.setLocationCode(cid);
                 m.setLastUserId(rs.getInt("last_user_id"));
                 circLocations.add(m);
             }
@@ -327,7 +330,7 @@ public class ExportCoders {
         while(rs.next()) {
             Coder c = new Coder();
             String cid = rs.getString(cols[0]);
-            if (cid.length() == 1)
+            if (cid.length() == 1 && tName.equals("location"))
                 cid = "0" + cid;
             c.setCoder_id(cid);
             c.setDescription(rs.getString(cols[1]));
