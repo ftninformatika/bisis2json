@@ -329,7 +329,7 @@ public class MongoUtil {
     private  Map<String, String> initCodersMap(){
         Map<String, String> codersMap = new HashMap<>();
         codersMap.put("coders.accessionReg", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"Invknj.json");
-        codersMap.put("coders.acquisition", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"Nacin_Nabavke.json");
+        codersMap.put("coders.acquisition", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"Nacin_nabavke.json");
         codersMap.put("coders.availability", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"Dostupnost.json");
         codersMap.put("coders.binding", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"Povez.json");
         codersMap.put("coders.location", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"location.json");
