@@ -328,10 +328,26 @@ public class ExportCoders {
         PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream( outputDirName + "/" +tName + ".json"), "UTF8")));
         List<Coder> coders = new ArrayList<>();
         while(rs.next()) {
-            Coder c = new Coder();
+            Coder c = null;
             String cid = rs.getString(cols[0]);
             if (cid.length() == 1 && tName.equals("location"))
                 cid = "0" + cid;
+            if(tName.equals("Status_Primerka")){
+                c = new ItemStatus();
+                Integer zaduziv = rs.getInt("zaduziv");
+                if(zaduziv != null && zaduziv == 1)
+                    ((ItemStatus)c).setLendable(true);
+                else
+                    ((ItemStatus)c).setLendable(false);
+
+                if(zaduziv != null && zaduziv == 2)
+                    ((ItemStatus)c).setShowable(false);
+                else
+                    ((ItemStatus)c).setShowable(true);
+            }
+            else {
+                c= new Coder();
+            }
             c.setCoder_id(cid);
             c.setDescription(rs.getString(cols[1]));
             c.setLibrary(libName);
