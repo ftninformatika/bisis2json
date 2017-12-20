@@ -220,9 +220,11 @@ public class ExportCoders {
         }
 
         rs = statement.executeQuery("SELECT * from warning_types");
+        Map<Integer, String> typesMap = new HashMap<>();
         {
             List<WarningType> warningTypes = new ArrayList<>();
             while (rs.next()){
+                typesMap.put(rs.getInt("id"), rs.getString("name"));
                 WarningType m = new WarningType();
                 m.setLibrary(library);
                 m.setDescription(rs.getString("name"));
@@ -230,6 +232,20 @@ public class ExportCoders {
                 warningTypes.add(m);
             }
             writeToFile(circCodersOutputDirName + "/warningTypes.json", mapper.writeValueAsString(warningTypes));
+        }
+
+        rs = statement.executeQuery("SELECT * from warn_counters");
+        {
+            List<WarningCounter> warningCounters = new ArrayList<>();
+            while (rs.next()){
+                WarningCounter wc = new WarningCounter();
+                wc.setLibrary(Mysql2MongoBisisMigrationTool.library);
+                wc.setWarnYear(rs.getString("warn_year"));
+                wc.setLastNo(rs.getInt("last_no"));
+                wc.setWarningType(typesMap.get(rs.getInt("wtype")));
+                warningCounters.add(wc);
+            }
+            writeToFile(circCodersOutputDirName + "/warningCounters.json", mapper.writeValueAsString(warningCounters));
         }
 
         rs = statement.executeQuery("SELECT * from location");
@@ -240,8 +256,14 @@ public class ExportCoders {
                 m.setLibrary(library);
                 m.setDescription(rs.getString("name"));
                 String cid = rs.getString("id");
-                if (cid.length() == 1)
+                if (cid.length() == 1 && !Mysql2MongoBisisMigrationTool.library.equals("bgb"))
                     cid = "0" + cid;
+                if (Mysql2MongoBisisMigrationTool.library.equals("bgb")){
+                    if(cid.length() == 1)
+                        cid = "0" + cid;
+                    if(cid.length() == 2)
+                        cid = "00" + cid;
+                }
                 m.setLocationCode(cid);
                 m.setLastUserId(rs.getInt("last_user_id"));
                 circLocations.add(m);
@@ -261,7 +283,7 @@ public class ExportCoders {
                 if(rs.getString("name").equals("circ-validator"))
                     c.setValidatorOptionsXML(rs.getString("text"));
             }
-            writeToFile(circCodersOutputDirName + "/circConfigs.json", "[" + mapper.writeValueAsString(c) + "]");
+            writeToFile(circCodersOutputDirName + "/circConfigs.json", "[" + mapper.writeValueAsString(c) + "]"); //<-- zbog toga sto sve sifarnike importuje kao jsonArray
         }
         System.out.println("Coders successfully exported!");
     }
@@ -286,8 +308,6 @@ public class ExportCoders {
 
     private static void exportCoders1(Connection conn, String lib, String outputDirName) throws SQLException, FileNotFoundException, UnsupportedEncodingException {
         String[] tableNames = { "Invknj", "Nacin_nabavke", "Dostupnost", "Povez", "SigFormat", "Interna_oznaka", "Status_Primerka", "location", "Podlokacija" };
-
-
 
         for (String coderName: tableNames) {
 

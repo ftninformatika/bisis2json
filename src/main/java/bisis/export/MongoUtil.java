@@ -256,9 +256,9 @@ public class MongoUtil {
         for (Map.Entry<String, String> entry: coderMap.entrySet()){
 
             if (uname != null && !uname.equals("") && pass != null && !pass.equals(""))
-                command = "mongoimport --host " + host +" --port " + port + " --db " + dbname + " --username " + uname + " --password " + pass +" --collection " + entry.getKey() + " --file " + entry.getValue() + " --jsonArray";
+                command = "mongoimport --host " + host +" --port " + port + " --db " + dbname + " --username " + uname + " --password " + pass +" --collection " + entry.getKey() + " --file " + entry.getValue() + " --jsonArray --maintainInsertionOrder";
             else
-                command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection " + entry.getKey() + " --file " + entry.getValue() + " --jsonArray";
+                command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection " + entry.getKey() + " --file " + entry.getValue() + " --jsonArray --maintainInsertionOrder";
             System.out.println("Importing coder: " + entry.getKey());
 
             Process p = Runtime.getRuntime().exec(runCmd + command);
@@ -349,6 +349,7 @@ public class MongoUtil {
         codersMap.put("coders.place", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"circ_coders_json_output"+ File.separator +"places.json");
         codersMap.put("coders.user_categ", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"circ_coders_json_output"+ File.separator +"userCategories.json");
         codersMap.put("coders.warning_type", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"circ_coders_json_output"+ File.separator +"warningTypes.json");
+        codersMap.put("coders.warning_counters", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"circ_coders_json_output"+ File.separator +"warningCounters.json");
 
         return codersMap;
     }

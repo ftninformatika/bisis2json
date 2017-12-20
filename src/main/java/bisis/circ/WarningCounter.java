@@ -12,9 +12,8 @@ import lombok.*;
 @ToString
 public class WarningCounter {
 
-
     private String library;
-    private String warningType;
+    private String warningType; //WarningType.description
     private String warnYear;
     private Integer lastNo;
 
