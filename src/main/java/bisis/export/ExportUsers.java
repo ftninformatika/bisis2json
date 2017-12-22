@@ -74,7 +74,7 @@ public class ExportUsers {
     PreparedStatement organizationPS = conn.prepareStatement("SELECT id, address, name, city, zip from organization where id=?");
     PreparedStatement membershipTypePS = conn.prepareStatement("SELECT name, period from mmbr_types where id=?");
     PreparedStatement userCategoryPS = conn.prepareStatement("SELECT * from user_categs where id=?");
-    PreparedStatement corporateMemberPS = conn.prepareStatement("SELECT * from groups where user_id=?");
+    PreparedStatement corporateMemberPS = conn.prepareStatement("SELECT * from groups where sys_id=?");
     PreparedStatement duplicatesPS = conn.prepareStatement("SELECT * from duplicate where id=?");
     PreparedStatement picturebooksPS = conn.prepareStatement("SELECT * from picturebooks where id=?");
     PreparedStatement languagePS = conn.prepareStatement("SELECT * from languages where id=?");
@@ -136,30 +136,33 @@ public class ExportUsers {
       rUc.close();
 
       //CorporateMember
-      corporateMemberPS.setInt(1, rset.getInt("groups"));
-      ResultSet rCpm = corporateMemberPS.executeQuery();
-      if(rCpm.next()){
-        CorporateMember cm = new CorporateMember();
-        cm.setUserId(rCpm.getString("user_id"));
-        cm.setInstName(rCpm.getString("inst_name"));
-        cm.setSignDate(getDate(rCpm,"sign_date"));
-        cm.setAddress(rCpm.getString("address"));
-        cm.setCity(rCpm.getString("city"));
-        cm.setZip(rCpm.getInt("zip"));
-        cm.setPhone(rCpm.getString("phone"));
-        cm.setEmail(rCpm.getString("email"));
-        cm.setFax(rCpm.getString("fax"));
-        cm.setSecAddress(rCpm.getString("sec_address"));
-        cm.setSecCity(rCpm.getString("sec_city"));
-        cm.setSecZip(rCpm.getInt("sec_zip"));
-        cm.setSecPhone(rCpm.getString("sec_phone"));
-        cm.setContFirstName(rCpm.getString("cont_fname"));
-        cm.setContLastName(rCpm.getString("cont_lname"));
-        cm.setContEmail(rCpm.getString("cont_email"));
-        member.setCorporateMember(cm);
-      }
-      rCpm.close();
+      String group = rset.getString("groups");
+      if (group != null) {
 
+        corporateMemberPS.setInt(1, Integer.parseInt(group));
+        ResultSet rCpm = corporateMemberPS.executeQuery();
+        if (rCpm.next()) {
+          CorporateMember cm = new CorporateMember();
+          cm.setUserId(rCpm.getString("user_id"));
+          cm.setInstName(rCpm.getString("inst_name"));
+          cm.setSignDate(getDate(rCpm, "sign_date"));
+          cm.setAddress(rCpm.getString("address"));
+          cm.setCity(rCpm.getString("city"));
+          cm.setZip(rCpm.getInt("zip"));
+          cm.setPhone(rCpm.getString("phone"));
+          cm.setEmail(rCpm.getString("email"));
+          cm.setFax(rCpm.getString("fax"));
+          cm.setSecAddress(rCpm.getString("sec_address"));
+          cm.setSecCity(rCpm.getString("sec_city"));
+          cm.setSecZip(rCpm.getInt("sec_zip"));
+          cm.setSecPhone(rCpm.getString("sec_phone"));
+          cm.setContFirstName(rCpm.getString("cont_fname"));
+          cm.setContLastName(rCpm.getString("cont_lname"));
+          cm.setContEmail(rCpm.getString("cont_email"));
+          member.setCorporateMember(cm);
+        }
+        rCpm.close();
+      }
 
       languagePS.setInt(1, rset.getInt("languages"));
       ResultSet rL = languagePS.executeQuery();
