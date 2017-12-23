@@ -142,6 +142,7 @@ public class Mysql2MongoBisisMigrationTool {
               iu.indexField(library + "_members", "signings.firstName", true, false);
               iu.indexField(library + "_members", "signings.lastName", true, false);
               iu.indexField(library + "_members", "signings.signDate", false, false);
+              iu.indexField(library + "_members", "corporateMember.instName", false, false);
           }
 
 

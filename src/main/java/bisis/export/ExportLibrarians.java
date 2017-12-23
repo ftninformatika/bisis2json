@@ -12,6 +12,7 @@ import java.sql.*;
 import java.util.*;
 
 import bisis.librarian.dto.ProcessTypeDTO;
+import bisis.utils.DaoUtils;
 import bisis.utils.FileUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,9 +53,9 @@ public class ExportLibrarians {
                 l.setPrezime(rs.getString("prezime"));
                 l.setEmail(rs.getString("email"));
                 l.setNapomena(rs.getString("napomena"));
-                l.setObrada(rs.getInt("obrada") == 1);
-                l.setCirkulacija(rs.getInt("cirkulacija") == 1);
-                l.setAdministracija(rs.getInt("administracija") == 1);
+                l.setObrada(DaoUtils.getInteger(rs,"obrada") == 1);
+                l.setCirkulacija(DaoUtils.getInteger(rs,"cirkulacija") == 1);
+                l.setAdministracija(DaoUtils.getInteger(rs,"administracija") == 1);
                 l.setBiblioteka(lib);
                 LibrarianContextDTO cntx = null;
 

@@ -3,6 +3,7 @@ package bisis.export;
 import bisis.circ.*;
 import bisis.coders.Coder;
 import bisis.coders.ItemStatus;
+import bisis.utils.DaoUtils;
 import bisis.utils.FileUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -98,13 +99,13 @@ public class ExportCoders {
                 c.setSignDate(getDate(rs, "sign_date"));
                 c.setAddress(rs.getString("address"));
                 c.setCity(rs.getString("city"));
-                c.setZip(rs.getInt("zip"));
+                c.setZip(DaoUtils.getInteger(rs,"zip"));
                 c.setPhone(rs.getString("phone"));
                 c.setEmail(rs.getString("email"));
                 c.setFax(rs.getString("fax"));
                 c.setSecAddress(rs.getString("sec_address"));
                 c.setSecCity(rs.getString("sec_city"));
-                c.setSecZip(rs.getInt("sec_zip"));
+                c.setSecZip(DaoUtils.getInteger(rs,"sec_zip"));
                 c.setSecPhone(rs.getString("sec_phone"));
                 c.setContFirstName(rs.getString("cont_fname"));
                 c.setContLastName(rs.getString("cont_lname"));
@@ -159,7 +160,7 @@ public class ExportCoders {
             while (rs.next()){
                 MembershipType m = new MembershipType();
                 m.setLibrary(library);
-                m.setPeriod(rs.getInt("period"));
+                m.setPeriod(DaoUtils.getInteger(rs,"period"));
                 m.setDescription(rs.getString("name"));
                 membershipTypes.add(m);
             }
@@ -180,7 +181,7 @@ public class ExportCoders {
                 m.setName(rs.getString("name"));
                 organizations.add(m);
 
-                idMigrationMap.put(rs.getInt("id"),m.get_id());
+                idMigrationMap.put(DaoUtils.getInteger(rs,"id"),m.get_id());
 
             }
             writeToFile(circCodersOutputDirName + "/organizations.json", mapper.writeValueAsString(organizations));
@@ -207,11 +208,11 @@ public class ExportCoders {
                 UserCategory m = new UserCategory();
                 m.setLibrary(library);
                 m.setDescription(rs.getString("name"));
-                m.setTitlesNo(rs.getInt("titles_no"));
-                m.setPeriod(rs.getInt("period"));
+                m.setTitlesNo(DaoUtils.getInteger(rs,"titles_no"));
+                m.setPeriod(DaoUtils.getInteger(rs,"period"));
 
                 if (hasColumn(rs, "max_period"))
-                    m.setMaxPeriod(rs.getInt("max_period"));
+                    m.setMaxPeriod(DaoUtils.getInteger(rs,"max_period"));
                 else
                     m.setMaxPeriod(5000);
                 userCategories.add(m);
@@ -241,8 +242,8 @@ public class ExportCoders {
                 WarningCounter wc = new WarningCounter();
                 wc.setLibrary(Mysql2MongoBisisMigrationTool.library);
                 wc.setWarnYear(rs.getString("warn_year"));
-                wc.setLastNo(rs.getInt("last_no"));
-                wc.setWarningType(typesMap.get(rs.getInt("wtype")));
+                wc.setLastNo(DaoUtils.getInteger(rs,"last_no"));
+                wc.setWarningType(typesMap.get(DaoUtils.getInteger(rs,"wtype")));
                 warningCounters.add(wc);
             }
             writeToFile(circCodersOutputDirName + "/warningCounters.json", mapper.writeValueAsString(warningCounters));
@@ -265,7 +266,7 @@ public class ExportCoders {
                         cid = "00" + cid;
                 }
                 m.setLocationCode(cid);
-                m.setLastUserId(rs.getInt("last_user_id"));
+                m.setLastUserId(DaoUtils.getInteger(rs,"last_user_id"));
                 circLocations.add(m);
             }
             writeToFile(circCodersOutputDirName + "/circLocations.json", mapper.writeValueAsString(circLocations));
@@ -332,7 +333,7 @@ public class ExportCoders {
                     c.setCoder_id(rs.getString("status_id"));
                     c.setDescription(rs.getString("status_opis"));
                     c.setLibrary(lib);
-                    c.setLendable(rs.getInt("zaduziv") == 1);
+                    c.setLendable(DaoUtils.getInteger(rs,"zaduziv") == 1);
                     c.setShowable(false);
                     statuses.add(c);
                 }
@@ -354,7 +355,7 @@ public class ExportCoders {
                 cid = "0" + cid;
             if(tName.equals("Status_Primerka")){
                 c = new ItemStatus();
-                Integer zaduziv = rs.getInt("zaduziv");
+                Integer zaduziv = DaoUtils.getInteger(rs,"zaduziv");
                 if(zaduziv != null && zaduziv == 1)
                     ((ItemStatus)c).setLendable(true);
                 else

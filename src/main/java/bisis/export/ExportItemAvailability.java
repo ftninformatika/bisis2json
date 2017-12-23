@@ -2,6 +2,7 @@ package bisis.export;
 
 import bisis.circ.Lending;
 import bisis.records.ItemAvailability;
+import bisis.utils.DaoUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.cli.*;
@@ -70,7 +71,7 @@ public class ExportItemAvailability {
 
             ItemAvailability ia = new ItemAvailability();
             ia.setRecordID(rset.getString("record_id"));
-            ia.setBorrowed(rset.getInt("stanje") == 1);
+            ia.setBorrowed(DaoUtils.getInteger(rset,"stanje") == 1);
             ia.setCtlgNo(rset.getString("inv_broj"));
             ia.setLibDepartment(libDepartments.get(rset.getString("odeljenje_id")));
 

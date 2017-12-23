@@ -81,12 +81,13 @@ public class ExportLendings {
             lending.setLibrarianReturn(rset.getString("librarian_return"));
             lending.setLibrarianResume(rset.getString("librarian_resume"));
 
-            //za lokaciju da li ubacivati description ili coder_id????
-            locPS.setInt(1, rset.getInt("location"));
-            ResultSet locRs = locPS.executeQuery();
-            if(locRs.next())
-                lending.setLocation(locRs.getString("name"));
 
+            locPS.setInt(1, rset.getInt("location"));
+            if (!rset.wasNull()) {
+                ResultSet locRs = locPS.executeQuery();
+                if (locRs.next())
+                    lending.setLocation(locRs.getString("name"));
+            }
 
             outputFile.write(toJSON(lending));
         }
