@@ -350,6 +350,7 @@ public class MongoUtil {
         codersMap.put("coders.user_categ", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"circ_coders_json_output"+ File.separator +"userCategories.json");
         codersMap.put("coders.warning_type", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"circ_coders_json_output"+ File.separator +"warningTypes.json");
         codersMap.put("coders.warning_counter", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"circ_coders_json_output"+ File.separator +"warningCounters.json");
+        codersMap.put("coders.counters", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"circ_coders_json_output"+ File.separator +"counters.json");
 
         return codersMap;
     }

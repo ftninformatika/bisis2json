@@ -2,6 +2,7 @@ package bisis.export;
 
 import bisis.circ.*;
 import bisis.coders.Coder;
+import bisis.coders.Counter;
 import bisis.coders.ItemStatus;
 import bisis.utils.DaoUtils;
 import bisis.utils.FileUtils;
@@ -285,6 +286,19 @@ public class ExportCoders {
                     c.setValidatorOptionsXML(rs.getString("text"));
             }
             writeToFile(circCodersOutputDirName + "/circConfigs.json", "[" + mapper.writeValueAsString(c) + "]"); //<-- zbog toga sto sve sifarnike importuje kao jsonArray
+        }
+
+        rs = statement.executeQuery("SELECT * FROM Counters");
+        {
+            List<Counter> lc = new ArrayList<>();
+            while (rs.next()) {
+                Counter c = new Counter();
+                c.setLibrary(library);
+                c.setCounterName(rs.getString("counter_name"));
+                c.setCounterValue(DaoUtils.getInteger(rs, "counter_value"));
+                lc.add(c);
+            }
+            writeToFile(circCodersOutputDirName + "/counters.json", mapper.writeValueAsString(lc));
         }
         System.out.println("Coders successfully exported!");
     }
