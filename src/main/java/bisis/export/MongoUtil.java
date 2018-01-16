@@ -388,6 +388,7 @@ public class MongoUtil {
         mdb.getCollection("coders.acquisition").deleteMany(new BasicDBObject("library", lib));
         mdb.getCollection("coders.accessionReg").deleteMany(new BasicDBObject("library", lib));
         mdb.getCollection("coders.process_types").deleteMany(new BasicDBObject("libName", lib));
+        mdb.getCollection("coders.counters").deleteMany(new BasicDBObject("library", lib));
         System.out.println("All data for library: " + lib + " has been dropped. \nExiting application.");
     }
 
