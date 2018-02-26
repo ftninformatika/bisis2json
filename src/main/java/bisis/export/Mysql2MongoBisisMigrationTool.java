@@ -92,8 +92,8 @@ public class Mysql2MongoBisisMigrationTool {
                 FileUtils.createDir(exportDir);
 
                 //exports
-                ExportRecords.main(conn,"json",  exportDir + "/exportedRecords.json");
-                ExportCoders.main(conn, new String[]{"-l", library, "-o", exportDir});
+//                ExportRecords.main(conn,"json",  exportDir + "/exportedRecords.json");
+//                ExportCoders.main(conn, new String[]{"-l", library, "-o", exportDir});
                 ExportLendings.main(conn,  new String[]{"-o", exportDir + "/exportedLendings.json"});
                 ExportUsers.main(conn, new String[]{"-o", exportDir + "/exportedMembers.json", "-l", library});
                 ExportItemAvailability.main(conn, new String[]{"-o", exportDir + "/exportedItemAvailabilities.json"});

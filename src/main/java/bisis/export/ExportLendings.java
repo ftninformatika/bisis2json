@@ -6,6 +6,7 @@ import bisis.records.Record;
 import bisis.records.serializers.JSONSerializer;
 import bisis.records.serializers.LooseXMLSerializer;
 import bisis.textsrv.DBStorage;
+import bisis.utils.DateUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.cli.*;
@@ -23,6 +24,9 @@ import java.util.List;
  * Created by Petar on 8/28/2017.
  */
 public class ExportLendings {
+
+    private static ObjectMapper mapper = new ObjectMapper();
+
     public static void main(Connection conn, String[] args) {
         Options options = new Options();
 
@@ -73,10 +77,10 @@ public class ExportLendings {
                 lending.setUserId(rUser.getString("user_id"));
 
             lending.setCtlgNo(rset.getString("ctlg_no"));
-            lending.setLendDate(getDate(rset, "lend_date"));
-            lending.setResumeDate(getDate(rset,"resume_date"));
-            lending.setReturnDate(getDate(rset, "return_date"));
-            lending.setDeadline(getDate(rset, "deadline"));
+            lending.setLendDate(DateUtils.getInstant(rset, "lend_date"));
+            lending.setResumeDate(DateUtils.getInstant(rset, "resume_date"));
+            lending.setReturnDate(DateUtils.getInstant(rset, "return_date"));
+            lending.setDeadline(DateUtils.getInstant(rset, "deadline"));
             lending.setLibrarianLend(rset.getString("librarian_lend"));
             lending.setLibrarianReturn(rset.getString("librarian_return"));
             lending.setLibrarianResume(rset.getString("librarian_resume"));
@@ -98,22 +102,6 @@ public class ExportLendings {
 
     }
 
-    private static LocalDate getDate(ResultSet rset, String columnName)  {
-
-        try {
-            java.sql.Date date = rset.getDate(columnName);
-            if (date == null)
-                return null;
-            return date.toLocalDate();
-        }
-        catch (Exception e) {
-            //e.printStackTrace();
-            System.out.println("Tried parsing date 00-00-0000, parsed null ");
-            return null;
-        }
-
-    }
-
     private static String toJSON(Lending lending) {
         try {
             return mapper.writeValueAsString(lending);
@@ -122,6 +110,4 @@ public class ExportLendings {
             return "";
         }
     }
-
-    private static ObjectMapper mapper = new ObjectMapper();
 }

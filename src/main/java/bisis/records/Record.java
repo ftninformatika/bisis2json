@@ -431,7 +431,7 @@ public class Record implements Serializable {
   		rec.getGodine().add(g.copy());
   	return rec;
   }
-  
+
   /*
    * kopija zapisa bez polja
    */
@@ -444,7 +444,7 @@ public class Record implements Serializable {
   	rec.setLastModifiedDate(lastModifiedDate);
   	return rec;
   }
-  
+
   /*
    * kopira zapis bez inventarnih podataka
    */
@@ -457,8 +457,8 @@ public class Record implements Serializable {
   	rec.setLastModifiedDate(lastModifiedDate);
   	for(Field f:fields)
   		rec.add(f.copy());
-  	return rec;  	
-  } 
+  	return rec;
+  }
 
   /** record identifier */
   private int recordID;

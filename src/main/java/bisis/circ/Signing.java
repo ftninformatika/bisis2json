@@ -1,6 +1,6 @@
 package bisis.circ;
 
-import bisis.export.IsoLocalDateSerializer;
+import bisis.export.IsoInstantDateSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Date;
 @Getter
@@ -18,10 +19,10 @@ import java.util.Date;
 public class Signing implements Serializable {
 
 
-  @JsonSerialize(using = IsoLocalDateSerializer.class)
-  private LocalDate signDate;
-  @JsonSerialize(using = IsoLocalDateSerializer.class)
-  private LocalDate untilDate;
+  @JsonSerialize(using = IsoInstantDateSerializer.class)
+  private Instant signDate;
+  @JsonSerialize(using = IsoInstantDateSerializer.class)
+  private Instant untilDate;
   private String librarian;
   private Double cost;
   private String receipt;

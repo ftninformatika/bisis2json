@@ -1,10 +1,11 @@
 package bisis.circ;
 
-import bisis.export.IsoLocalDateSerializer;
+import bisis.export.IsoInstantDateSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.*;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDate;
 
 /**
@@ -16,7 +17,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @ToString
 public class Duplicate implements Serializable {
-    @JsonSerialize(using = IsoLocalDateSerializer.class)
-    private LocalDate dupDate;
+    @JsonSerialize(using = IsoInstantDateSerializer.class)
+    private Instant dupDate;
     private int dupNo;
 }

@@ -1,10 +1,11 @@
 package bisis.circ;
 
-import bisis.export.IsoLocalDateSerializer;
+import bisis.export.IsoInstantDateSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.*;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDate;
 
 /**
@@ -19,8 +20,8 @@ public class CorporateMember implements Serializable {
     private String library;
     private String userId;
     private String instName;
-    @JsonSerialize(using = IsoLocalDateSerializer.class)
-    private LocalDate signDate;
+    @JsonSerialize(using = IsoInstantDateSerializer.class)
+    private Instant signDate;
     private String address;
     private String city;
     private Integer zip;

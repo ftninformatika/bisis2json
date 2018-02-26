@@ -1,10 +1,11 @@
 package bisis.circ;
 
-import bisis.export.IsoLocalDateSerializer;
+import bisis.export.IsoInstantDateSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.*;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDate;
 
 /**
@@ -16,8 +17,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @ToString
 public class PictureBook implements Serializable {
-    @JsonSerialize(using = IsoLocalDateSerializer.class)
-    private LocalDate lendDate;
+    @JsonSerialize(using = IsoInstantDateSerializer.class)
+    private Instant lendDate;
     private int lendNo;
     private int returnNo;
     private int status;

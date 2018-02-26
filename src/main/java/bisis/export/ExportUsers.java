@@ -2,18 +2,15 @@ package bisis.export;
 
 import java.io.*;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.time.LocalDate;
 import java.util.*;
 
 import bisis.circ.*;
 import bisis.utils.DaoUtils;
+import bisis.utils.DateUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.mongodb.MongoClient;
-import com.mongodb.client.MongoCollection;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -23,9 +20,6 @@ import org.apache.commons.cli.Options;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.bson.Document;
-import org.bson.types.ObjectId;
-
 public class ExportUsers {
   
   public static void main(Connection conn, String[] args) {
@@ -147,7 +141,7 @@ public class ExportUsers {
             CorporateMember cm = new CorporateMember();
             cm.setUserId(rCpm.getString("user_id"));
             cm.setInstName(rCpm.getString("inst_name"));
-            cm.setSignDate(getDate(rCpm, "sign_date"));
+            cm.setSignDate(DateUtils.getInstant(rCpm, "sign_date"));
             cm.setAddress(rCpm.getString("address"));
             cm.setCity(rCpm.getString("city"));
             cm.setZip(DaoUtils.getInteger(rCpm,"zip"));
@@ -229,11 +223,11 @@ public class ExportUsers {
 
       while (r2.next()) {
         Signing signing = new Signing();
-        signing.setSignDate(getDate(r2, "sign_date"));
+        signing.setSignDate(DateUtils.getInstant(r2, "sign_date"));
 
 
         signing.setLocation(locationsMap.get(DaoUtils.getInteger(r2, "location")));
-        signing.setUntilDate(getDate(r2, "until_date"));
+        signing.setUntilDate(DateUtils.getInstant(r2, "until_date"));
         signing.setCost(r2.getDouble("cost"));
         signing.setReceipt(r2.getString("receipt_id"));
         signing.setLibrarian(r2.getString("librarian"));
@@ -247,7 +241,7 @@ public class ExportUsers {
         List<Duplicate> dups = new ArrayList<>();
         while (rDu.next()) {
           Duplicate d = new Duplicate();
-          d.setDupDate(getDate(rDu, "dup_date"));
+          d.setDupDate(DateUtils.getInstant(rDu, "dup_date"));
           d.setDupNo(rDu.getInt("dup_no"));
           dups.add(d);
         }
@@ -260,7 +254,7 @@ public class ExportUsers {
         List<PictureBook> pictureBooks = new ArrayList<>();
         while (rPb.next()) {
           PictureBook p = new PictureBook();
-          p.setLendDate(getDate(rPb, "sdate"));
+          p.setLendDate(DateUtils.getInstant(rPb, "sdate"));
           p.setLendNo(DaoUtils.getInteger(rPb,"lend_no"));
           p.setReturnNo(DaoUtils.getInteger(rPb,"return_no"));
           p.setStatus(DaoUtils.getInteger(rPb,"state"));
@@ -293,19 +287,6 @@ public class ExportUsers {
     
   }
 
-  private static LocalDate getDate(ResultSet rset, String columnName)  {
-    try {
-      java.sql.Date date = rset.getDate(columnName);
-      if (date == null)
-        return null;
-      return date.toLocalDate();
-    }
-    catch (Exception e) {
-      //e.printStackTrace();
-      System.out.println("Tried parsing date 00-00-0000, parsed null ");
-      return null;
-    }
-  }
 
   private static String toJSON(Member member) {
     try {

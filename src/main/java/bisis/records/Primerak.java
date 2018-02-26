@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import bisis.export.IsoDateSerializer;
-import bisis.export.IsoLocalDateSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 

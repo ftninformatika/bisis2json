@@ -5,6 +5,7 @@ import bisis.coders.Coder;
 import bisis.coders.Counter;
 import bisis.coders.ItemStatus;
 import bisis.utils.DaoUtils;
+import bisis.utils.DateUtils;
 import bisis.utils.FileUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -97,7 +98,7 @@ public class ExportCoders {
                 c.setLibrary(library);
                 c.setUserId(rs.getString("user_id"));
                 c.setInstName(rs.getString("inst_name"));
-                c.setSignDate(getDate(rs, "sign_date"));
+                c.setSignDate(DateUtils.getInstant(rs, "sign_date"));
                 c.setAddress(rs.getString("address"));
                 c.setCity(rs.getString("city"));
                 c.setZip(DaoUtils.getInteger(rs,"zip"));
@@ -282,8 +283,12 @@ public class ExportCoders {
                 if(rs.getString("name").equals("circ-options"))
                     c.setCircOptionsXML(rs.getString("text"));
 
-                if(rs.getString("name").equals("circ-validator"))
-                    c.setValidatorOptionsXML(rs.getString("text"));
+                if(rs.getString("name").equals("circ-validator")) {
+                    String txt = rs.getString("text");
+                    if(txt.contains("com.gint.app.bisis4.client"))
+                        txt = txt.replace("com.gint.app.bisis4.client", "com.ftninformatika.bisis");
+                    c.setValidatorOptionsXML(txt);
+                }
             }
             writeToFile(circCodersOutputDirName + "/circConfigs.json", "[" + mapper.writeValueAsString(c) + "]"); //<-- zbog toga sto sve sifarnike importuje kao jsonArray
         }
@@ -432,20 +437,4 @@ public class ExportCoders {
     }
 
 
-
-
-    private static LocalDate getDate(ResultSet rset, String columnName)  {
-
-        try {
-            java.sql.Date date = rset.getDate(columnName);
-            if (date == null)
-                return null;
-            return date.toLocalDate();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-
-    }
 }
