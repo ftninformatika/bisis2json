@@ -17,7 +17,7 @@ public class IsoDateSerializer extends JsonSerializer<Date> {
             dateValue = ((java.sql.Date)date).toLocalDate().atStartOfDay(ZoneOffset.ofHours(1)).toInstant().atOffset(ZoneOffset.ofHours(1)).toLocalDateTime().format(formatter);
         else
             dateValue = date.toInstant().atOffset(ZoneOffset.ofHours(1)).toLocalDateTime().format(formatter);
-        String text = "{ \"$date\" : \"" + dateValue + "Z\" }";
+        String text = "{ \"$date\" : \"" + dateValue + "-01:00\" }";
         jgen.writeRawValue(text);
     }
 
