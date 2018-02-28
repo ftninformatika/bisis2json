@@ -12,7 +12,7 @@ import java.time.ZoneOffset;
 public class IsoInstantDateSerializer extends JsonSerializer<Instant> {
     @Override
     public void serialize(Instant value, JsonGenerator gen, SerializerProvider serializers) throws IOException, JsonProcessingException {
-            String text = "{ \"$date\" : \"" + value.toString().substring(0, value.toString().length()-1) + "-01:00\" }";
+            String text = "{ \"$date\" : \"" + value.toString().substring(0, value.toString().length()-1) + "Z\" }";
             gen.writeRawValue(text);
     }
 }
