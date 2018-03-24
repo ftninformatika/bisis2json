@@ -91,12 +91,12 @@ public class Mysql2MongoBisisMigrationTool {
                 String exportDir = "export" + library.toUpperCase();
                 FileUtils.createDir(exportDir);
 
-                //exports
-                ExportRecords.main(conn,"json",  exportDir + "/exportedRecords.json");
-                ExportCoders.main(conn, new String[]{"-l", library, "-o", exportDir});
-                ExportLendings.main(conn,  new String[]{"-o", exportDir + "/exportedLendings.json"});
-                ExportUsers.main(conn, new String[]{"-o", exportDir + "/exportedMembers.json", "-l", library});
-                ExportItemAvailability.main(conn, new String[]{"-o", exportDir + "/exportedItemAvailabilities.json"});
+//                //exports
+//                ExportRecords.main(conn,"json",  exportDir + "/exportedRecords.json");
+//                ExportCoders.main(conn, new String[]{"-l", library, "-o", exportDir});
+//                ExportLendings.main(conn,  new String[]{"-o", exportDir + "/exportedLendings.json"});
+//                ExportUsers.main(conn, new String[]{"-o", exportDir + "/exportedMembers.json", "-l", library});
+//                ExportItemAvailability.main(conn, new String[]{"-o", exportDir + "/exportedItemAvailabilities.json"});
                 ExportClientConfig.export(new String[]{"-c", pathToInnis + "/client-config.ini", "-o", exportDir + "/config.json", "-r", pathToInnis + "/reports.ini", "-l", library});
                 ExportLibrarians.export(library, conn);
 
@@ -139,8 +139,8 @@ public class Mysql2MongoBisisMigrationTool {
               iu.indexField(library + "_lendings", "resumeDate", false, false);
               iu.indexField(library + "_lendings", "deadline", false, false);
               iu.indexField(library + "_members", "userId", true, true);
-              iu.indexField(library + "_members", "signings.firstName", true, false);
-              iu.indexField(library + "_members", "signings.lastName", true, false);
+              iu.indexField(library + "_members", "firstName", true, false);
+              iu.indexField(library + "_members", "lastName", true, false);
               iu.indexField(library + "_members", "signings.signDate", false, false);
               iu.indexField(library + "_members", "corporateMember.instName", false, false);
               iu.indexField(library + "_records", "primerci.invBroj", false, false);
