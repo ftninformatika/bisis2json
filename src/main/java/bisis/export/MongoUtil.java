@@ -40,7 +40,7 @@ public class MongoUtil {
         this.pass = pass;
         this.mongoClient = mongoClient;
         coderMap = initCodersMap();
-        if (Mysql2MongoBisisMigrationTool.os.equals("Linux"))
+        if (Mysql2MongoBisisMigrationTool.os.equals("Linux") || Mysql2MongoBisisMigrationTool.os.toLowerCase().startsWith("mac"))
             runCmd = "";
         else
             runCmd = "cmd /c ";
