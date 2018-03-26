@@ -142,20 +142,7 @@ public class ExportCoders {
             writeToFile(circCodersOutputDirName + "/languages.json", mapper.writeValueAsString(languages));
         }
 
-        rs = statement.executeQuery("SELECT * from membership");
-        {
-            List<Membership> memberships = new ArrayList<>();
-            while (rs.next()){
-                Membership m = new Membership();
-                m.setLibrary(library);
-                m.setUserCateg(rs.getString("user_categ"));
-                m.setMemberType(rs.getString("mmbr_type"));
-                m.setCost(rs.getDouble("cost"));
-                memberships.add(m);
-            }
-            writeToFile(circCodersOutputDirName + "/memberships.json", mapper.writeValueAsString(memberships));
-        }
-
+        Map<String, String> mmbrMap = new HashMap<>();
         rs = statement.executeQuery("SELECT * from mmbr_types");
         {
             List<MembershipType> membershipTypes = new ArrayList<>();
@@ -165,9 +152,48 @@ public class ExportCoders {
                 m.setPeriod(DaoUtils.getInteger(rs,"period"));
                 m.setDescription(rs.getString("name"));
                 membershipTypes.add(m);
+                mmbrMap.put(rs.getString("id"), rs.getString("name"));
             }
             writeToFile(circCodersOutputDirName + "/membershipTypes.json", mapper.writeValueAsString(membershipTypes));
         }
+
+        Map<String, String> categMap = new HashMap<>();
+        rs = statement.executeQuery("SELECT * from user_categs");
+        {
+            List<UserCategory> userCategories = new ArrayList<>();
+            while (rs.next()){
+                UserCategory m = new UserCategory();
+                m.setLibrary(library);
+                m.setDescription(rs.getString("name"));
+                m.setTitlesNo(DaoUtils.getInteger(rs,"titles_no"));
+                m.setPeriod(DaoUtils.getInteger(rs,"period"));
+
+                if (hasColumn(rs, "max_period"))
+                    m.setMaxPeriod(DaoUtils.getInteger(rs,"max_period"));
+                else
+                    m.setMaxPeriod(5000);
+                userCategories.add(m);
+                categMap.put(rs.getString("id"), rs.getString("name"));
+            }
+            writeToFile(circCodersOutputDirName + "/userCategories.json", mapper.writeValueAsString(userCategories));
+        }
+
+
+        rs = statement.executeQuery("SELECT * from membership");
+        {
+
+            List<Membership> memberships = new ArrayList<>();
+            while (rs.next()){
+                Membership m = new Membership();
+                m.setLibrary(library);
+                m.setUserCateg(categMap.get(rs.getString("user_categ")));
+                m.setMemberType(mmbrMap.get(rs.getString("mmbr_type")));
+                m.setCost(rs.getDouble("cost"));
+                memberships.add(m);
+            }
+            writeToFile(circCodersOutputDirName + "/memberships.json", mapper.writeValueAsString(memberships));
+        }
+
 
         rs = statement.executeQuery("SELECT * from organization");
         {
