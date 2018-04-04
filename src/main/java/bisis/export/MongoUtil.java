@@ -329,6 +329,7 @@ public class MongoUtil {
     private  Map<String, String> initCodersMap(){
         Map<String, String> codersMap = new HashMap<>();
         codersMap.put("coders.accessionReg", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"Invknj.json");
+        codersMap.put("coders.task", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"Sifarnik_992b.json");
         codersMap.put("coders.acquisition", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"Nacin_nabavke.json");
         codersMap.put("coders.availability", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"Dostupnost.json");
         codersMap.put("coders.binding", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"Povez.json");
@@ -390,6 +391,7 @@ public class MongoUtil {
         mdb.getCollection("coders.accessionReg").deleteMany(new BasicDBObject("library", lib));
         mdb.getCollection("coders.process_types").deleteMany(new BasicDBObject("libName", lib));
         mdb.getCollection("coders.counters").deleteMany(new BasicDBObject("library", lib));
+        mdb.getCollection("coders.task").deleteMany(new BasicDBObject("library", lib));
         System.out.println("All data for library: " + lib + " has been dropped. \nExiting application.");
     }
 

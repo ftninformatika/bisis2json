@@ -223,9 +223,8 @@ public class Subfield implements Serializable {
   /** subfield content; an empty string if the subfield is empty */
   private String content;
   /** the list of subsubfields */
-  @JsonIgnore
   private List<Subsubfield> subsubfields;
   /** a secondary field contained by this subfield */
-  @JsonIgnore
+  //@JsonIgnore
   private Field secField;
 }
