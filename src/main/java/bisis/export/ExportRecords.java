@@ -63,7 +63,7 @@ public class ExportRecords {
           continue;
         }
 
-
+        rec.setRN(rec.getRN());
         rec.pack();
         if ("xml".equals(format))
           out.println(LooseXMLSerializer.toLooseXML(rec));
