@@ -10,21 +10,15 @@ import bisis.utils.FileUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.mongodb.BasicDBObject;
-import com.mongodb.client.MongoCollection;
-import jdk.nashorn.internal.parser.JSONParser;
 import org.apache.commons.cli.*;
-import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.*;
 import java.sql.*;
-import java.sql.Date;
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Petar on 8/31/2017.
@@ -353,7 +347,7 @@ public class ExportCoders {
 
 
     private static void exportCoders1(Connection conn, String lib, String outputDirName) throws SQLException, FileNotFoundException, UnsupportedEncodingException {
-        String[] tableNames = { "Invknj", "Nacin_nabavke", "Dostupnost", "Povez", "SigFormat", "Interna_oznaka", "Status_Primerka", "location", "Podlokacija", "Sifarnik_992b" };
+        String[] tableNames = { "Invknj", "Odeljenje", "Nacin_nabavke", "Dostupnost", "Povez", "SigFormat", "Interna_oznaka", "Status_Primerka", "location", "Podlokacija", "Sifarnik_992b" };
 
         for (String coderName: tableNames) {
 

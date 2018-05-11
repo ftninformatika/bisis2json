@@ -5,13 +5,8 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
-import com.sun.nio.zipfs.ZipPath;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -333,7 +328,7 @@ public class MongoUtil {
         codersMap.put("coders.acquisition", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"Nacin_nabavke.json");
         codersMap.put("coders.availability", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"Dostupnost.json");
         codersMap.put("coders.binding", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"Povez.json");
-        codersMap.put("coders.location", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"location.json");
+        codersMap.put("coders.location", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"Odeljenje.json");
         codersMap.put("coders.sublocation", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"Podlokacija.json");
         codersMap.put("coders.process_types", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"processTypes.json");
         codersMap.put("coders.status", System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"coders_json_output"+ File.separator +"Status_Primerka.json ");
