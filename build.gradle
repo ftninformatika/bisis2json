@@ -7,69 +7,6 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 
-task fatJarRecords(type: Jar) {
-    manifest {
-        attributes 'Main-Class': 'bisis.export.ExportRecords'
-    }
-    from sourceSets.main.output
-    //from sourceSets.resources.files
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
-    with jar
-    archiveName 'bisis2json-export-records.jar'
-}
-
-task fatJarUsers(type: Jar) {
-    manifest {
-        attributes 'Main-Class': 'bisis.export.ExportUsers'
-    }
-    from sourceSets.main.output
-    //from sourceSets.resources.files
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
-    with jar
-    archiveName 'bisis2json-export-users.jar'
-}
-
-task fatJarClientConfig(type: Jar) {
-    manifest {
-        attributes 'Main-Class': 'bisis.export.ExportClientConfig'
-    }
-    from sourceSets.main.output
-    //from sourceSets.resources.files
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
-    with jar
-    archiveName 'bisis2json-export-client-config.jar'
-}
-
-task fatJarLendings(type: Jar){
-    manifest {
-        attributes 'Main-Class': 'bisis.export.ExportLendings'
-    }
-    from sourceSets.main.output
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
-    with jar
-    archiveName 'bisis2json-export-lendings.jar'
-}
-
-task fatJarCoders(type: Jar){
-    manifest {
-        attributes 'Main-Class': 'bisis.export.ExportCoders'
-    }
-    from sourceSets.main.output
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
-    with jar
-    archiveName 'bisis2json-export-coders.jar'
-}
-
-task fatJarItemAvailabilities(type: Jar){
-    manifest {
-        attributes 'Main-Class': 'bisis.export.ExportItemAvailability'
-    }
-    from sourceSets.main.output
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
-    with jar
-    archiveName 'bisis2json-export-item-availabilities.jar'
-}
-
 
 task fatJarBisisMigrate(type: Jar){
     manifest {
@@ -84,6 +21,8 @@ task fatJarBisisMigrate(type: Jar){
 repositories {
     mavenCentral()
 }
+
+
 
 dependencies {
     compile group: 'org.projectlombok', name: 'lombok', version: '1.16.18'
@@ -102,6 +41,10 @@ dependencies {
     compile group: 'org.mongodb', name: 'mongo-java-driver', version: '3.5.0'
     compile group: 'org.zeroturnaround', name: 'zt-zip', version: '1.12'
     compile group: 'org.jdom', name: 'jdom2', version: '2.0.6'
+//    compile group: 'org.mongodb', name: 'mongo-java-driver', version: '3.6.3'
+    compile group: 'org.jongo', name: 'jongo', version: '1.3.0'
+
+
 
 }
 
