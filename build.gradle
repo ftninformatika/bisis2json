@@ -18,6 +18,16 @@ task fatJarBisisMigrate(type: Jar){
     archiveName 'bisis-migrate.jar'
 }
 
+task fatJarBGBPrepis(type: Jar){
+    manifest {
+        attributes 'Main-Class': 'bisis.export.MigrateBGB'
+    }
+    from sourceSets.main.output
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
+    with jar
+    archiveName 'bgb-inventar-prepis.jar'
+}
+
 repositories {
     mavenCentral()
 }
