@@ -1,11 +1,8 @@
 package bisis.export;
 
 import bisis.circ.Lending;
-import bisis.circ.Member;
-import bisis.records.Record;
-import bisis.records.serializers.JSONSerializer;
-import bisis.records.serializers.LooseXMLSerializer;
-import bisis.textsrv.DBStorage;
+import bisis.circ.Warning;
+import bisis.utils.DaoUtils;
 import bisis.utils.DateUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,9 +13,10 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Petar on 8/28/2017.
@@ -63,6 +61,15 @@ public class ExportLendings {
         ResultSet rset = stmt.executeQuery("SELECT * FROM lending");
         PreparedStatement userPS = conn.prepareStatement("SELECT user_id FROM users where sys_id = ?");
         PreparedStatement locPS = conn.prepareStatement("SELECT name FROM location where id = ?");
+        PreparedStatement warningsPS = conn.prepareStatement("SELECT * FROM warnings WHERE lending_id = ?");
+
+        ResultSet warningTypesRs = conn.createStatement().executeQuery("SELECT * from warning_types");
+        Map<Integer, String> warningTypesMap = new HashMap<>();
+        while(warningTypesRs.next()){
+            warningTypesMap.put(DaoUtils.getInteger(warningTypesRs,"id"), warningTypesRs.getString("name"));
+        }
+
+
         int lendingCount = 0;
 
         while(rset.next()){
@@ -70,6 +77,23 @@ public class ExportLendings {
                 System.out.println("lendings exported: " + lendingCount);
 
             Lending lending = new Lending();
+
+            //warnings
+            Integer leindgId = DaoUtils.getInteger(rset, "id");
+            warningsPS.setInt(1, leindgId);
+            ResultSet warningsResulsts = warningsPS.executeQuery();
+            List<Warning> warningList = new ArrayList<>();
+            while (warningsResulsts.next()){
+                Warning w = new Warning();
+                w.setWarningDate(DateUtils.getInstant(warningsResulsts, "wdate"));
+                w.setWarningType(warningTypesMap.get(warningsResulsts.getInt("wtype")));
+                w.setWarnNo(warningsResulsts.getString("warn_no"));
+                w.setDeadline(DateUtils.getInstant(warningsResulsts, "deadline"));
+                w.setNote(warningsResulsts.getString("note"));
+                warningList.add(w);
+            }
+            lending.setWarnings(warningList);
+
 
             userPS.setInt(1, rset.getInt("sys_id"));
             ResultSet rUser = userPS.executeQuery();
@@ -95,6 +119,7 @@ public class ExportLendings {
 
             outputFile.write(toJSON(lending));
         }
+        warningsPS.close();
         userPS.close();
         stmt.close();
 
