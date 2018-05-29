@@ -241,6 +241,38 @@ public class MongoUtil {
     }
 
     /***
+     * Import config from json file to mongo using mongoimport
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public  void importRegistries() throws IOException, InterruptedException {
+        String command = "";
+        if (uname != null && !uname.equals("") && pass != null && !pass.equals(""))
+            command = "mongoimport --host " + host +" --port " + port + " --db " + dbname + " --username " + uname + " --password " + pass + " --collection " + Mysql2MongoBisisMigrationTool.library + "_registries" + " --file " + System.getProperty("user.dir") +   File.separator +"export" + lib.toUpperCase() +  File.separator +"registries.json";
+        else
+            command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection " + Mysql2MongoBisisMigrationTool.library + "_registries" + " --file " + System.getProperty("user.dir") +  File.separator +"export" + lib.toUpperCase()  + File.separator +"registries.json";
+        System.out.println("Importing config");
+        Process p = Runtime.getRuntime().exec(runCmd + command);
+
+        BufferedReader stdInput = new BufferedReader(new
+                InputStreamReader(p.getInputStream()));
+
+        BufferedReader stdError = new BufferedReader(new
+                InputStreamReader(p.getErrorStream()));
+
+        //print stream
+        String s = null;
+        while ((s = stdInput.readLine()) != null) {
+            System.out.println(s);
+        }
+
+        while ((s = stdError.readLine()) != null) {
+            System.out.println(s);
+        }
+
+    }
+
+    /***
      * Import coders from json file to mongo using mongoimport
      * @throws IOException
      * @throws InterruptedException
@@ -294,6 +326,7 @@ public class MongoUtil {
         importItemAvailibilities();
         importConfig();
         importLibrarians();
+        importRegistries();
     }
 
     /***

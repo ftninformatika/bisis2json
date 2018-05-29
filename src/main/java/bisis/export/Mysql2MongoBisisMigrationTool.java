@@ -91,14 +91,16 @@ public class Mysql2MongoBisisMigrationTool {
                 String exportDir = "export" + library.toUpperCase();
                 FileUtils.createDir(exportDir);
 
-//                //exports
-                ExportRecords.main(conn,"json",  exportDir + "/exportedRecords.json");
-                ExportCoders.main(conn, new String[]{"-l", library, "-o", exportDir});
-                ExportLendings.main(conn,  new String[]{"-o", exportDir + "/exportedLendings.json"});
-                ExportUsers.main(conn, new String[]{"-o", exportDir + "/exportedMembers.json", "-l", library});
-                ExportItemAvailability.main(conn, new String[]{"-o", exportDir + "/exportedItemAvailabilities.json"});
-                ExportClientConfig.export(new String[]{"-c", pathToInnis + "/client-config.ini", "-o", exportDir + "/config.json", "-r", pathToInnis + "/reports.ini", "-l", library});
-                ExportLibrarians.export(library, conn);
+                //exports
+//                ExportRecords.main(conn,"json",  exportDir + "/exportedRecords.json");
+//                ExportCoders.main(conn, new String[]{"-l", library, "-o", exportDir});
+//                ExportLendings.main(conn,  new String[]{"-o", exportDir + "/exportedLendings.json"});
+//                ExportUsers.main(conn, new String[]{"-o", exportDir + "/exportedMembers.json", "-l", library});
+//                ExportItemAvailability.main(conn, new String[]{"-o", exportDir + "/exportedItemAvailabilities.json"});
+//                ExportClientConfig.export(new String[]{"-c", pathToInnis + "/client-config.ini", "-o", exportDir + "/config.json", "-r", pathToInnis + "/reports.ini", "-l", library});
+//                ExportLibrarians.export(library, conn);
+
+                ExportRegistries.export(conn);
 
                 conn.close();
                 if(cmd.hasOption("z")) { //zip if selected
@@ -146,6 +148,7 @@ public class Mysql2MongoBisisMigrationTool {
               iu.indexField(library + "_records", "primerci.invBroj", false, false);
               iu.indexField(library + "_records", "godine.invBroj", false, false);
               iu.indexField(library + "_records", "godine.sveske.invBroj", false, false);
+              iu.indexField(library + "_records", "rn", true, false);
           }
 
 

@@ -1,12 +1,14 @@
 package bisis.circ;
 
+import bisis.export.IsoInstantDateSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * Created by dboberic on 28/07/2017.
@@ -16,10 +18,12 @@ import java.util.Date;
 @Setter
 @Getter
 public class Warning implements Serializable {
-    private Date warningDate;
+    @JsonSerialize(using = IsoInstantDateSerializer.class)
+    private Instant warningDate;
     private String warningType;
     private String warnNo;
-    private Date deadline;
+    @JsonSerialize(using = IsoInstantDateSerializer.class)
+    private Instant deadline;
     private String note;
 
 }
