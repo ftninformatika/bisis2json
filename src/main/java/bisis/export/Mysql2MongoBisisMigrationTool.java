@@ -149,6 +149,7 @@ public class Mysql2MongoBisisMigrationTool {
               iu.indexField(library + "_records", "godine.invBroj", false, false);
               iu.indexField(library + "_records", "godine.sveske.invBroj", false, false);
               iu.indexField(library + "_records", "rn", true, false);
+              iu.indexField(library + "_registries", "code", true, false);
           }
 
 

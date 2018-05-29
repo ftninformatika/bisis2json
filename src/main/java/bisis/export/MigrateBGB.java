@@ -32,10 +32,6 @@ public class MigrateBGB {
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + dbName + "?useSSL=false&serverTimezone=CET"
                     , "bisis", "bisis");
             DB db = new MongoClient().getDB("bisis");
-            PrintWriter outPrimerci = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream("primerciMap.json"), "UTF8")));
-            PrintWriter outGodine = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream("godineMap.json"), "UTF8")));
-
-
             Jongo jongo = new Jongo(db);
             MongoCollection centralRecs = jongo.getCollection("bgb_records");
 
@@ -83,19 +79,12 @@ public class MigrateBGB {
             }
 
             FileUtils.writeTextFile("not_found_records.txt",errIDS.toString());
-//            outPrimerci.println(JSONSerializer.toJSONPrimerciMap(mapPrimerci));
-//            outGodine.println(JSONSerializer.toJSONGodineMap(mapGodine));
-//
-//            outGodine.close();
-//            outPrimerci.close();
             scanner.close();
 
 
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 
