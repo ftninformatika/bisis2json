@@ -11,10 +11,9 @@ import com.mongodb.MongoClient;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 
-import java.io.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.sql.*;
 import java.util.*;
 
 public class MigrateBGB {
@@ -31,6 +30,13 @@ public class MigrateBGB {
         try {
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + dbName + "?useSSL=false&serverTimezone=CET"
                     , "bisis", "bisis");
+            Statement stm = conn.createStatement();
+            ResultSet rs = stm.executeQuery("select count(*) as total from Records");
+            //broj zapisa u lokalu
+            Integer totalLocalRecs = 0;
+            while(rs.next())
+             totalLocalRecs = rs.getInt("total");
+            stm.close();
             DB db = new MongoClient().getDB("bisis");
             Jongo jongo = new Jongo(db);
             MongoCollection centralRecs = jongo.getCollection("bgb_records");
@@ -38,27 +44,53 @@ public class MigrateBGB {
             Scanner scanner = new Scanner(new File(MigrateBGB.class.getResource("/bisis/records-map/record_map.csv").getPath()));
             DBStorage storage = new DBStorage();
 
-            //listamo linije record_map.csv
-            int i = 0;
-            List<String> errIDS = new ArrayList<>();
+            //mapa lokalniRn - centralaRn
+            Map<Integer, Integer> localCentralMap = new HashMap<>();
             while (scanner.hasNext()) {
-                List<String> line = CSVUtils.parseLine(scanner.nextLine());
-                Integer localId = Integer.valueOf(line.get(1));
-                Integer centralId = Integer.valueOf(line.get(2));
+                try {
+                    List<String> line = CSVUtils.parseLine(scanner.nextLine());
+                    localCentralMap.put(Integer.valueOf(line.get(1)), Integer.valueOf(line.get(2)));
+                } catch (Exception e) {
+                    continue;
+                }
+            }
 
-                //pokupi zapis iz opstinske
-                Record localRec = storage.get(conn, localId);
+            Map<Integer, String> withoutReferenceMap = new HashMap<>();
 
-                if(localRec == null) {
+            for (int i = 1; i < totalLocalRecs; i++) {
+                Record localRec = storage.get(conn, i);
 
-                    System.out.println("Greska, ne postoji lokalni zapis sa brojem: " + localId);
-                    errIDS.add(String.valueOf(localId));
+
+                Integer centralRN = null;
+
+                try {
+                    centralRN = localCentralMap.get(localRec.getRN());
+                } catch (Exception e) {
+                    //withoutReferenceMap.put(localRec.getRN(), localRec.getSubfieldContent("010a"));
+                    System.out.println("Ne moze da pokupi rn iz lokala za recordId: " + i);
+                    continue;
                 }
 
-                //pokupi zapis iz centralne
-                Record centralRec = centralRecs.findOne("{rn:" + centralId + "}").as(Record.class);
+                //ako nema referencu izvuci njegov rn i njegov isbn
+                if (centralRN == null) {
+                    //pokusaj preko isbn da ga izvuces i postavis centralRN
+                    if (localRec.getSubfieldContent("010a") != null && !localRec.getSubfieldContent("010a").trim().equals("")) {
+                        Record isbnRec = centralRecs.findOne("{\"fields.subfields.content\":  \"" + localRec.getSubfieldContent("010a") + "\"}").as(Record.class);
+                        centralRN = isbnRec.getRN();
+                    } else {
+                        withoutReferenceMap.put(localRec.getRN(), localRec.getSubfieldContent("010a"));
+                        continue;
+                    }
+                }
 
-                //prespe primerke/godine i sacuva u centralnu
+                Record centralRec = centralRecs.findOne("{rn:" + centralRN + "}").as(Record.class);
+
+                if (localRec == null || centralRec == null) {
+                    System.out.println("Lokalni/centralni zapis je null! recId: " + i);
+                    continue;
+
+                }
+
                 if( centralRec != null && localRec != null) {
                     if (centralRec.getPrimerci() == null)
                         centralRec.setPrimerci(new ArrayList<Primerak>());
@@ -72,13 +104,14 @@ public class MigrateBGB {
 
                     centralRecs.save(centralRec);
 
-                    i++;
                     if (i % 1000 == 0)
                         System.out.println("Processed: " + i + " records");
                 }
+
             }
 
-            FileUtils.writeTextFile("not_found_records.txt",errIDS.toString());
+
+            FileUtils.writeTextFile("without_reference.txt",withoutReferenceMap.toString());
             scanner.close();
 
 
