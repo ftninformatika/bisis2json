@@ -1,18 +1,20 @@
 package bisis.records;
 
+import bisis.records.serializers.PrimerakSerializer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
+import org.jongo.marshall.jackson.oid.MongoObjectId;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import bisis.export.IsoDateSerializer;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import bisis.records.serializers.PrimerakSerializer;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
 @SuppressWarnings("serial")
+@Getter
+@Setter
 public class Record implements Serializable {
 
   /**
@@ -289,7 +291,23 @@ public class Record implements Serializable {
   	}catch(Exception e){
   		return 0;
   	}
-  } 
+  }
+
+  public boolean isPictureBookBGB() {
+      boolean retVal = true;
+
+      if (this.getPrimerci() == null || this.getPrimerci().size() == 0)
+          return retVal = false;
+      else {
+          for (Primerak p: this.getPrimerci()) {
+              if (!p.getInvBroj().substring(2,4).equals("99"))
+                  retVal = false;
+                  break;
+          }
+      }
+
+      return retVal;
+  }
   
   
   public void setRN(int rn){
@@ -358,6 +376,27 @@ public class Record implements Serializable {
 		  return g;		  
 	  }
 	  return null;
+  }
+
+  public void addInventar(Record r) {
+      if (r != null) {
+          if (r.getPrimerci() != null && r.getPrimerci().size() > 0) {
+              if (this.getPrimerci() == null)
+                  this.setPrimerci(new ArrayList<>());
+              this.getPrimerci().addAll(r.getPrimerci());
+          }
+          if (r.getGodine() != null && r.getGodine().size() > 0) {
+              if (this.getGodine() == null)
+                  this.setGodine(new ArrayList<>());
+              this.getGodine().addAll(r.getGodine());
+          }
+      }
+  }
+
+  public boolean isInvetarPrazan() {
+      if ((this.getPrimerci() == null || this.getPrimerci().size() ==0) && (this.getGodine() == null || this.getGodine().size() == 0))
+          return true;
+      else return false;
   }
   
   
@@ -460,6 +499,17 @@ public class Record implements Serializable {
   	return rec;
   }
 
+  public void setIsbn(String isbn) {
+      this.isbn = this.getSubfieldContent("010a");
+  }
+
+  public String getIsbn() {
+      return isbn;
+  }
+
+
+  @MongoObjectId
+  private String _id;
   /** record identifier */
   private int recordID;
   /** publication type */
@@ -475,9 +525,13 @@ public class Record implements Serializable {
   /** record modifier */
   private Author modifier;
   /** record creation date */
-  @JsonSerialize(using = IsoDateSerializer.class)
+//  @JsonSerialize(using = IsoDateSerializer.class)
   private Date creationDate;
   /** last modification date */
-  @JsonSerialize(using = IsoDateSerializer.class)
+//  @JsonSerialize(using = IsoDateSerializer.class)
   private Date lastModifiedDate;
+    /** rn */
+    private int rn;
+    /** za potrebe prepisa*/
+    private String isbn;
 }

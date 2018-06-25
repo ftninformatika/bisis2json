@@ -1,12 +1,10 @@
 package bisis.records;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-
-import bisis.export.IsoDateSerializer;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
 @SuppressWarnings("serial")
 public class Sveska implements Serializable{
@@ -15,7 +13,7 @@ public class Sveska implements Serializable{
   private String invBroj;
   private String status;
 
-  @JsonSerialize(using = IsoDateSerializer.class)
+//  @JsonSerialize(using = IsoDateSerializer.class)
   private Date datumStatusa;
 
   private int stanje;

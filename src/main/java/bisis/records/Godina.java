@@ -1,5 +1,7 @@
 package bisis.records;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -7,17 +9,13 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import bisis.export.IsoDateSerializer;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-
 @SuppressWarnings("serial")
 public class Godina implements Serializable{
 
   private int godinaID;
   private String invBroj;
 
-  @JsonSerialize(using = IsoDateSerializer.class)
+//  @JsonSerialize(using = IsoDateSerializer.class)
   private Date datumRacuna;
 
   private String brojRacuna;
@@ -25,7 +23,7 @@ public class Godina implements Serializable{
   private BigDecimal cena;
   private String finansijer;
 
-  @JsonSerialize(using = IsoDateSerializer.class)
+//  @JsonSerialize(using = IsoDateSerializer.class)
   private Date datumInventarisanja;
 
   private String sigFormat;

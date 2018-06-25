@@ -6,7 +6,6 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.time.LocalDate;
 
 /**
  * Created by dboberic on 28/07/2017.

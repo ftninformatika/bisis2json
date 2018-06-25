@@ -92,14 +92,13 @@ public class Mysql2MongoBisisMigrationTool {
                 FileUtils.createDir(exportDir);
 
                 //exports
-//                ExportRecords.main(conn,"json",  exportDir + "/exportedRecords.json");
-//                ExportCoders.main(conn, new String[]{"-l", library, "-o", exportDir});
-//                ExportLendings.main(conn,  new String[]{"-o", exportDir + "/exportedLendings.json"});
-//                ExportUsers.main(conn, new String[]{"-o", exportDir + "/exportedMembers.json", "-l", library});
-//                ExportItemAvailability.main(conn, new String[]{"-o", exportDir + "/exportedItemAvailabilities.json"});
-//                ExportClientConfig.export(new String[]{"-c", pathToInnis + "/client-config.ini", "-o", exportDir + "/config.json", "-r", pathToInnis + "/reports.ini", "-l", library});
-//                ExportLibrarians.export(library, conn);
-
+                ExportRecords.main(conn,"json",  exportDir + "/exportedRecords.json");
+                ExportCoders.main(conn, new String[]{"-l", library, "-o", exportDir});
+                ExportLendings.main(conn,  new String[]{"-o", exportDir + "/exportedLendings.json"});
+                ExportUsers.main(conn, new String[]{"-o", exportDir + "/exportedMembers.json", "-l", library});
+                ExportItemAvailability.main(conn, new String[]{"-o", exportDir + "/exportedItemAvailabilities.json"});
+                ExportClientConfig.export(new String[]{"-c", pathToInnis + "/client-config.ini", "-o", exportDir + "/config.json", "-r", pathToInnis + "/reports.ini", "-l", library});
+                ExportLibrarians.export(library, conn);
                 ExportRegistries.export(conn);
 
                 conn.close();
@@ -150,6 +149,8 @@ public class Mysql2MongoBisisMigrationTool {
               iu.indexField(library + "_records", "godine.sveske.invBroj", false, false);
               iu.indexField(library + "_records", "rn", true, false);
               iu.indexField(library + "_registries", "code", true, false);
+              iu.indexField(library + "_records", "fields.name", true, false);
+              iu.indexField(library + "_records", "fields.subfields.name", true, false);
           }
 
 
