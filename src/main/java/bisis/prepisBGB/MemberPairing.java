@@ -2,6 +2,7 @@ package bisis.prepisBGB;
 
 import bisis.circ.*;
 import bisis.export.ExportCoders;
+import bisis.jongo_circ.JoLending;
 import bisis.jongo_circ.JoMember;
 import bisis.utils.DaoUtils;
 import bisis.utils.DateUtils;
@@ -11,11 +12,15 @@ import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.jongo.MongoCursor;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class MemberPairing {
 
@@ -29,6 +34,9 @@ public class MemberPairing {
             DB db = new MongoClient().getDB("bisis");
             Jongo jongo = new Jongo(db);
             MongoCollection centralMembersCollection = jongo.getCollection("bgb_members");
+            MongoCollection lendingsCollection = jongo.getCollection("bgb_lendings");
+
+            PrintWriter foundMembers = new PrintWriter(new File(LIBRARY +"_upareni_clanovi.txt"));
 
             List<Integer> sysIdsLocalList = new ArrayList<>();
             Statement stmt = conn.createStatement();
@@ -49,7 +57,12 @@ public class MemberPairing {
 
                 System.out.println("Nasao ih: " + found + "\nNije nasao: " + nFound + "\nOd: " + total);
                 if (centralMember != null && isSameMember(localMember, centralMember)) {
+                    foundMembers.write(toStringCompareMembers(localMember, centralMember));
                     found++;
+                    //prepisi zaduzenja
+                    List<Lending> lendings = getLendings(conn,sysId + "");
+                    List<JoLending> joLendings = lendings.stream().map(l -> new JoLending(l)).collect(Collectors.toList());
+                    System.out.println("stani");
                 }
                 else {
 
@@ -58,6 +71,7 @@ public class MemberPairing {
                         centralMember = getMemberFromCursor(centralMembersCollection.find(query).as(JoMember.class));
 
                     if (centralMember != null) {
+                        foundMembers.write(toStringCompareMembers(localMember, centralMember));
                         found++;
                         continue;
                     }
@@ -66,21 +80,22 @@ public class MemberPairing {
                         if (!queryJmbg.equals("{}"))
                             centralMember = getMemberFromCursor(centralMembersCollection.find(queryJmbg).as(JoMember.class));
                         if (centralMember != null) {
+                            foundMembers.write(toStringCompareMembers(localMember, centralMember));
                             found++;
                             continue;
                         }
 
                     }
 
-
                     nFound++;
-
                 }
             }
-
+            foundMembers.close();
 
 
         } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
@@ -94,6 +109,19 @@ public class MemberPairing {
         } else {
             return null;
         }
+    }
+
+    public static String toStringCompareMembers(Member m, JoMember jm) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("\n---------------------");
+        sb.append("Podaci(br. korisnika, ime, prezime, srednje ime, adresa):\n");
+        sb.append(m.getUserId() + " | " + jm.getUserId() + "\n");
+        sb.append(m.getFirstName() + " | " + jm.getFirstName() + "\n");
+        sb.append(m.getLastName() + " | " + jm.getLastName() + "\n");
+        sb.append(m.getParentName() + " | " + jm.getParentName() + "\n");
+        sb.append(m.getAddress() + " | " + jm.getAddress() + "\n");
+
+        return sb.toString();
     }
 
     private static String getJmbgQuery(Member m) {
@@ -332,7 +360,6 @@ public class MemberPairing {
         rset.close();
         stmt.close();
 
-        //lendingPS.close();
         signingPS.close();
         organizationPS.close();
         membershipTypePS.close();
@@ -345,5 +372,74 @@ public class MemberPairing {
         return member;
     }
 
+    public static List<Lending> getLendings(Connection conn, String memberId) throws SQLException {
+
+        List<Lending> retVal = new ArrayList<>();
+
+        Statement stmt = conn.createStatement();
+        ResultSet rset = stmt.executeQuery("SELECT * FROM lending WHERE sys_id = " + memberId);
+        PreparedStatement userPS = conn.prepareStatement("SELECT user_id FROM users where sys_id = ?");
+        PreparedStatement locPS = conn.prepareStatement("SELECT name FROM location where id = ?");
+        PreparedStatement warningsPS = conn.prepareStatement("SELECT * FROM warnings WHERE lending_id = ?");
+
+        ResultSet warningTypesRs = conn.createStatement().executeQuery("SELECT * from warning_types");
+        Map<Integer, String> warningTypesMap = new HashMap<>();
+        while(warningTypesRs.next()){
+            warningTypesMap.put(DaoUtils.getInteger(warningTypesRs,"id"), warningTypesRs.getString("name"));
+        }
+
+
+        int lendingCount = 0;
+
+        while(rset.next()) {
+
+            Lending lending = new Lending();
+
+            //warnings
+            Integer leindgId = DaoUtils.getInteger(rset, "id");
+            warningsPS.setInt(1, leindgId);
+            ResultSet warningsResulsts = warningsPS.executeQuery();
+            List<Warning> warningList = new ArrayList<>();
+            while (warningsResulsts.next()){
+                Warning w = new Warning();
+                w.setWarningDate(DateUtils.getInstant(warningsResulsts, "wdate"));
+                w.setWarningType(warningTypesMap.get(warningsResulsts.getInt("wtype")));
+                w.setWarnNo(warningsResulsts.getString("warn_no"));
+                w.setDeadline(DateUtils.getInstant(warningsResulsts, "deadline"));
+                w.setNote(warningsResulsts.getString("note"));
+                warningList.add(w);
+            }
+            lending.setWarnings(warningList);
+
+
+            userPS.setInt(1, rset.getInt("sys_id"));
+            ResultSet rUser = userPS.executeQuery();
+            if(rUser.next())
+                lending.setUserId(rUser.getString("user_id"));
+
+            lending.setCtlgNo(rset.getString("ctlg_no"));
+            lending.setLendDate(DateUtils.getInstant(rset, "lend_date"));
+            lending.setResumeDate(DateUtils.getInstant(rset, "resume_date"));
+            lending.setReturnDate(DateUtils.getInstant(rset, "return_date"));
+            lending.setDeadline(DateUtils.getInstant(rset, "deadline"));
+            lending.setLibrarianLend(rset.getString("librarian_lend"));
+            lending.setLibrarianReturn(rset.getString("librarian_return"));
+            lending.setLibrarianResume(rset.getString("librarian_resume"));
+
+
+            locPS.setInt(1, rset.getInt("location"));
+            if (!rset.wasNull()) {
+                ResultSet locRs = locPS.executeQuery();
+                if (locRs.next())
+                    lending.setLocation(locRs.getString("name"));
+            }
+            retVal.add(lending);
+        }
+        warningsPS.close();
+        userPS.close();
+        stmt.close();
+
+        return retVal;
+    }
 
 }
