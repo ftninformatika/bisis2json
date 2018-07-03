@@ -6,8 +6,10 @@ import bisis.jongo_circ.JoLending;
 import bisis.jongo_circ.JoMember;
 import bisis.utils.DaoUtils;
 import bisis.utils.DateUtils;
+import bisis.utils.LatCyrUtils;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
+import org.apache.commons.cli.Options;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.jongo.MongoCursor;
@@ -27,6 +29,9 @@ public class MemberPairing {
     public static final String LIBRARY = "bgb";
 
     public static void main(String[] args) {
+        Options options = new Options();
+        initOptions(options);
+
 
         try {
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3307/" + "bisis" + "?useSSL=false&serverTimezone=CET"
@@ -37,6 +42,7 @@ public class MemberPairing {
             MongoCollection lendingsCollection = jongo.getCollection("bgb_lendings");
 
             PrintWriter foundMembers = new PrintWriter(new File(LIBRARY +"_upareni_clanovi.txt"));
+            PrintWriter sameUserIDPW = new PrintWriter(new File(LIBRARY +"_same_userID.txt"));
 
             List<Integer> sysIdsLocalList = new ArrayList<>();
             Statement stmt = conn.createStatement();
@@ -60,9 +66,10 @@ public class MemberPairing {
                     foundMembers.write(toStringCompareMembers(localMember, centralMember));
                     found++;
                     //prepisi zaduzenja
-                    List<Lending> lendings = getLendings(conn,sysId + "");
-                    List<JoLending> joLendings = lendings.stream().map(l -> new JoLending(l)).collect(Collectors.toList());
-                    System.out.println("stani");
+
+                }
+                else if (centralMember != null &&  !isSameMember(localMember, centralMember)) {
+                    sameUserIDPW.write(toStringCompareMembers(localMember, centralMember));
                 }
                 else {
 
@@ -75,18 +82,6 @@ public class MemberPairing {
                         found++;
                         continue;
                     }
-                    else {
-                        String queryJmbg = getJmbgQuery(localMember);
-                        if (!queryJmbg.equals("{}"))
-                            centralMember = getMemberFromCursor(centralMembersCollection.find(queryJmbg).as(JoMember.class));
-                        if (centralMember != null) {
-                            foundMembers.write(toStringCompareMembers(localMember, centralMember));
-                            found++;
-                            continue;
-                        }
-
-                    }
-
                     nFound++;
                 }
             }
@@ -98,6 +93,19 @@ public class MemberPairing {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+
+    }
+
+    public static void copyLendings(Connection conn, String sysId, MongoCollection memCollection) {
+        List<Lending> lendings = null;
+        try {
+            lendings = getLendings(conn,sysId + "");
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        List<JoLending> joLendings = lendings.stream().map(l -> new JoLending(l)).collect(Collectors.toList());
+        memCollection.save(joLendings);
 
     }
 
@@ -154,7 +162,9 @@ public class MemberPairing {
         if (m.getJmbg()!= null && !m.getJmbg().equals("") && !m.getJmbg().equals("0000000000000") && m.getJmbg().equals(m2.getJmbg()))
             return true;
         else
-            return (m.getFirstName().equals(m2.getFirstName()) && m.getLastName().equals(m2.getLastName()) /*&& m.getParentName().equals(m2.getParentName())*/);
+            return (LatCyrUtils.toLatinUnaccented(m.getFirstName()).toLowerCase().equals(LatCyrUtils.toLatinUnaccented(m2.getFirstName()).toLowerCase())
+                    &&
+                    LatCyrUtils.toLatinUnaccented(m.getLastName()).toLowerCase().equals(LatCyrUtils.toLatinUnaccented(m2.getLastName()).toLowerCase()));
     }
 
     private static Member getMember(Connection conn, Integer sys_id, String library) throws SQLException {
@@ -440,6 +450,15 @@ public class MemberPairing {
         stmt.close();
 
         return retVal;
+    }
+
+    private static void initOptions(Options options){
+        options.addOption("a", "mysqladress", true, "MySQL server address (default: localhost)");
+        options.addOption("p", "mysqlport", true,"MySQL server port (default: 3306)");
+        options.addOption("n","mysqdblname", true, "MySQL database name (default: bisis)");
+        options.addOption("u","mysqlusername", true, "MySQL server username (default: bisis)");
+        options.addOption("w","mysqlpassword", true, "MySQL server password (default: bisis)");
+
     }
 
 }
