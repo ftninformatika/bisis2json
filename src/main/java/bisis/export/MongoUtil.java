@@ -395,6 +395,7 @@ public class MongoUtil {
         mdb.getCollection(lib + "_members").drop();
         mdb.getCollection(lib + "_itemAvailability").drop();
         mdb.getCollection(lib + "_reports").drop();
+        mdb.getCollection(lib + "_registries").drop();
         mdb.getCollection("librarians").deleteMany(new BasicDBObject("biblioteka", lib));
 
         mdb.getCollection("configs").deleteMany(new BasicDBObject("libraryName", lib));
