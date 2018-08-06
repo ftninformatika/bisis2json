@@ -1,10 +1,11 @@
 package bisis.records;
 
+import bisis.export.IsoDateSerializer;
 import bisis.records.serializers.PrimerakSerializer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.Setter;
-import org.jongo.marshall.jackson.oid.MongoObjectId;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -508,8 +509,8 @@ public class Record implements Serializable {
   }
 
 
-  @MongoObjectId
-  private String _id;
+//  @MongoObjectId
+//  private String _id;
   /** record identifier */
   private int recordID;
   /** publication type */
@@ -525,10 +526,10 @@ public class Record implements Serializable {
   /** record modifier */
   private Author modifier;
   /** record creation date */
-//  @JsonSerialize(using = IsoDateSerializer.class)
+  @JsonSerialize(using = IsoDateSerializer.class)
   private Date creationDate;
   /** last modification date */
-//  @JsonSerialize(using = IsoDateSerializer.class)
+  @JsonSerialize(using = IsoDateSerializer.class)
   private Date lastModifiedDate;
     /** rn */
     private int rn;

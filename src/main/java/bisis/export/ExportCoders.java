@@ -283,9 +283,9 @@ public class ExportCoders {
                     cid = "0" + cid;
                 if (Mysql2MongoBisisMigrationTool.library.equals("bgb")){
                     if(cid.length() == 1)
-                        cid = "0" + cid;
-                    if(cid.length() == 2)
                         cid = "00" + cid;
+                    else if(cid.length() == 2)
+                        cid = "0" + cid;
                 }
                 m.setLocationCode(cid);
                 m.setLastUserId(DaoUtils.getInteger(rs,"last_user_id"));

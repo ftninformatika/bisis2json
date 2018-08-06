@@ -1,25 +1,27 @@
 package bisis.export;
 
-import bisis.librarian.ProcessType;
 import bisis.librarian.ProcessTypeBuilder;
 import bisis.librarian.ProcessTypeCatalog;
 import bisis.librarian.dto.LibrarianContextDTO;
 import bisis.librarian.dto.LibrarianDTO;
-
-import java.io.IOException;
-import java.io.StringReader;
-import java.sql.*;
-import java.util.*;
-
 import bisis.librarian.dto.ProcessTypeDTO;
 import bisis.utils.DaoUtils;
 import bisis.utils.FileUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.bson.types.ObjectId;
-import org.jdom2.*;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.*;
 
 /**
  * Created by Petar on 12/1/2017.
@@ -38,7 +40,7 @@ public class ExportLibrarians {
             while (rs.next()){
                 ProcessTypeDTO ptd = ProcessTypeBuilder.buildDTOFromProcessType(ProcessTypeBuilder.getProcessType(rs.getString("tipobr_spec")));
                 ptd.setLibName(lib);
-                ptd.set_id(new ObjectId().toHexString());
+                //ptd.set_id(ObjectId.get());
                 processTypes.put(ptd.getName(), ptd);
             }
 

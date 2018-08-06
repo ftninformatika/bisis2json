@@ -17,7 +17,7 @@ import java.util.List;
 //@Document(collection = "coders.process_types")
 public class ProcessTypeDTO {
 
-    /*@Id*/ private String _id;
+    ///*@Id*/ private ObjectId _id;
     private String name;
     private int pubType;
     private String libName;

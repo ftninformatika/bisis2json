@@ -1,5 +1,7 @@
 package bisis.records;
 
+import bisis.export.IsoDateSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
 import java.io.Serializable;
@@ -11,7 +13,7 @@ public class Primerak implements Serializable {
 
   private int primerakID;
   private String invBroj;
-//  @JsonSerialize(using = IsoDateSerializer.class)
+  @JsonSerialize(using = IsoDateSerializer.class)
   private Date datumRacuna;
   private String brojRacuna;
   private String dobavljac;
@@ -19,7 +21,7 @@ public class Primerak implements Serializable {
   private String finansijer;
   private String usmeravanje;
 
-//  @JsonSerialize(using = IsoDateSerializer.class)
+  @JsonSerialize(using = IsoDateSerializer.class)
   private Date datumInventarisanja;
 
   private String sigFormat;
@@ -33,7 +35,7 @@ public class Primerak implements Serializable {
   private String odeljenje;
   private String status;
 
-//  @JsonSerialize(using = IsoDateSerializer.class)
+  @JsonSerialize(using = IsoDateSerializer.class)
   private Date datumStatusa;
 
   private String inventator;

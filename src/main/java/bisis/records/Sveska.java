@@ -1,5 +1,7 @@
 package bisis.records;
 
+import bisis.export.IsoDateSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
 import java.io.Serializable;
@@ -13,7 +15,7 @@ public class Sveska implements Serializable{
   private String invBroj;
   private String status;
 
-//  @JsonSerialize(using = IsoDateSerializer.class)
+  @JsonSerialize(using = IsoDateSerializer.class)
   private Date datumStatusa;
 
   private int stanje;
