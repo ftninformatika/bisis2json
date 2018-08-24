@@ -2,7 +2,7 @@ package bisis.prepisBGB;
 
 import bisis.coders.Counter;
 import bisis.export.MigrateBGB;
-import bisis.records.Record;
+import bisis.jongo_records.JoRecord;
 import bisis.textsrv.DBStorage;
 import bisis.utils.CSVUtils;
 import com.mongodb.DB;
@@ -68,11 +68,11 @@ public class RnPairing {
 
             for (Integer recId: withoutRNs){
 
-                Record r = storage.get(conn, recId);
+                JoRecord r = new JoRecord(storage.get(conn, recId));
                 String query = getPairingQuery(r);
-                Record fromCentral = null;
+                JoRecord fromCentral = null;
                 try {
-                    fromCentral = getRecFromCursor(centralRecs.find(query).as(Record.class));
+                    fromCentral = getRecFromCursor(centralRecs.find(query).as(JoRecord.class));
                 } catch (Exception e) {
                     continue;
                 }
@@ -82,7 +82,7 @@ public class RnPairing {
                     try {
                         String isbnQuery = getIsbnOnlyQuery(r);
                         if (!isbnQuery.equals(""))
-                            fromCentral = getRecFromCursor(centralRecs.find(isbnQuery).as(Record.class));
+                            fromCentral = getRecFromCursor(centralRecs.find(isbnQuery).as(JoRecord.class));
                     } catch (Exception e) {
                         continue;
                     }
@@ -138,7 +138,7 @@ public class RnPairing {
         }
     }
 
-    public static Record getRecFromCursor(MongoCursor<Record> cursor) {
+    public static JoRecord getRecFromCursor(MongoCursor<JoRecord> cursor) {
         if (cursor.count() == 1)
             return cursor.next();
         else  if (cursor.count() == 0 ) {
@@ -150,7 +150,7 @@ public class RnPairing {
         }
     }
 
-    public static String getPairingQuery(Record r) {
+    public static String getPairingQuery(JoRecord r) {
         String retVal = "{$and: [ ";
 
         for (String subfield: getSubfieldsList()){
@@ -173,7 +173,7 @@ public class RnPairing {
         return retVal;
     }
 
-    public static String getIsbnOnlyQuery(Record r) {
+    public static String getIsbnOnlyQuery(JoRecord r) {
         String retVal = "";
 
         String subfield = "010a";
@@ -190,14 +190,14 @@ public class RnPairing {
         return retVal;
     }
 
-    private static String getISBNGenericQuery(Record r) {
+    private static String getISBNGenericQuery(JoRecord r) {
         String isbn = r.getSubfieldContent("010a");
         if (isbn != null && !isbn.equals(""))
             return "{'fields.subfields.content':'" + isbn + "'}";
         return "{}";
     }
 
-    private static String getISBNConreteQuery(Record r) {
+    private static String getISBNConreteQuery(JoRecord r) {
         String isbn = r.getSubfieldContent("010a");
         if (isbn != null && !isbn.equals(""))
             return "{'isbn':'" + isbn + "'}";

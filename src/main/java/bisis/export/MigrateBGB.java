@@ -1,6 +1,6 @@
 package bisis.export;
 
-import bisis.records.Record;
+import bisis.jongo_records.JoRecord;
 import bisis.textsrv.DBStorage;
 import bisis.utils.CSVUtils;
 import com.mongodb.DB;
@@ -59,7 +59,7 @@ public class MigrateBGB {
             int cnt = 0;
             for (Integer id: localRecIds) {
                 cnt++;
-                Record localRec = storage.get(conn, id);
+                JoRecord localRec = new JoRecord(storage.get(conn, id));
 
                 if (localRec != null) {
 
@@ -79,7 +79,7 @@ public class MigrateBGB {
                         continue;
                     }
 
-                    Record centralRec = centralRecs.findOne("{rn:" + centralRN + "}").as(Record.class);
+                    JoRecord centralRec = centralRecs.findOne("{rn:" + centralRN + "}").as(JoRecord.class);
 
                     if (centralRec == null) {
                         withoutRn.append(localRec.getRN() + "," + localRec.getRecordID());
