@@ -50,6 +50,7 @@ public class Member implements Serializable {
   private Integer classNo;
   private String blockReason;
   private String pin;
+  private String oldNumbers;
 
   private List<Signing> signings = new ArrayList<>();
   //private List<Lending> lendings = new ArrayList<>();

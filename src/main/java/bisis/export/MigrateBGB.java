@@ -61,9 +61,6 @@ public class MigrateBGB {
                 cnt++;
                 Record localRec = storage.get(conn, id);
 
-                if (localRec.getRN() == 18305)
-                    System.out.println("stani");
-
                 if (localRec != null) {
 
                     if(localRec.getRN() == 0) {
@@ -124,8 +121,6 @@ public class MigrateBGB {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
             e.printStackTrace();
         }
 

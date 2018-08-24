@@ -28,6 +28,16 @@ task fatJarBGBPrepis(type: Jar){
     archiveName 'bgb-inventar-prepis.jar'
 }
 
+task fatJarExtractRN(type: Jar){
+    manifest {
+        attributes 'Main-Class': 'bisis.export.ExtractRN'
+    }
+    from sourceSets.main.output
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
+    with jar
+    archiveName 'extractRN.jar'
+}
+
 repositories {
     mavenCentral()
 }

@@ -1,7 +1,6 @@
 package bisis.jongo_circ;
 
 import bisis.circ.Lending;
-import bisis.circ.Warning;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -29,7 +29,7 @@ public class JoLending implements Serializable {
         librarianLend = l.getLibrarianLend();
         librarianReturn = l.getLibrarianReturn();
         librarianResume = l.getLibrarianResume();
-        warnings = l.getWarnings();
+        warnings = l.getWarnings().stream().map(w -> new JoWarning(w)).collect(Collectors.toList());
     }
 
     private String userId;
@@ -42,6 +42,6 @@ public class JoLending implements Serializable {
     private String librarianLend;
     private String librarianReturn;
     private String librarianResume;
-    private List<Warning> warnings = new ArrayList<>();
+    private List<JoWarning> warnings = new ArrayList<>();
 
 }
