@@ -1,25 +1,21 @@
 package bisis.export;
 
+import bisis.circ.*;
+import bisis.prepisBGB.MemberCodersPairingMap;
+import bisis.utils.DaoUtils;
+import bisis.utils.DateUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import org.apache.commons.cli.*;
+
 import java.io.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
-
-import bisis.circ.*;
-import bisis.utils.DaoUtils;
-import bisis.utils.DateUtils;
-import com.fasterxml.jackson.core.type.TypeReference;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 public class ExportUsers {
   
   public static void main(Connection conn, String[] args) {
@@ -119,17 +115,28 @@ public class ExportUsers {
       userCategoryPS.setInt(1, rset.getInt("user_categ"));
       if(!rset.wasNull()) {
         ResultSet rUc = userCategoryPS.executeQuery();
-        if (rUc.next()) {
-          UserCategory uC = new UserCategory();
-          uC.setLibrary(library);
-          uC.setDescription(rUc.getString("name"));
-          uC.setTitlesNo(rUc.getInt("titles_no"));
-          uC.setPeriod(rUc.getInt("period"));
-          if (ExportCoders.hasColumn(rUc, "max_period"))
-            uC.setMaxPeriod(rUc.getInt("max_period"));
-          else
-            uC.setMaxPeriod(5000);
-          member.setUserCategory(uC);
+
+        // specijalni slucaj bgb, kada postoji mapiranje sifarnika
+        if (Mysql2MongoBisisMigrationTool.library.equals("bgb")) {
+          if (rUc.next()) {
+            String ucDesc = rUc.getString("name");
+            UserCategory uc = MemberCodersPairingMap.getUserCategMappedByDesc(ucDesc);
+            member.setUserCategory(uc);
+          }
+        }
+        else {
+          if (rUc.next()) {
+            UserCategory uC = new UserCategory();
+            uC.setLibrary(library);
+            uC.setDescription(rUc.getString("name"));
+            uC.setTitlesNo(rUc.getInt("titles_no"));
+            uC.setPeriod(rUc.getInt("period"));
+            if (ExportCoders.hasColumn(rUc, "max_period"))
+              uC.setMaxPeriod(rUc.getInt("max_period"));
+            else
+              uC.setMaxPeriod(5000);
+            member.setUserCategory(uC);
+          }
         }
         rUc.close();
       }

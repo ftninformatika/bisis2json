@@ -69,17 +69,29 @@ public class MemberStorage {
         userCategoryPS.setInt(1, rset.getInt("user_categ"));
         if(!rset.wasNull()) {
             ResultSet rUc = userCategoryPS.executeQuery();
-            if (rUc.next()) {
-                UserCategory uC = new UserCategory();
-                uC.setLibrary(library);
-                uC.setDescription(rUc.getString("name"));
-                uC.setTitlesNo(rUc.getInt("titles_no"));
-                uC.setPeriod(rUc.getInt("period"));
-                if (ExportCoders.hasColumn(rUc, "max_period"))
-                    uC.setMaxPeriod(rUc.getInt("max_period"));
-                else
-                    uC.setMaxPeriod(5000);
-                member.setUserCategory(uC);
+
+            //specijalni slucaj bgb, mapiranje sifarnika
+            if(library.equals("bgb")) {
+                if (rUc.next()) {
+                    String ucDesc = rUc.getString("name");
+                    UserCategory uc = MemberCodersPairingMap.getUserCategMappedByDesc(ucDesc);
+                    member.setUserCategory(uc);
+                }
+            }
+
+            else {
+                if (rUc.next()) {
+                    UserCategory uC = new UserCategory();
+                    uC.setLibrary(library);
+                    uC.setDescription(rUc.getString("name"));
+                    uC.setTitlesNo(rUc.getInt("titles_no"));
+                    uC.setPeriod(rUc.getInt("period"));
+                    if (ExportCoders.hasColumn(rUc, "max_period"))
+                        uC.setMaxPeriod(rUc.getInt("max_period"));
+                    else
+                        uC.setMaxPeriod(5000);
+                    member.setUserCategory(uC);
+                }
             }
             rUc.close();
         }

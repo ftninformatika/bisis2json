@@ -127,9 +127,11 @@ public class RnPairing {
 
             counterRn.setCounterValue(rnCnt);
             counterRecordid.setCounterValue(recIdCnt);
-            codersCounters.save(rnCnt);
-            codersCounters.save(recIdCnt);
-            System.out.println("\nOBROJACI PODESENI ZA RN I RECORD_ID NA: " + rnCnt + " i " + recIdCnt);
+//            codersCounters.save(counterRn);
+//            codersCounters.save(counterRecordid);
+            codersCounters.update("{counterName: 'RN', library: 'bgb'}").with(counterRn);
+            codersCounters.update("{counterName: 'recordid', library: 'bgb'}").with(counterRecordid);
+            System.out.println("\nBROJACI PODESENI ZA RN I RECORD_ID NA: " + rnCnt + " i " + recIdCnt);
 
         } catch (SQLException e) {
             e.printStackTrace();

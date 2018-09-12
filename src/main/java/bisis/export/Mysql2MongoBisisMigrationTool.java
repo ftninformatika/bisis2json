@@ -23,12 +23,13 @@ public class Mysql2MongoBisisMigrationTool {
     public static MongoDatabase mdb = null;
     static String os = System.getProperty("os.name");
     static String library = "";
+    static String branchLibrary = "";
 
     public static void main(String[] args){
         Options options = new Options();
         initOptions(options);
 
-        //String library = "";
+
         String mysqlAddress = "localhost";
         String mysqlPort = "3306";
         String mysqlDbName = "bisis";
@@ -77,6 +78,8 @@ public class Mysql2MongoBisisMigrationTool {
                 mongoUsername = cmd.getOptionValue("mu");
             if (cmd.hasOption("mw"))
                 mongoPassword = cmd.getOptionValue("mw");
+            if (cmd.hasOption("bl"))
+                branchLibrary = cmd.getOptionValue("bl");
 
             if (!cmd.hasOption("h") && !cmd.hasOption("i") && !cmd.hasOption("e") && !cmd.hasOption("d")){
                 System.out.println("Please select one of the tool mods: -i for import, -e for export, -d for drop data, -h help.");
@@ -92,14 +95,14 @@ public class Mysql2MongoBisisMigrationTool {
                 FileUtils.createDir(exportDir);
 
                 //exports
-                ExportRecords.main(conn,"json",  exportDir + "/exportedRecords.json");
-                ExportCoders.main(conn, new String[]{"-l", library, "-o", exportDir});
-                ExportLendings.main(conn,  new String[]{"-o", exportDir + "/exportedLendings.json"});
+//                ExportRecords.main(conn,"json",  exportDir + "/exportedRecords.json");
+//                ExportCoders.main(conn, new String[]{"-l", library, "-o", exportDir});
+//                ExportLendings.main(conn,  new String[]{"-o", exportDir + "/exportedLendings.json"});
                 ExportUsers.main(conn, new String[]{"-o", exportDir + "/exportedMembers.json", "-l", library});
-                ExportItemAvailability.main(conn, new String[]{"-o", exportDir + "/exportedItemAvailabilities.json"});
-                ExportClientConfig.export(new String[]{"-c", pathToInnis + "/client-config.ini", "-o", exportDir + "/config.json", "-r", pathToInnis + "/reports.ini", "-l", library});
-                ExportLibrarians.export(library, conn);
-                ExportRegistries.export(conn);
+//                ExportItemAvailability.main(conn, new String[]{"-o", exportDir + "/exportedItemAvailabilities.json"});
+//                ExportClientConfig.export(new String[]{"-c", pathToInnis + "/client-config.ini", "-o", exportDir + "/config.json", "-r", pathToInnis + "/reports.ini", "-l", library});
+//                ExportLibrarians.export(library, conn);
+//                ExportRegistries.export(conn);
 
                 conn.close();
                 if(cmd.hasOption("z")) { //zip if selected
@@ -189,6 +192,8 @@ public class Mysql2MongoBisisMigrationTool {
         options.addOption("i", "import", false, "If import is selected");
         options.addOption("e", "export", false, "If export is selected");
         options.addOption("z", "archive", false, "Archive after export.");
+
+        options.addOption("bl", "branch", false, "Branch library. (bgb only)");
 
     }
 
