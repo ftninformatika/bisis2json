@@ -55,12 +55,24 @@ public class MemberStorage {
         membershipTypePS.setInt(1, rset.getInt("mmbr_type"));
         if(!rset.wasNull()) {
             ResultSet rMmbrt = membershipTypePS.executeQuery();
-            MembershipType mmbrt = new MembershipType();
-            if (rMmbrt.next()) {
-                mmbrt.setDescription(rMmbrt.getString("name"));
-                mmbrt.setPeriod(DaoUtils.getInteger(rMmbrt,"period"));
-                mmbrt.setLibrary(library);
-                member.setMembershipType(mmbrt);
+
+            // bgb slucaj, kada postoji mapiranje sifarnika
+            if (library.equals("bgb")) {
+                if(rMmbrt.next()) {
+                    String name = rMmbrt.getString("name");
+                    MembershipType mmbType = MemberCodersPairingMap.getMmbrTypeByName(name);
+                    member.setMembershipType(mmbType);
+                }
+            }
+            else {
+
+                MembershipType mmbrt = new MembershipType();
+                if (rMmbrt.next()) {
+                    mmbrt.setDescription(rMmbrt.getString("name"));
+                    mmbrt.setPeriod(DaoUtils.getInteger(rMmbrt, "period"));
+                    mmbrt.setLibrary(library);
+                    member.setMembershipType(mmbrt);
+                }
             }
             rMmbrt.close();
         }
