@@ -27,8 +27,8 @@ public class MemberPairing2 {
 
         try {
 
-            if(args.length != 2) {
-                System.out.println("Enter mysqldb name and location id as arguments!");
+            if(args.length != 4) {
+                System.out.println("Enter mysqldb name{1} location id{2} mongodb name{3} mongodb port{4} as arguments!");
                 System.exit(0);
             }
             String locationId = "9" + args[1];
@@ -36,7 +36,8 @@ public class MemberPairing2 {
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + args[0] + "?useSSL=false&serverTimezone=CET"
                     , "bisis", "bisis");
 
-            DB db = new MongoClient().getDB("bisis");
+            MongoClient mongoClient = new MongoClient(args[2], Integer.parseInt(args[3]));
+            DB db = mongoClient.getDB("bisis");
             Jongo jongo = new Jongo(db);
             MongoCollection centralMembersCollection = jongo.getCollection("bgb_members");
             MongoCollection lendingsCollection = jongo.getCollection("bgb_lendings");
@@ -83,15 +84,15 @@ public class MemberPairing2 {
             e.printStackTrace();
         }
 
-        }
+    }
 
-     private static List<JoLending> transformLendingsUserId(List<Lending> lendings, String newUserId ) {
+    private static List<JoLending> transformLendingsUserId(List<Lending> lendings, String newUserId ) {
         List<JoLending> retVal = lendings.stream().map(l -> new JoLending(l)).collect(Collectors.toList());
         retVal.forEach(l -> l.setUserId(newUserId));
         return retVal;
-     }
+    }
 
-     private static String computeUserId(String prefix) {
+    private static String computeUserId(String prefix) {
         String retVal = prefix;
         int nums = String.valueOf(USER_ID_CNT).length();
         int zeros = 8 - nums;
@@ -99,7 +100,7 @@ public class MemberPairing2 {
             retVal += "0";
         retVal += String.valueOf(USER_ID_CNT);
         return retVal;
-     }
+    }
 
 
     public static List<Lending> getLendings(Connection conn, String sysId) throws SQLException {

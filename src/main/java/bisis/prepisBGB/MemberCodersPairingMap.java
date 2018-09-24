@@ -133,6 +133,7 @@ public class MemberCodersPairingMap {
         mmbrshipTypesMapping.put("GIMNAZ. \"SV. SAVA\"", "UG. GIMNAZ. \"SV. SAVA\"");
         mmbrshipTypesMapping.put("MUZEJ GRADA", "UG. MUZEJ GRADA");
         mmbrshipTypesMapping.put("ČLAN.UDR.BIBLIOTEKA", "ČLAN UDR. BIBLIOTEKA");
+        mmbrshipTypesMapping.put("POPUSTI.RS", "ONLINE POPUSTI");
      }
 
     public static UserCategory getUserCategMappedByDesc(String description) {
