@@ -316,6 +316,7 @@ public class JoRecord implements Serializable {
         }else
             sfRN = f001.getSubfield('e');
         sfRN.setContent(String.valueOf(rn));
+        this.rn = rn;
     }
 
     // get master record number
