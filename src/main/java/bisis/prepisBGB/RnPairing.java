@@ -127,8 +127,6 @@ public class RnPairing {
 
             counterRn.setCounterValue(rnCnt);
             counterRecordid.setCounterValue(recIdCnt);
-//            codersCounters.save(counterRn);
-//            codersCounters.save(counterRecordid);
             codersCounters.update("{counterName: 'RN', library: 'bgb'}").with(counterRn);
             codersCounters.update("{counterName: 'recordid', library: 'bgb'}").with(counterRecordid);
             System.out.println("\nBROJACI PODESENI ZA RN I RECORD_ID NA: " + rnCnt + " i " + recIdCnt);
