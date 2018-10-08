@@ -1,8 +1,12 @@
 package bisis.export;
 
+import bisis.coders.Coder;
+import bisis.jongo_records.JoPrimerak;
 import bisis.jongo_records.JoRecord;
+import bisis.records.ItemAvailability;
 import bisis.textsrv.DBStorage;
 import bisis.utils.CSVUtils;
+import bisis.utils.RecordUtils;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import org.jongo.Jongo;
@@ -15,16 +19,19 @@ import java.util.*;
 public class MigrateBGB {
 
     public static void main(String[] args) {
-        if(args.length != 1) {
-            System.out.println("Unesite naziv mysql baze kao argument!");
+        if(args.length != 3) {
+            System.out.println("Please enter mysqldb name{1} and branch prefix{2} and generate(g)/insert(i) switch{3}");
             return;
         }
 
         String dbName = args[0];
+        String branchPrefix = args[1];
+        String _switch = args[2];
 
         try {
 
-            PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream("without_rn.csv"), "UTF8")));
+            PrintWriter out = new PrintWriter(new File("without_rn.csv"));
+            PrintWriter outValidRecordsMap = new PrintWriter(new File("valid_records_map.csv"));
             StringBuffer withoutRn = new StringBuffer();
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + dbName + "?useSSL=false&serverTimezone=CET"
                     , "bisis", "bisis");
@@ -39,11 +46,14 @@ public class MigrateBGB {
             DB db = new MongoClient().getDB("bisis");
             Jongo jongo = new Jongo(db);
             MongoCollection centralRecs = jongo.getCollection("bgb_records");
+            MongoCollection centralItemAvailabilities = jongo.getCollection("bgb_itemAvailability");
+            MongoCollection locationCollection = jongo.getCollection("coders.location");
+            String locationDescription = locationCollection.findOne("{'library':'bgb', 'coder_id':#}", branchPrefix).as(Coder.class).getDescription();
 
             Scanner scanner = new Scanner(new File(MigrateBGB.class.getResource("/bisis/records-map/records_map.csv").getPath()));
             DBStorage storage = new DBStorage();
 
-            //mapa lokalniRn - centralaRn
+            // mapa lokalniRn - centralaRn
             Map<Integer, Integer> localCentralMap = new HashMap<>();
             while (scanner.hasNext()) {
                 try {
@@ -90,15 +100,23 @@ public class MigrateBGB {
                     }
                     else {
 
-                        if(!localRec.isInvetarPrazan()) {
-                            centralRec.addInventar(localRec);
-
-                            centralRecs.save(centralRec);
+                        // upis u validnu mapu
+                        if(!_switch.equals("i")) {
+                            outValidRecordsMap.write("date_generated," + localRec.getRN() + "," + centralRN + "\n");
                         }
-                        else {
-//                            withoutRn.append(localRec.getRN() + "," + localRec.getRecordID());
-//                            withoutRn.append("\n");
-                            System.out.println("Prazan inventar za zapis! recId: " + localRec.getRecordID());
+
+                        // switch za prepis
+                        if(!localRec.isInvetarPrazan() && _switch.equals("i")) {
+                            for (JoPrimerak p: localRec.getPrimerci()) {
+                                if (!centralRec.containsPrimerak(p)) {
+                                    centralRec.getPrimerci().add(p);
+                                    centralRecs.save(centralRec);
+                                    ItemAvailability ia = RecordUtils.makeItemAvailabilyForRec(localRec, p.getInvBroj(), locationDescription);
+                                    centralItemAvailabilities.save(ia);
+                                }
+                                else
+                                    System.out.println("Nasao dupli inv za: " + p.getInvBroj());
+                            }
                         }
                         if (cnt % 1000 == 0)
                             System.out.println("Processed: " + cnt + " records");
@@ -109,25 +127,18 @@ public class MigrateBGB {
                     withoutRn.append("\n");
                     System.out.println("Lokalni zapis je null!");
                 }
-
             }
             System.out.println(cnt);
             out.write(withoutRn.toString());
             out.close();
-
+            outValidRecordsMap.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
         }
-
-
     }
-
-
 
 
 }

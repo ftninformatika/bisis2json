@@ -1,11 +1,14 @@
 package bisis.jongo_circ;
 
-import bisis.circ.*;
+import bisis.circ.MembershipType;
+import bisis.circ.Organization;
+import bisis.circ.UserCategory;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.jongo.marshall.jackson.oid.MongoObjectId;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -54,7 +57,7 @@ public class JoMember {
     private String blockReason;
     private String pin;
     private String oldNumbers;
-
+    private Date birthday;
 
     private List<JoSigning> signings = new ArrayList<>();
     //private List<Lending> lendings = new ArrayList<>();

@@ -222,6 +222,16 @@ public class JoRecord implements Serializable {
         }
     }
 
+    public boolean containsPrimerak(JoPrimerak p) {
+        boolean retVal = false;
+        for(JoPrimerak pr: this.getPrimerci()){
+            if (pr.getInvBroj().equals(p.getInvBroj())) {
+                retVal = true;
+                break;
+            }
+        }
+        return retVal;
+    }
 
     public  void sortFields(){
         for (int i = 1; i < getFields().size(); i++) {
@@ -285,6 +295,7 @@ public class JoRecord implements Serializable {
         }
     }
 
+    @JsonIgnore
     public boolean isPictureBookBGB() {
         boolean retVal = true;
 
@@ -386,6 +397,7 @@ public class JoRecord implements Serializable {
         }
     }
 
+    @JsonIgnore
     public boolean isInvetarPrazan() {
         if ((this.getPrimerci() == null || this.getPrimerci().size() ==0) && (this.getGodine() == null || this.getGodine().size() == 0))
             return true;

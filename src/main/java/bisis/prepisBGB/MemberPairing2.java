@@ -62,7 +62,8 @@ public class MemberPairing2 {
                 if (centralMember == null) {
                     centralMembersCollection.save(localMember);
                     List<JoLending> joLendingList = lendingList.stream().map(l -> new JoLending(l)).collect(Collectors.toList());
-                    lendingsCollection.save(joLendingList);
+                    for(JoLending l: joLendingList)
+                        lendingsCollection.save(l);
                 }
                 // ako ga ima dodeli mu userId i upisi stari broj pa ga prepisi
                 else {
@@ -71,7 +72,8 @@ public class MemberPairing2 {
                     localMember.setOldNumbers(localMember.getUserId());
                     localMember.setUserId(userId);
                     centralMembersCollection.save(localMember);
-                    lendingsCollection.save(joLendingList);
+                    for(JoLending l: joLendingList)
+                        lendingsCollection.save(l);
                     USER_ID_CNT++;
                 }
                 cnt++;

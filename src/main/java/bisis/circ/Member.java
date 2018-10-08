@@ -1,9 +1,12 @@
 package bisis.circ;
 
+import bisis.export.IsoInstantDateSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +54,8 @@ public class Member implements Serializable {
   private String blockReason;
   private String pin;
   private String oldNumbers;
+  @JsonSerialize(using = IsoInstantDateSerializer.class)
+  private Instant birthday;
 
   private List<Signing> signings = new ArrayList<>();
   //private List<Lending> lendings = new ArrayList<>();

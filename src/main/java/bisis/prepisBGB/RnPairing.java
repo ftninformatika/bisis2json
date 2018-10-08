@@ -1,5 +1,6 @@
 package bisis.prepisBGB;
 
+import bisis.coders.Coder;
 import bisis.coders.Counter;
 import bisis.export.MigrateBGB;
 import bisis.jongo_records.JoRecord;
@@ -24,12 +25,13 @@ import java.util.Scanner;
 public class RnPairing {
 
     public static void main(String[] args) {
-        if(args.length != 1) {
-            System.out.println("Unesite naziv mysql baze kao argument!");
+        if(args.length != 2) {
+            System.out.println("Please enter mysqldb name{1} and branch prefix{2}");
             return;
         }
 
         String dbName = args[0];
+        String branchPrefix = args[1];
 
         try {
             StringBuffer withoutRn = new StringBuffer();
@@ -42,6 +44,9 @@ public class RnPairing {
             DB db = new MongoClient().getDB("bisis");
             Jongo jongo = new Jongo(db);
             MongoCollection centralRecs = jongo.getCollection("bgb_records");
+            MongoCollection centralItemAvailabilities = jongo.getCollection("bgb_itemAvailability");
+            MongoCollection locationCollection = jongo.getCollection("coders.location");
+            String locationDescription = locationCollection.findOne("{'library':'bgb', 'coder_id':#}", branchPrefix).as(Coder.class).getDescription();
 
             MongoCollection codersCounters = jongo.getCollection("coders.counters");
             Counter counterRn = codersCounters.findOne("{'library':'bgb', 'counterName':'RN'}").as(Counter.class);
@@ -63,17 +68,22 @@ public class RnPairing {
 
             PrintWriter pwFound = new PrintWriter(new File(dbName +"_upareni.csv"));
             PrintWriter pwNotFound = new PrintWriter(new File(dbName+"_neupareni.csv"));
+            PrintWriter pwPictureBooks = new PrintWriter(new File(dbName+"_pictureBooks.csv"));
             StringBuffer sbFound = new StringBuffer();
             StringBuffer sbNotFound = new StringBuffer();
+            StringBuffer sbPictureBooks = new StringBuffer();
 
             for (Integer recId: withoutRNs){
 
                 JoRecord r = new JoRecord(storage.get(conn, recId));
                 String query = getPairingQuery(r);
                 JoRecord fromCentral = null;
+                System.out.print("\nPronasao: " + found + "\nPronasao slikovnica: " + picturebooks + "\nNije pronasao: " + nFound + "\nOd: " + total + " \n");
+
                 try {
                     fromCentral = getRecFromCursor(centralRecs.find(query).as(JoRecord.class));
                 } catch (Exception e) {
+                    e.printStackTrace();
                     continue;
                 }
 
@@ -81,55 +91,51 @@ public class RnPairing {
                 if (fromCentral == null) {
                     try {
                         String isbnQuery = getIsbnOnlyQuery(r);
-                        if (!isbnQuery.equals(""))
+                        if (!isbnQuery.equals("")) {
                             fromCentral = getRecFromCursor(centralRecs.find(isbnQuery).as(JoRecord.class));
+                        }
                     } catch (Exception e) {
+                        e.printStackTrace();
                         continue;
                     }
                 }
 
-                System.out.print("\nPronasao: " + found + "\nPrepisao slikovnica: " + picturebooks + "\nNije pronasao: " + nFound + "\nOd: " + total + " \n");
 
                 if (fromCentral != null) {
                     sbFound.append("datum," + r.getRN() + "," + fromCentral.getRN());
                     sbFound.append("\n");
                     found++;
 
-                    fromCentral.addInventar(r);
-
-                    centralRecs.save(fromCentral);
                 }
                 else {
 
-                    // ako je slikovnica onda prepisujemo ceo zapis sa sve invetarom
-                    // dodeljujemo rn i record_id sa brojaca
+                    // slikovnice posebno, jer se prepisuju cele sa sve zapisom
                     if (r.isPictureBookBGB()) {
-                        r.setRN(rnCnt);
-                        r.setRecordID(recIdCnt);
-                        rnCnt ++;
-                        recIdCnt ++;
-                        picturebooks ++;
-                        centralRecs.save(r);
+                        picturebooks++;
+                        sbPictureBooks.append(r.getRN() + "," + r.getRecordID());
+                        sbPictureBooks.append("\n");
                         continue;
                     }
 
 
                     nFound++;
-                    sbNotFound.append(r.getRN()/* + "," +r.getRecordID()*/);
+                    sbNotFound.append(r.getRN() + "," +r.getRecordID());
                     sbNotFound.append("\n");
                 }
                }
 
             pwFound.write(sbFound.toString());
             pwNotFound.write(sbNotFound.toString());
+            pwPictureBooks.write(sbPictureBooks.toString());
             pwFound.close();
             pwNotFound.close();
+            pwPictureBooks.close();
 
             counterRn.setCounterValue(rnCnt);
             counterRecordid.setCounterValue(recIdCnt);
             codersCounters.update("{counterName: 'RN', library: 'bgb'}").with(counterRn);
             codersCounters.update("{counterName: 'recordid', library: 'bgb'}").with(counterRecordid);
-            System.out.println("\nBROJACI PODESENI ZA RN I RECORD_ID NA: " + rnCnt + " i " + recIdCnt);
+           // System.out.println("\nBROJACI PODESENI ZA RN I RECORD_ID NA: " + rnCnt + " i " + recIdCnt);
 
         } catch (SQLException e) {
             e.printStackTrace();

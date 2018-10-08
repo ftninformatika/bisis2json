@@ -327,31 +327,33 @@ public class MemberStorage {
             rUc.close();
         }
         //CorporateMember
-        corporateMemberPS.setInt(1, rset.getInt("groups"));
-        if (!rset.wasNull()) {
-            ResultSet rCpm = corporateMemberPS.executeQuery();
-            if (rCpm.next()) {
-                JoCorporateMember cm = new JoCorporateMember();
-                cm.setUserId(rCpm.getString("user_id"));
-                cm.setInstName(rCpm.getString("inst_name"));
-                cm.setSignDate(rCpm.getDate( "sign_date"));
-                cm.setAddress(rCpm.getString("address"));
-                cm.setCity(rCpm.getString("city"));
-                cm.setZip(DaoUtils.getInteger(rCpm,"zip"));
-                cm.setPhone(rCpm.getString("phone"));
-                cm.setEmail(rCpm.getString("email"));
-                cm.setFax(rCpm.getString("fax"));
-                cm.setSecAddress(rCpm.getString("sec_address"));
-                cm.setSecCity(rCpm.getString("sec_city"));
-                cm.setSecZip(DaoUtils.getInteger(rCpm,"sec_zip"));
-                cm.setSecPhone(rCpm.getString("sec_phone"));
-                cm.setContFirstName(rCpm.getString("cont_fname"));
-                cm.setContLastName(rCpm.getString("cont_lname"));
-                cm.setContEmail(rCpm.getString("cont_email"));
-                member.setCorporateMember(cm);
+        //if (!library.equals("bgb")) {
+            corporateMemberPS.setInt(1, rset.getInt("groups"));
+            if (!rset.wasNull()) {
+                ResultSet rCpm = corporateMemberPS.executeQuery();
+                if (rCpm.next()) {
+                    JoCorporateMember cm = new JoCorporateMember();
+                    cm.setUserId(rCpm.getString("user_id"));
+                    cm.setInstName(rCpm.getString("inst_name"));
+                    cm.setSignDate(rCpm.getDate("sign_date"));
+                    cm.setAddress(rCpm.getString("address"));
+                    cm.setCity(rCpm.getString("city"));
+                    cm.setZip(DaoUtils.getInteger(rCpm, "zip"));
+                    cm.setPhone(rCpm.getString("phone"));
+                    cm.setEmail(rCpm.getString("email"));
+                    cm.setFax(rCpm.getString("fax"));
+                    cm.setSecAddress(rCpm.getString("sec_address"));
+                    cm.setSecCity(rCpm.getString("sec_city"));
+                    cm.setSecZip(DaoUtils.getInteger(rCpm, "sec_zip"));
+                    cm.setSecPhone(rCpm.getString("sec_phone"));
+                    cm.setContFirstName(rCpm.getString("cont_fname"));
+                    cm.setContLastName(rCpm.getString("cont_lname"));
+                    cm.setContEmail(rCpm.getString("cont_email"));
+                    member.setCorporateMember(cm);
+                }
+                rCpm.close();
             }
-            rCpm.close();
-        }
+       // }
 
         languagePS.setInt(1, rset.getInt("languages"));
         if (!rset.wasNull()) {
