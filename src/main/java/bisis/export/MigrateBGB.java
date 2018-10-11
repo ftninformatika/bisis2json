@@ -111,7 +111,7 @@ public class MigrateBGB {
                                 if (!centralRec.containsPrimerak(p)) {
                                     centralRec.getPrimerci().add(p);
                                     centralRecs.save(centralRec);
-                                    ItemAvailability ia = RecordUtils.makeItemAvailabilyForRec(localRec, p.getInvBroj(), locationDescription);
+                                    ItemAvailability ia = RecordUtils.makeItemAvailabilyForRec(centralRec, p.getInvBroj(), locationDescription);
                                     centralItemAvailabilities.save(ia);
                                 }
                                 else

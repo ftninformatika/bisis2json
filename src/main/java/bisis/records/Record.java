@@ -1,6 +1,7 @@
 package bisis.records;
 
 import bisis.export.IsoDateSerializer;
+import bisis.jongo_records.JoRecord;
 import bisis.records.serializers.PrimerakSerializer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 @Getter
@@ -55,6 +57,21 @@ public class Record implements Serializable {
     this.primerci = primerci;
     this.godine = godine;
   }
+
+  public Record(JoRecord rec){
+    this.recordID = rec.getRecordID();
+    this.pubType = rec.getPubType();
+    this.fields = rec.getFields();
+    this.primerci = rec.getPrimerci().stream().map(p -> new Primerak(p)).collect(Collectors.toList());
+    this.godine = rec.getGodine().stream().map(g -> new Godina(g)).collect(Collectors.toList());
+    this.creator = rec.getCreator();
+    this.modifier = rec.getModifier();
+    this.creationDate = rec.getCreationDate();
+    this.lastModifiedDate = rec.getLastModifiedDate();
+    this.rn = rec.getRN();
+    this.isbn = rec.getIsbn();
+  }
+
 
   /**
    * Returns the number of fields in this record.

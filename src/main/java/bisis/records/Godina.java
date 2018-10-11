@@ -1,6 +1,7 @@
 package bisis.records;
 
 import bisis.export.IsoDateSerializer;
+import bisis.jongo_records.JoGodina;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
@@ -82,6 +83,33 @@ public class Godina implements Serializable{
     this.broj = broj;
     this.sveske.addAll(sveske);
   }*/
+
+  public Godina(JoGodina g) {
+    this();
+    this.godinaID = g.getGodinaID();
+    this.invBroj = g.getInvBroj();
+    this.datumRacuna = g.getDatumRacuna();
+    this.brojRacuna = g.getBrojRacuna();
+    this.dobavljac = g.getDobavljac();
+    this.cena = g.getCena();
+    this.finansijer = g.getFinansijer();
+    this.datumInventarisanja = g.getDatumInventarisanja();
+    this.sigFormat = g.getSigFormat();
+    this.sigPodlokacija = g.getSigPodlokacija();
+    this.sigIntOznaka = g.getSigIntOznaka();
+    this.sigDublet = g.getSigDublet();
+    this.sigNumerusCurens = g.getSigNumerusCurens();
+    this.sigNumeracija = g.getSigNumeracija();
+    this.sigUDK = g.getSigUDK();
+    this.povez = g.getPovez();
+    this.nacinNabavke = g.getNacinNabavke();
+    this.odeljenje = g.getOdeljenje();
+    this.napomene = g.getNapomene();
+    this.godiste = g.getGodiste();
+    this.godina = g.getGodina();
+    this.broj = g.getBroj();
+    this.sveske.addAll(sveske);
+  }
 
   public void add(Sveska s) {
     sveske.add(s);

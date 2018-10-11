@@ -39,11 +39,12 @@ public class RecordUtils {
     }
 
     public static ItemAvailability makeItemAvailabilyForRec(JoRecord record, String invNum,  String libDepartmentDesc) {
-        ItemAvailability retVal = new ItemAvailability();
+        ItemAvailability retVal = null;
 
         if (record.getPrimerci() != null && record.getPrimerci().size() > 0) {
+            retVal = new ItemAvailability();
             for (JoPrimerak p : record.getPrimerci()) {
-                if (p.getInvBroj().equals(invNum)) {
+                if (p.getInvBroj() != null && p.getInvBroj().equals(invNum)) {
                     ItemAvailability ia = new ItemAvailability();
                     ia.setLibDepartment(libDepartmentDesc);
                     ia.setBorrowed(false);
@@ -56,8 +57,9 @@ public class RecordUtils {
         }
 
         if (record.getGodine() != null && record.getGodine().size() > 0) {
+            retVal = new ItemAvailability();
             for (JoGodina g : record.getGodine()) {
-                if (g.getInvBroj().equals(invNum)) {
+                if (g.getInvBroj() != null && g.getInvBroj().equals(invNum)) {
                     ItemAvailability ia = new ItemAvailability();
                     ia.setLibDepartment(libDepartmentDesc);
                     ia.setBorrowed(false);

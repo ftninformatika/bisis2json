@@ -1,6 +1,7 @@
 package bisis.records;
 
 import bisis.export.IsoDateSerializer;
+import bisis.jongo_records.JoPrimerak;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
@@ -81,7 +82,35 @@ public class Primerak implements Serializable {
     this.inventator = inventator;
     version = 0;
   }
-  
+
+  public Primerak(JoPrimerak primerak) {
+    this.primerakID = primerak.getPrimerakID();
+    this.invBroj = primerak.getInvBroj();
+    this.datumRacuna = primerak.getDatumRacuna();
+    this.brojRacuna = primerak.getBrojRacuna();
+    this.dobavljac = primerak.getDobavljac();
+    this.cena = primerak.getCena();
+    this.finansijer = primerak.getFinansijer();
+    this.usmeravanje = primerak.getUsmeravanje();
+    this.datumInventarisanja = primerak.getDatumInventarisanja();
+    this.sigFormat = primerak.getSigFormat();
+    this.sigPodlokacija = primerak.getSigPodlokacija();
+    this.sigIntOznaka = primerak.getSigIntOznaka();
+    this.sigDublet = primerak.getSigDublet();
+    this.sigNumerusCurens = primerak.getSigNumerusCurens();
+    this.sigUDK = primerak.getSigUDK();
+    this.povez = primerak.getPovez();
+    this.nacinNabavke = primerak.getNacinNabavke();
+    this.odeljenje = primerak.getOdeljenje();
+    this.status = primerak.getStatus();
+    this.datumStatusa = primerak.getDatumStatusa();
+    this.dostupnost = primerak.getDostupnost();
+    this.napomene = primerak.getNapomene();
+    this.stanje = primerak.getStanje();
+    this.inventator = primerak.getInventator();
+    version = 0;
+  }
+
   public boolean isSigDefined() {
     return 
       sigFormat != null ||
