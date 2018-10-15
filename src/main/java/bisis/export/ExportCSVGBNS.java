@@ -7,6 +7,7 @@ import bisis.records.Primerak;
 import bisis.records.Record;
 import bisis.records.Sveska;
 import bisis.utils.LatCyrUtils;
+import bisis.utils.ProgressBar;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import org.jongo.Jongo;
@@ -31,16 +32,28 @@ public class ExportCSVGBNS {
             PrintWriter exportFile = new PrintWriter(new File("csvGBNS.csv"));
 
             MongoCursor<JoRecord> allRecs = recCollection.find().as(JoRecord.class);
-
-            //Header tabele
-            exportFile.write("Naslov,Autori,Branch,Izdavač,Jezik,Udk\n");
-
+            // Header tabele
+            exportFile.write("\"Naslov\",\"Autori\",\"Branch\",\"Izdavač\",\"God.Izd.\",\"Jezik\",\"Udk\"\n");
+            int total = allRecs.count();
+            int cnt = 0;
+            ProgressBar progressBar = new ProgressBar();
+            System.out.println("\nGenerating CSV...\n");
             while (allRecs.hasNext()) {
                 JoRecord rec = allRecs.next();
-                exportFile.write(getNaslov(rec).replace(",", "") + "," + getAutori(rec).replace(",", "") + ","
-                        + getBranches(rec).replace(",", "") + "," + getIzdavac(rec).replace(",", "") +
-                        "," + getJezik(rec).replace(",", "") + "," + getUdk(rec).replace(",","")+"\n");
+                exportFile.write(
+                        "\"" + getNaslov(rec).replace("\"", "") + "\"" + ","
+                         + "\"" + getAutori(rec).replace("\"", "") + "\"" + ","
+                         + "\"" + getBranches(rec).replace("\"", "") + "\"" + ","
+                         + "\"" + getIzdavac(rec).replace("\"", "") + "\"" + ","
+                         + "\"" + getGodina(rec).replace("\"", "") + "\"" + ","
+                         + "\"" + getJezik(rec).replace("\"", "") + "\"" + ","
+                         + "\"" + getUdk(rec).replace("\"", "") + "\"" +"\n");
+
+            cnt++;
+            if (cnt % (total / 100) == 100)
+                progressBar.update(cnt, total);
             }
+            progressBar.update(total,total);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -50,9 +63,9 @@ public class ExportCSVGBNS {
     public static String getNaslov(JoRecord rec) {
         String retVal = "";
         if (rec.getSubfieldContent("200a") != null)
-            retVal += LatCyrUtils.toLatin(rec.getSubfieldContent("200a")).replace(',', ' ');
+            retVal += LatCyrUtils.toLatin(rec.getSubfieldContent("200a"));
         if (rec.getSubfieldContent("200i") != null)
-            retVal += "; " + LatCyrUtils.toLatin(rec.getSubfieldContent("200a")).replace(',', ' ');
+            retVal += "; " + LatCyrUtils.toLatin(rec.getSubfieldContent("200a"));
 
         return retVal;
     }
@@ -64,7 +77,7 @@ public class ExportCSVGBNS {
             retVal = "";
             for (String d: prefixMap.get("AU")) {
                 if (!retVal.toLowerCase().contains(d.toLowerCase()) && d.trim() != "" && !conatinsAuthor(retVal, d))
-                    retVal += LatCyrUtils.toLatin(d).replace(",","") + "; ";
+                    retVal += LatCyrUtils.toLatin(d) + "; ";
             }
             retVal = retVal.substring(0, retVal.length() - 2);
             if (retVal.startsWith(" ; "))
@@ -122,7 +135,7 @@ public class ExportCSVGBNS {
     public static String getIzdavac(JoRecord rec) {
         String retVal = "Nepoznat izdavač";
         if(rec.getSubfieldContent("210c") != null)
-            retVal = LatCyrUtils.toLatin(rec.getSubfieldContent("210c")).replace(',',';');
+            retVal = LatCyrUtils.toLatin(rec.getSubfieldContent("210c"));
 
         return retVal;
     }
@@ -140,7 +153,7 @@ public class ExportCSVGBNS {
         if (prefixMap.get("DC") != null && prefixMap.get("DC").size() > 0) {
             retVal = "";
             for (String d: prefixMap.get("DC")) {
-                retVal += LatCyrUtils.toLatin(d).replace(",","") + "; ";
+                retVal += LatCyrUtils.toLatin(d) + "; ";
             }
             retVal = retVal.substring(0, retVal.length() - 2);
         }
@@ -152,7 +165,7 @@ public class ExportCSVGBNS {
     public static String getGodina(JoRecord rec) {
         String retVal = "Nepoznata godina";
         if (rec.getSubfieldContent("210d") != null) {
-            retVal = rec.getSubfieldContent("210d").replace('[',' ').replace(']', ' ').replace(',', ' ');
+            retVal = rec.getSubfieldContent("210d").replace('[',' ').replace(']', ' ');
         }
         return retVal;
     }
