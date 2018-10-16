@@ -63,6 +63,7 @@ public class RecordsTransfusionMachine {
             DBStorage storage = new DBStorage();
 
             // mapa lokalniRn - centralaRn
+            // TODO - check.py funkcionalnost prvo, pa onda prepis
             Map<Integer, Integer> localCentralMap = new HashMap<>();
             while (scannerMap.hasNext()) {
                 try {
