@@ -2,6 +2,7 @@ package bisis.export;
 
 import bisis.records.Record;
 import bisis.textsrv.DBStorage;
+import bisis.utils.ProgressBar;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -24,6 +25,13 @@ public class ExtractRN {
             int cnt = 0;
             ResultSet rset = stmt.executeQuery("SELECT record_id FROM Records");
             PreparedStatement psInsertRN = conn.prepareStatement("update Records set rn = ? where record_id = ?");
+
+            conn.createStatement().execute("alter table Records add column `rn` int(11)");
+            conn.createStatement().execute("create index records_rn_index on Records (rn)");
+            conn.createStatement().execute("alter table Primerci modify column primerak_id int not null auto_increment");
+
+            ProgressBar progressBar = new ProgressBar();
+            System.out.println("Inserting RN in Records:");
             while (rset.next())
                 docIDs.add(rset.getInt(1));
             DBStorage storage = new DBStorage();
@@ -35,9 +43,11 @@ public class ExtractRN {
                 psInsertRN.execute();
                 cnt++;
                 if (cnt % 100 == 0) {
-                    System.out.println("Extracted: " + cnt);
+                    progressBar.update(cnt, docIDs.size());
                 }
             }
+
+            progressBar.update(docIDs.size(), docIDs.size());
             conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
