@@ -35,6 +35,7 @@ public class MemberPairing {
 
 
         try {
+
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3307/" + "bisis" + "?useSSL=false&serverTimezone=CET"
                     , "bisis", "bisis");
             DB db = new MongoClient().getDB("bisis");
