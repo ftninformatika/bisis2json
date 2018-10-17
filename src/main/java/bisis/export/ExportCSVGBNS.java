@@ -64,8 +64,15 @@ public class ExportCSVGBNS {
         String retVal = "";
         if (rec.getSubfieldContent("200a") != null)
             retVal += LatCyrUtils.toLatin(rec.getSubfieldContent("200a"));
+        if (rec.getSubfieldContent("200e") != null)
+            retVal += "; " + LatCyrUtils.toLatin(rec.getSubfieldContent("200e"));
+        if (rec.getSubfieldContent("200h") != null)
+            retVal += "; " + LatCyrUtils.toLatin(rec.getSubfieldContent("200h"));
         if (rec.getSubfieldContent("200i") != null)
-            retVal += "; " + LatCyrUtils.toLatin(rec.getSubfieldContent("200a"));
+            retVal += "; " + LatCyrUtils.toLatin(rec.getSubfieldContent("200i"));
+
+        if (retVal.trim().equals(""))
+            retVal = "Nepoznat naslov";
 
         return retVal;
     }
@@ -84,6 +91,11 @@ public class ExportCSVGBNS {
                 retVal = retVal.substring(3, retVal.length());
             retVal.replace("]", "").replace("[", "");
         }
+        if (retVal.equals("Nepoznati autori") && !getIzdavac(rec).equals("Nepoznat izdavač"))
+            retVal = getIzdavac(rec);
+
+        if (retVal.trim().equals(""))
+            retVal = "Nepoznati autori";
 
         return retVal;
     }
