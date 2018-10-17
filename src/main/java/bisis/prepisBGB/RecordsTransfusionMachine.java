@@ -62,18 +62,29 @@ public class RecordsTransfusionMachine {
             Scanner scannerU = new Scanner(new File(mysqlDbName + RecordsMapGenerator.UNPAIRED_RECORDS_FILE_NAME_CHUNK));
             DBStorage storage = new DBStorage();
 
-            // mapa lokalniRn - centralaRn
-            // TODO - check.py funkcionalnost prvo, pa onda prepis
+            // localRn - centralRn map
+            List<Integer> duplicateLocalRns = new ArrayList<>();
             Map<Integer, Integer> localCentralMap = new HashMap<>();
             while (scannerMap.hasNext()) {
                 try {
                     List<String> line = CSVUtils.parseLine(scannerMap.nextLine());
+                    if (localCentralMap.get(Integer.valueOf(line.get(1))) != null)
+                        duplicateLocalRns.add(Integer.valueOf(line.get(1)));
                     localCentralMap.put(Integer.valueOf(line.get(1)), Integer.valueOf(line.get(2)));
                 } catch (Exception e) {
                     continue;
                 }
             }
             scannerMap.close();
+
+            // check if localRn's are unique
+            if (duplicateLocalRns.size() > 0) {
+                System.out.println("Records map file is not valid, it contains duplicates in localRn's.");
+                System.out.println("Folowing RN's are duplicated:");
+                for (int rn: duplicateLocalRns)
+                    System.out.println(String.valueOf(rn));
+                System.exit(0);
+            }
 
             List<Integer> picturebooksList = new ArrayList<>();
             while (scannerPb.hasNext()) {
