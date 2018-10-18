@@ -5,6 +5,7 @@ import bisis.export.ExportCoders;
 import bisis.jongo_circ.*;
 import bisis.utils.DaoUtils;
 import bisis.utils.DateUtils;
+import org.jongo.MongoCollection;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -15,13 +16,9 @@ import java.util.Map;
 public class MemberStorage {
 
 
-    public MemberStorage(String library, Connection conn) {
-        this.library = library;
-        this.conn = conn;
-    }
-
     private String library;
     private Connection conn;
+    private MongoCollection cmMongoCollection;
 
     public static final String SELECT_SIGNINGS = "SELECT id, sign_date, location, until_date, cost, receipt_id, librarian FROM signing WHERE sys_id=?";
     public static final String SELECT_ORGANIZATION = "SELECT id, address, name, city, zip from organization where id=?";
@@ -33,6 +30,16 @@ public class MemberStorage {
     public static final String SELECT_LANGUAGE = "SELECT * from languages where id=?";
     public static final String SELECT_EDU_LVL = "SELECT * from edu_lvl where id=?";
 
+    public MemberStorage(String library, Connection conn) {
+        this.library = library;
+        this.conn = conn;
+    }
+
+    public MemberStorage(String library, Connection conn, MongoCollection cmMongoCollection) {
+        this.library = library;
+        this.conn = conn;
+        this.cmMongoCollection = cmMongoCollection;
+    }
     public Member get(int sys_id) throws SQLException {
         Statement stmt = conn.createStatement();
         //PreparedStatement lendingPS = conn.prepareStatement("SELECT id, ctlg_no, lend_date, location, return_date, resume_date, deadline, librarian_lend, librarian_return, librarian_resume FROM lending WHERE sys_id=?");
@@ -107,7 +114,7 @@ public class MemberStorage {
             }
             rUc.close();
         }
-        //CorporateMember
+        // CorporateMember
         corporateMemberPS.setInt(1, rset.getInt("groups"));
         if (!rset.wasNull()) {
             ResultSet rCpm = corporateMemberPS.executeQuery();
@@ -326,8 +333,21 @@ public class MemberStorage {
             }
             rUc.close();
         }
-        //CorporateMember
-        //if (!library.equals("bgb")) {
+        // CorporateMember ako postoji u mongu, mapiraj, ako ne - null
+        if (!library.equals("bgb")) {
+            corporateMemberPS.setInt(1, rset.getInt("groups"));
+            if (!rset.wasNull()) {
+                ResultSet rCpm = corporateMemberPS.executeQuery();
+                if (rCpm.next()) {
+                    String instName = rCpm.getString("inst_name");
+                    JoCorporateMember cm = cmMongoCollection.findOne("{'library':#, 'instName':#}", library, instName).as(JoCorporateMember.class);
+                    if (cm != null)
+                        member.setCorporateMember(cm);
+                }
+                rCpm.close();
+            }
+        }
+        else {
             corporateMemberPS.setInt(1, rset.getInt("groups"));
             if (!rset.wasNull()) {
                 ResultSet rCpm = corporateMemberPS.executeQuery();
@@ -353,7 +373,7 @@ public class MemberStorage {
                 }
                 rCpm.close();
             }
-       // }
+        }
 
         languagePS.setInt(1, rset.getInt("languages"));
         if (!rset.wasNull()) {
@@ -460,7 +480,6 @@ public class MemberStorage {
 
         rset.close();
         stmt.close();
-
         signingPS.close();
         organizationPS.close();
         membershipTypePS.close();
@@ -471,5 +490,75 @@ public class MemberStorage {
         languagePS.close();
         eduLvlPS.close();
         return member;
+    }
+
+    public static List<Lending> getLendings(Connection conn, String sysId) throws SQLException {
+
+        List<Lending> retVal = new ArrayList<>();
+
+        Statement stmt = conn.createStatement();
+        ResultSet rset = stmt.executeQuery("SELECT * FROM lending WHERE sys_id = " + sysId);
+        PreparedStatement userPS = conn.prepareStatement("SELECT user_id FROM users where sys_id = ?");
+        PreparedStatement locPS = conn.prepareStatement("SELECT name FROM location where id = ?");
+        PreparedStatement warningsPS = conn.prepareStatement("SELECT * FROM warnings WHERE lending_id = ?");
+
+        ResultSet warningTypesRs = conn.createStatement().executeQuery("SELECT * from warning_types");
+        Map<Integer, String> warningTypesMap = new HashMap<>();
+        while(warningTypesRs.next()){
+            warningTypesMap.put(DaoUtils.getInteger(warningTypesRs,"id"), warningTypesRs.getString("name"));
+        }
+
+
+        int lendingCount = 0;
+
+        while(rset.next()) {
+
+            Lending lending = new Lending();
+
+            //warnings
+            Integer leindgId = DaoUtils.getInteger(rset, "id");
+            warningsPS.setInt(1, leindgId);
+            ResultSet warningsResulsts = warningsPS.executeQuery();
+            List<Warning> warningList = new ArrayList<>();
+            while (warningsResulsts.next()){
+                Warning w = new Warning();
+                w.setWarningDate(DateUtils.getInstant(warningsResulsts, "wdate"));
+                w.setWarningType(warningTypesMap.get(warningsResulsts.getInt("wtype")));
+                w.setWarnNo(warningsResulsts.getString("warn_no"));
+                w.setDeadline(DateUtils.getInstant(warningsResulsts, "deadline"));
+                w.setNote(warningsResulsts.getString("note"));
+                warningList.add(w);
+            }
+            lending.setWarnings(warningList);
+
+
+            userPS.setInt(1, rset.getInt("sys_id"));
+            ResultSet rUser = userPS.executeQuery();
+            if(rUser.next())
+                lending.setUserId(rUser.getString("user_id"));
+
+            lending.setCtlgNo(rset.getString("ctlg_no"));
+            lending.setLendDate(DateUtils.getInstant(rset, "lend_date"));
+            lending.setResumeDate(DateUtils.getInstant(rset, "resume_date"));
+            lending.setReturnDate(DateUtils.getInstant(rset, "return_date"));
+            lending.setDeadline(DateUtils.getInstant(rset, "deadline"));
+            lending.setLibrarianLend(rset.getString("librarian_lend"));
+            lending.setLibrarianReturn(rset.getString("librarian_return"));
+            lending.setLibrarianResume(rset.getString("librarian_resume"));
+
+
+            locPS.setInt(1, rset.getInt("location"));
+            if (!rset.wasNull()) {
+                ResultSet locRs = locPS.executeQuery();
+                if (locRs.next())
+                    lending.setLocation(locRs.getString("name"));
+            }
+            retVal.add(lending);
+        }
+        warningsPS.close();
+        userPS.close();
+        stmt.close();
+
+        return retVal;
     }
 }

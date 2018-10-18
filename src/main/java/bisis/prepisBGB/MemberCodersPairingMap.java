@@ -2,7 +2,6 @@ package bisis.prepisBGB;
 
 import bisis.circ.MembershipType;
 import bisis.circ.UserCategory;
-import bisis.utils.FileUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -175,13 +174,13 @@ public class MemberCodersPairingMap {
         return sb.toString();
     }
 
-    public static void main(String[] args) {
-        try {
-            FileUtils.writeTextFile("userCategs.json", exportToJsonUserCategs());
-            FileUtils.writeTextFile("mmbrTypes.json", exportToJsonMmbrTypes());
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-    }
+//    public static void main(String[] args) {
+//        try {
+//            FileUtils.writeTextFile("userCategs.json", exportToJsonUserCategs());
+//            FileUtils.writeTextFile("mmbrTypes.json", exportToJsonMmbrTypes());
+//        } catch (JsonProcessingException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 }

@@ -8,6 +8,10 @@ import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.jongo.MongoCursor;
 
+/**
+ *  Izvrsiti ako se radi prepis iz ogranaka, extract- uje RN iz zapisa u kolonu MySQL,
+ *  neophodno radi izvrsavanja import skripti napisanih u python- u
+ */
 public class Fix0RNs {
 
     public static void main(String[] args) {

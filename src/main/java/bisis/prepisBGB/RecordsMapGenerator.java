@@ -75,9 +75,9 @@ public class RecordsMapGenerator {
             ProgressBar progressBar = new ProgressBar();
             System.out.println("Generating valid records map etc...");
             int cnt = 0;
-            for (Integer sys_id: localRecIds) {
+            for (Integer record_id: localRecIds) {
                 cnt++;
-                JoRecord localRec = new JoRecord(storage.get(mysqlConn, sys_id));
+                JoRecord localRec = new JoRecord(storage.get(mysqlConn, record_id));
                 if (localRec != null && localRec.getRN() != 0) {
                     Integer centralRn = localCentralMap.get(localRec.getRN());
 
@@ -113,7 +113,7 @@ public class RecordsMapGenerator {
 
                 }
                 else {
-                    outErrRecords.write("Greska za zapis sa sys_id: " + sys_id + "\n");
+                    outErrRecords.write("Greska za zapis sa sys_id: " + record_id + "\n");
                 }
                 if (cnt % 100 == 0)
                     progressBar.update(cnt, localRecIds.size());

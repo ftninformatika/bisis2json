@@ -7,22 +7,13 @@ import org.apache.commons.cli.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-/**
- * @author Petar
- *
- * Tool for migrating inventory from local to central library (bgb)
- */
-public class InventoryPairingBGB {
+public class MembersPairingBGB {
 
-    private static final Logger LOGGER = Logger.getLogger(InventoryPairingBGB.class.getName());
     public static MongoClient mongoClient = null;
     public static DB mongoDatabase = null;
     public static Connection mysqlConn = null;
-    public static boolean generateMode = false;
-    public static boolean insertMode = false;
+    public static boolean margeMembersMode = true;
     public static String mysqlDbName = "";
     public static String branchPrefix = "";
 
@@ -40,12 +31,12 @@ public class InventoryPairingBGB {
         String mongoUsername = "";
         String mongoPassword = "";
         String recordsMapPath = "";
-        boolean insertPicturebooks = false;
-        boolean insertUnpaired = false;
+        boolean printMergedMembersMode = false;
 
         CommandLineParser parser = new GnuParser();
         try {
             CommandLine cmd = parser.parse(options, args);
+
             if (cmd.hasOption("h")) {
                 printHelp(options);
                 System.exit(0);
@@ -53,7 +44,7 @@ public class InventoryPairingBGB {
             if (cmd.hasOption("bp"))
                 branchPrefix = cmd.getOptionValue("bp");
             else
-                throw new Exception("Please enter branch prefix -bp, -h for help.");
+                throw new Exception("Please enter branch prefix (-bp), -h for help.");
             if (cmd.hasOption("a"))
                 mysqlAddress = cmd.getOptionValue("a");
             if (cmd.hasOption("p"))
@@ -63,7 +54,7 @@ public class InventoryPairingBGB {
             if (cmd.hasOption("n"))
                 mysqlDbName = cmd.getOptionValue("n");
             else
-                throw new Exception("MySQL db name is mandatory parameter, -h for help.");
+                throw new Exception("MySQL db name is mandatory parameter (-n), -h for help.");
             if (cmd.hasOption("w"))
                 mysqlPassword = cmd.getOptionValue("w");
             if (cmd.hasOption("ma"))
@@ -76,19 +67,10 @@ public class InventoryPairingBGB {
                 mongoUsername = cmd.getOptionValue("mu");
             if (cmd.hasOption("mw"))
                 mongoPassword = cmd.getOptionValue("mw");
-            if (cmd.hasOption("g")) {
-                generateMode = true;
-                if (!cmd.hasOption("rm"))
-                    throw new Exception("You must eneter path to records map .csv file in generate mode (-rf) !");
-                else
-                    recordsMapPath = cmd.getOptionValue("rm");
-            }
-            if (cmd.hasOption("i"))
-                insertMode = true;
-            if (cmd.hasOption("ip"))
-                insertPicturebooks = true;
-            if (cmd.hasOption("iu"))
-                insertUnpaired = true;
+            if (cmd.hasOption("m") && cmd.getOptionValue("m").equals("off"))
+                margeMembersMode = false;
+            if (cmd.hasOption("pm"))
+                printMergedMembersMode = true;
 
             mysqlConn = DriverManager.getConnection("jdbc:mysql://" + mysqlAddress
                     + ":" + mysqlPort + "/" + mysqlDbName + "?useSSL=false&serverTimezone=CET", mysqlUsername, mysqlPassword);
@@ -98,25 +80,16 @@ public class InventoryPairingBGB {
                 mongoClient = new MongoClient( new MongoClientURI("mongodb://" + mongoUsername + ":" + mongoPassword + "@" + mongoAddres + ":" + mongoPort + "/" + mongoName));
             mongoDatabase = mongoClient.getDB(mongoName);
 
-            RecordsMapGenerator recordsMapGenerator = new RecordsMapGenerator();
-            RecordsTransfusionMachine recordsTransfusionMachine = new RecordsTransfusionMachine();
-
-            if (generateMode)
-                recordsMapGenerator.generate(recordsMapPath);
-            if (insertMode)
-                recordsTransfusionMachine.transfuse(insertPicturebooks, insertUnpaired);
-
-
-
+            MembersMerger membersMerger = new MembersMerger();
+            membersMerger.fixCircLocationsMySQL();
+            membersMerger.merge(margeMembersMode, printMergedMembersMode);
         } catch (ParseException e) {
             e.printStackTrace();
-            LOGGER.log(Level.SEVERE, e.toString(), e);
         } catch (Exception e) {
-            //e.printStackTrace();
-            LOGGER.log(Level.SEVERE, e.toString(), e);
+            e.printStackTrace();
         }
-
     }
+
 
     private static void initOptions(Options options) {
         options.addOption("a", "mysqladress", true, "MySQL server address (default: localhost)");
@@ -133,18 +106,14 @@ public class InventoryPairingBGB {
 
         options.addOption("h", "help", false, "Help");
 
-        options.addOption("rm", "records-map", true, "Path to records_map file (if -g => mandatory param)");
+        options.addOption("m", "merge-mode", true, "If ON, same members will be merged. Default meta-data from central member.(default true, pass off if don't want it) ");
+        options.addOption("pm", "print-merged", false, "If ON, .txt file with merged members will be generated.");
         options.addOption("bp", "branch-prefix", true, "Prefix of branch you want to migrate. (mandatory)");
-        options.addOption("g", "generate", false, "Generate valid map with all possible paired records.");
-        options.addOption("i", "insert", false, "Insert all paired records from generated map.");
-        options.addOption("ip", "insert-picturebooks", false, "Also copy picture books");
-        options.addOption("iu", "insert-unpaired", false, "Also copy all unpaired records");
-
     }
 
     public static void printHelp(Options options){
-        System.out.println("\nTool for migrating and copying inventory from local libraries BGB to central.");
-        System.out.println("\nFor insertion mode (-i) this jar must be in same directory with generated .csv files to work.");
+        System.out.println("\nTool for migrating members from local to central library (bgb).\nBefore this necessarily unify \'location\' table in MySQL for lendings to be properly copyied!");
+        System.out.println("\nFor merge members mode (-m)");
         System.out.println("\nParameters:");
         for (Object o: options.getOptions())
             System.out.println("-" + ((Option) o).getOpt().toString() + "(--" + ((Option) o).getLongOpt().toString() + ") - " + ((Option) o).getDescription().toString());
