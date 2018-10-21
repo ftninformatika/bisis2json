@@ -15,6 +15,7 @@ public class MemberCodersPairingMap {
     // Mapiranje kategorija korisnika
     static Map<String, UserCategory> userCategsBgb = new HashMap<>();
     static Map<String, String> categDescriptionMapping = new HashMap<>();
+    static Map<String, String> memberCircMap = new HashMap<>();
 
     // Mapiranje vrste clanarine
     static Map<String, MembershipType> mmbrshipTypesBgb = new HashMap<>();
@@ -24,6 +25,10 @@ public class MemberCodersPairingMap {
 
      static {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+        memberCircMap.put("04","140");
+        memberCircMap.put("10","260");
+
 
         userCategsBgb.put("OSTALI", new UserCategory("bgb", "OSTALI", 10, 20, 5000));
         userCategsBgb.put("UČENICI SŠ", new UserCategory("bgb", "UČENICI SŠ", 10, 20, 5000));

@@ -128,7 +128,11 @@ public class RnPairing {
 //        }
 //    }
 
+    public static final String EMPTY_QUERY = "{$and: [] }";
+
     public static JoRecord getRecFromCursor(MongoCursor<JoRecord> cursor) {
+        if (cursor == null)
+            return null;
         if (cursor.count() == 1)
             return cursor.next();
         else  if (cursor.count() == 0 ) {
@@ -149,7 +153,7 @@ public class RnPairing {
                 String f = subfield.substring(0,3);
                 String sf = subfield.substring(3,4);
 
-                if(cont.contains("'") || cont.contains("\'"))
+                if(cont == null || cont.contains("'") || cont.contains("\'"))
                     continue;
 
                 retVal += "{ 'fields':{$elemMatch: {'name': '" + f +
@@ -160,7 +164,7 @@ public class RnPairing {
         // skloni poslednji ,
         retVal = retVal.substring(0, retVal.length() - 1);
         retVal += "] }";
-        return retVal;
+        return retVal.equals(EMPTY_QUERY) ? "" : retVal;
     }
 
     public static String getIsbnOnlyQuery(JoRecord r) {

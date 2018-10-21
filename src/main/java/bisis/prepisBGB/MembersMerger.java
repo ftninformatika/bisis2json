@@ -47,8 +47,11 @@ public class MembersMerger {
         System.out.println("Fixing circ location in MySQL.");
         while (circLocationsMCursor.hasNext()) {
             CircLocation cl = circLocationsMCursor.next();
-            if (circLocationsCentralMap.get(Integer.parseInt(cl.getLocationCode())) != null)
-                throw new Exception("Error in fixing circ locations! For code:" + cl.getLocationCode());
+            if (circLocationsCentralMap.get(Integer.parseInt(cl.getLocationCode())) != null) {
+                //throw new Exception("Error in fixing circ locations! For code:" + cl.getLocationCode());
+                System.out.println("Error in fixing circ locations! For code:" + cl.getLocationCode());
+                continue;
+            }
 
             circLocationsCentralMap.put(Integer.parseInt(cl.getLocationCode()), cl.getDescription());
         }
@@ -59,8 +62,10 @@ public class MembersMerger {
         while (rsetCircLocation.next()) {
             Integer id = rsetCircLocation.getInt("id");
             String newDescription = circLocationsCentralMap.get(id);
-            if (newDescription == null)
-                throw new Exception("Id for circ location:" + rsetCircLocation.getInt("id") + " doesn't exist in central database.");
+            if (newDescription == null) {
+//                throw new Exception("Id for circ location:" + rsetCircLocation.getInt("id") + " doesn't exist in central database.");
+                System.out.println("Id for circ location:" + rsetCircLocation.getInt("id") + " doesn't exist in central database.");
+            }
             else {
                 stmtSet.execute("UPDATE location SET name = '" + newDescription + "' WHERE id = " + id);
             }
@@ -101,6 +106,8 @@ public class MembersMerger {
         if (printMergedMode)
             System.out.println("Printing merged members ON.");
         ProgressBar progressBar = new ProgressBar();
+        // TODO - append for every library, defalut mapping to sublocation
+        String circLoc = MemberCodersPairingMap.memberCircMap.get(branchPrefix);
         for (Integer sys_id: sysIdsLocalList) {
             cnt++;
             JoMember localMember = memberStorage.getJo(sys_id);
@@ -109,14 +116,25 @@ public class MembersMerger {
             // If exists, check if it's same member - merge it, if not then copy it with new userId and all lendings
             if (centralMember != null) {
                 if (isSameMember(localMember, centralMember) && mergeMembersMode) {
+                    JoMember mainMember;
+                    JoMember secMember;
+                    if(circLoc.equals(localMember.getUserId().substring(0, 4))) {
+                        mainMember = localMember;
+                        secMember = centralMember;
+                    }
+                    else {
+                        mainMember = centralMember;
+                        secMember = localMember;
+                    }
+
                     // Copy lendings, signings and warnings to central member and save it
-                    centralMember.getSignings().addAll(localMember.getSignings());
-                    centralMember.getDuplicates().addAll(localMember.getDuplicates());
-                    centralMember.getPicturebooks().addAll(localMember.getPicturebooks());
+                    mainMember.getSignings().addAll(secMember.getSignings());
+                    mainMember.getDuplicates().addAll(secMember.getDuplicates());
+                    mainMember.getPicturebooks().addAll(secMember.getPicturebooks());
                     List<Lending> lendingList = memberStorage.getLendings( mysqlConn, String.valueOf(sys_id));
                     List<JoLending> joLendingList = lendingList.stream().map(l -> new JoLending(l)).collect(Collectors.toList());
                     joLendingList.stream().forEach(l -> lendingsCentralCollection.save(l));
-                    centralMembersCollection.save(centralMember);
+                    centralMembersCollection.save(mainMember);
                     found++;
                     if (printMergedMode)
                         foundMembersWriter.write(toStringCompareMembers(localMember, centralMember));
@@ -149,6 +167,7 @@ public class MembersMerger {
         System.out.println("Merged: " + found + " members.");
 
     }
+
 
     private static boolean isSameMember(JoMember m, JoMember m2) {
         if (m.getFirstName().toLowerCase().equals(m2.getFirstName().toLowerCase())

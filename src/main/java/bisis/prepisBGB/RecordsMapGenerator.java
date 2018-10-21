@@ -89,7 +89,9 @@ public class RecordsMapGenerator {
                     else {
                         String query = RnPairing.getPairingQuery(localRec);
                         // try to find with predefined fields
-                        JoRecord centralRecord = RnPairing.getRecFromCursor(centralRecsCollection.find(query).as(JoRecord.class));
+                        JoRecord centralRecord = null;
+
+                        centralRecord = RnPairing.getRecFromCursor(centralRecsCollection.find(query).as(JoRecord.class));
                         // if can't try only with isbn
                         if (centralRecord == null) {
                             query = RnPairing.getIsbnOnlyQuery(localRec);
@@ -113,7 +115,7 @@ public class RecordsMapGenerator {
 
                 }
                 else {
-                    outErrRecords.write("Greska za zapis sa sys_id: " + record_id + "\n");
+                    outErrRecords.write("Greska za zapis sa record_id: " + record_id + "\n");
                 }
                 if (cnt % 100 == 0)
                     progressBar.update(cnt, localRecIds.size());
