@@ -118,7 +118,7 @@ public class RecordsTransfusionMachine {
             for (Integer sys_id: localRecIds) {
                 cnt++;
                 JoRecord localRec = new JoRecord(storage.get(mysqlConn, sys_id));
-                Integer centralRn = localCentralMap.get(sys_id);
+                Integer centralRn = localCentralMap.get(localRec.getRN());
                 if (centralRn != null && centralRecsCollection.findOne("{rn:" + centralRn + "}").as(JoRecord.class) != null) {
                     JoRecord centralRec = centralRecsCollection.findOne("{rn:" + centralRn + "}").as(JoRecord.class);
                     for (JoPrimerak p: localRec.getPrimerci()) {
