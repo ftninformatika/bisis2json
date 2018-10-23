@@ -118,6 +118,15 @@ public class RecordsTransfusionMachine {
             for (Integer sys_id: localRecIds) {
                 cnt++;
                 JoRecord localRec = new JoRecord(storage.get(mysqlConn, sys_id));
+
+                // map some coders that doesn't exist in central TODO - write something more elegant later
+                for (JoPrimerak p: localRec.getPrimerci()) {
+                    if (p.getSigIntOznaka() != null
+                            && InventoryCodersPairingMap.internalMarkMap.get(p.getSigIntOznaka()) != null) {
+                        p.setSigIntOznaka(InventoryCodersPairingMap.internalMarkMap.get(p.getSigIntOznaka()));
+                    }
+                }
+
                 Integer centralRn = localCentralMap.get(localRec.getRN());
                 if (centralRn != null && centralRecsCollection.findOne("{rn:" + centralRn + "}").as(JoRecord.class) != null) {
                     JoRecord centralRec = centralRecsCollection.findOne("{rn:" + centralRn + "}").as(JoRecord.class);
@@ -133,6 +142,7 @@ public class RecordsTransfusionMachine {
                     }
                 }
                 else {
+
                     if (copyPicturebooks && picturebooksList.contains(sys_id)) {
                         localRec.setRN(rnCnt);
                         localRec.setRecordID(recIdCnt);
