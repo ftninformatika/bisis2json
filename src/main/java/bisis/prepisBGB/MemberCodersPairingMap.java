@@ -2,6 +2,7 @@ package bisis.prepisBGB;
 
 import bisis.circ.MembershipType;
 import bisis.circ.UserCategory;
+import bisis.utils.FileUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -121,7 +122,7 @@ public class MemberCodersPairingMap {
         mmbrshipTypesBgb.put("EKOTEKA PENZIONERI", new MembershipType("bgb", "EKOTEKA PENZIONERI", 365));
         mmbrshipTypesBgb.put("ŠKOLSKA NEDELJA 5+", new MembershipType("bgb", "ŠKOLSKA NEDELJA 5+", 365));
         mmbrshipTypesBgb.put("UG. ZEMUN+ PENZIONERI", new MembershipType("bgb", "UG. ZEMUN+ PENZIONERI", 365)); //TODO dodati nove sifarnike
-        mmbrshipTypesBgb.put("UG. ZEMUN+ 65+", new MembershipType("bgb", "UG. ZEMUN + PENZIONERI", 365));
+        mmbrshipTypesBgb.put("UG. ZEMUN+ 65+", new MembershipType("bgb", "UG. ZEMUN+ 65+", 365));
         mmbrshipTypesBgb.put("OBRISANA VRSTA", new MembershipType("bgb", "OBRISANA VRSTA", 365));
 
         mmbrshipTypesMapping.put("STUD.BIBLIOTEKARSTVA", "NE PLAĆA ČLANARINU");
@@ -185,13 +186,13 @@ public class MemberCodersPairingMap {
         return sb.toString();
     }
 
-//    public static void main(String[] args) {
-//        try {
-//            FileUtils.writeTextFile("userCategs.json", exportToJsonUserCategs());
-//            FileUtils.writeTextFile("mmbrTypes.json", exportToJsonMmbrTypes());
-//        } catch (JsonProcessingException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    public static void main(String[] args) {
+        try {
+            FileUtils.writeTextFile("userCategs.json", exportToJsonUserCategs());
+            FileUtils.writeTextFile("mmbrTypes.json", exportToJsonMmbrTypes());
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
