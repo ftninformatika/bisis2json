@@ -28,6 +28,7 @@ public class MemberCodersPairingMap {
 
         memberCircMap.put("04","140");
         memberCircMap.put("10","260");
+        memberCircMap.put("11","310");
 
 
         userCategsBgb.put("OSTALI", new UserCategory("bgb", "OSTALI", 10, 20, 5000));
@@ -119,6 +120,8 @@ public class MemberCodersPairingMap {
         mmbrshipTypesBgb.put("EKOTEKA OŠ", new MembershipType("bgb", "EKOTEKA OŠ", 365));
         mmbrshipTypesBgb.put("EKOTEKA PENZIONERI", new MembershipType("bgb", "EKOTEKA PENZIONERI", 365));
         mmbrshipTypesBgb.put("ŠKOLSKA NEDELJA 5+", new MembershipType("bgb", "ŠKOLSKA NEDELJA 5+", 365));
+        mmbrshipTypesBgb.put("UG. ZEMUN+ PENZIONERI", new MembershipType("bgb", "UG. ZEMUN+ PENZIONERI", 365)); //TODO dodati nove sifarnike
+        mmbrshipTypesBgb.put("UG. ZEMUN+ 65+", new MembershipType("bgb", "UG. ZEMUN + PENZIONERI", 365));
         mmbrshipTypesBgb.put("OBRISANA VRSTA", new MembershipType("bgb", "OBRISANA VRSTA", 365));
 
         mmbrshipTypesMapping.put("STUD.BIBLIOTEKARSTVA", "NE PLAĆA ČLANARINU");
@@ -138,6 +141,9 @@ public class MemberCodersPairingMap {
         mmbrshipTypesMapping.put("MUZEJ GRADA", "UG. MUZEJ GRADA");
         mmbrshipTypesMapping.put("ČLAN.UDR.BIBLIOTEKA", "ČLAN UDR. BIBLIOTEKA");
         mmbrshipTypesMapping.put("POPUSTI.RS", "ONLINE POPUSTI");
+        mmbrshipTypesMapping.put("GRUPA 10+ DECA", "GRUPA 10+DECA");
+        mmbrshipTypesMapping.put("ZEMUN+ PENZIONERI", "UG. ZEMUN+ PENZIONERI");
+        mmbrshipTypesMapping.put("ZEMUN+ 65+", "UG. ZEMUN+ 65+");
      }
 
     public static UserCategory getUserCategMappedByDesc(String description) {
