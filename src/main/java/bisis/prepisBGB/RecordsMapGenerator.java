@@ -91,7 +91,12 @@ public class RecordsMapGenerator {
                         // try to find with predefined fields
                         JoRecord centralRecord = null;
 
-                        centralRecord = RnPairing.getRecFromCursor(centralRecsCollection.find(query).as(JoRecord.class));
+                        try {
+                            centralRecord = RnPairing.getRecFromCursor(centralRecsCollection.find(query).as(JoRecord.class));
+                        }
+                        catch (Exception e) {
+                            System.out.println("invalid query:\n" + query);
+                        }
                         // if can't try only with isbn
                         if (centralRecord == null) {
                             query = RnPairing.getIsbnOnlyQuery(localRec);

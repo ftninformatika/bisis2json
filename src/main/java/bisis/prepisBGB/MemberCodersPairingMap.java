@@ -30,6 +30,7 @@ public class MemberCodersPairingMap {
         memberCircMap.put("04","140");
         memberCircMap.put("10","260");
         memberCircMap.put("11","310");
+        memberCircMap.put("09","240");
 
 
         userCategsBgb.put("OSTALI", new UserCategory("bgb", "OSTALI", 10, 20, 5000));
