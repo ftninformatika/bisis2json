@@ -85,6 +85,11 @@ public class RecordsMapGenerator {
                     if (centralRn != null && loadRecordFromCentral(centralRn, centralRecsCollection) != null) {
                         outValidRecordsMap.write("date_generated," + localRec.getRN() + "," + centralRn + "\n");
                     }
+                    // maybe it's a picture book?
+                    else if (localRec.isPictureBookBGB()) {
+                        outPicturebooks.write(localRec.getRN() + "," + localRec.getRecordID() + "\n");
+                    }
+
                     // can't find - try to
                     else {
                         String query = RnPairing.getPairingQuery(localRec);
@@ -102,18 +107,13 @@ public class RecordsMapGenerator {
                             query = RnPairing.getIsbnOnlyQuery(localRec);
                             centralRecord = RnPairing.getRecFromCursor(centralRecsCollection.find(query).as(JoRecord.class));
                         }
-                        // did all to pair it - write
-                        if (centralRecord != null)
+                        if (centralRecord != null) {
+                            // did all to pair it - write
                             outValidRecordsMap.write("date_paired," + localRec.getRN() + "," + centralRecord.getRN() + "\n");
-                        // maybe it's a picture book?
+                        }
                         else {
-                            if (localRec.isPictureBookBGB()) {
-                                outPicturebooks.write(localRec.getRN() + "," + localRec.getRecordID() + "\n");
-                            }
                             // if not it's impossible to pair it, or it's local made non picture book
-                            else {
-                                outUnpairedRecords.write(localRec.getRN() + "," + localRec.getRecordID() + "\n");
-                            }
+                            outUnpairedRecords.write(localRec.getRN() + "," + localRec.getRecordID() + "\n");
                         }
 
                     }
