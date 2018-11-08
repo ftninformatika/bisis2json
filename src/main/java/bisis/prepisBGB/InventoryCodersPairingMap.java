@@ -9,6 +9,8 @@ public class InventoryCodersPairingMap {
 
     static {
         internalMarkMap.put("depozit", "DEP");
+        internalMarkMap.put("citaonica", "ČIT");
+        internalMarkMap.put("d citaonica", "DČIT");
         internalMarkMap.put("magacin", "MAG");
         internalMarkMap.put("čitaonica", "ČIT");
         internalMarkMap.put("d čitaonica", "DČIT");
