@@ -54,8 +54,8 @@ public class RecordsTransfusionMachine {
             MongoCollection codersCounters = jongo.getCollection("coders.counters");
             Counter counterRn = codersCounters.findOne("{'library':'bgb', 'counterName':'RN'}").as(Counter.class);
             Counter counterRecordid = codersCounters.findOne("{'library':'bgb', 'counterName':'recordid'}").as(Counter.class);
-            int rnCnt = counterRn.getCounterValue();
-            int recIdCnt= counterRecordid.getCounterValue();
+            int rnCnt = counterRn.getCounterValue() + 1;
+            int recIdCnt= counterRecordid.getCounterValue() + 1;
 
             Scanner scannerMap = new Scanner(new File(mysqlDbName + RecordsMapGenerator.VALID_RECORDS_MAP_FILE_NAME_CHUNK));
             Scanner scannerPb = new Scanner(new File(mysqlDbName + RecordsMapGenerator.PICTUREBOOKS_FILE_NAME_CHUNK));

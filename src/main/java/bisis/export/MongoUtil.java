@@ -400,6 +400,7 @@ public class MongoUtil {
 
         mdb.getCollection("configs").deleteMany(new BasicDBObject("libraryName", lib));
         mdb.getCollection("coders.warning_type").deleteMany(new BasicDBObject("library", lib));
+        mdb.getCollection("coders.warning_counter").deleteMany(new BasicDBObject("library", lib));
         mdb.getCollection("coders.user_categ").deleteMany(new BasicDBObject("library", lib));
         mdb.getCollection("coders.sublocation").deleteMany(new BasicDBObject("library", lib));
         mdb.getCollection("coders.status").deleteMany(new BasicDBObject("library", lib));

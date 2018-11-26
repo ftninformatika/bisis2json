@@ -30,7 +30,13 @@ public class MemberCodersPairingMap {
         memberCircMap.put("04","140");
         memberCircMap.put("10","260");
         memberCircMap.put("11","310");
-        memberCircMap.put("09","244"); // Bora Stankovic preuzeo ulogu glavne
+        memberCircMap.put("09","244");
+        memberCircMap.put("03","120");
+        memberCircMap.put("13","330");
+        memberCircMap.put("12","280");
+        memberCircMap.put("02","100");
+        memberCircMap.put("08","200");
+        memberCircMap.put("15","350");
 
 
         userCategsBgb.put("OSTALI", new UserCategory("bgb", "OSTALI", 10, 20, 5000));
@@ -146,6 +152,7 @@ public class MemberCodersPairingMap {
         mmbrshipTypesMapping.put("GRUPA 10+ DECA", "GRUPA 10+DECA");
         mmbrshipTypesMapping.put("ZEMUN+ PENZIONERI", "UG. ZEMUN+ PENZIONERI");
         mmbrshipTypesMapping.put("ZEMUN+ 65+", "UG. ZEMUN+ 65+");
+        mmbrshipTypesMapping.put("EURO < 26; ETC", "EURO < 26");
      }
 
     public static UserCategory getUserCategMappedByDesc(String description) {
