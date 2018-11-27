@@ -82,6 +82,8 @@ public class MemberCodersPairingMap {
         categDescriptionMapping.put("PREDŠKOLSKI UZRAST", "PREDŠKOLSKI UZRAST");
         categDescriptionMapping.put("UČENICI OŠ", "UČENICI OŠ");
         categDescriptionMapping.put("SARADNICI", "SARADNICI");
+        categDescriptionMapping.put("STRANI DRŽAVLJANIN", "STRANI DRŽAVLJANI");
+        categDescriptionMapping.put("STUDENTI DIF-a", "STUDENTI");
 
         mmbrshipTypesBgb.put("REDOVAN ČLAN", new MembershipType("bgb", "REDOVAN ČLAN", 365));
         mmbrshipTypesBgb.put("SAJAM", new MembershipType("bgb", "SAJAM", 365));
