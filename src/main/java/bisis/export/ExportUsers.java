@@ -1,7 +1,7 @@
 package bisis.export;
 
 import bisis.circ.*;
-import bisis.prepisBGB.MemberCodersPairingMap;
+import bisis.prepis_bgb.MemberCodersPairingMap;
 import bisis.utils.DaoUtils;
 import bisis.utils.DateUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
