@@ -1,4 +1,4 @@
-package bisis.prepisBGB;
+package bisis.prepis_bgb;
 
 import com.mongodb.DB;
 import com.mongodb.MongoClient;

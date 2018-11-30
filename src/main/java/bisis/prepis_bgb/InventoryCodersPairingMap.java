@@ -1,4 +1,4 @@
-package bisis.prepisBGB;
+package bisis.prepis_bgb;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package bisis.prepisBGB;
+package bisis.prepis_bgb;
 
 import bisis.circ.MembershipType;
 import bisis.circ.UserCategory;

@@ -1,4 +1,4 @@
-package bisis.prepisBGB;
+package bisis.prepis_bgb;
 
 import bisis.jongo_records.JoRecord;
 import org.jongo.MongoCursor;

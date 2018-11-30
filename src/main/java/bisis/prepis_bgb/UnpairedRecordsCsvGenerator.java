@@ -1,4 +1,4 @@
-package bisis.prepisBGB;
+package bisis.prepis_bgb;
 
 import bisis.records.Record;
 import bisis.textsrv.DBStorage;

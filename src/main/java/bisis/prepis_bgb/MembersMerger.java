@@ -1,4 +1,4 @@
-package bisis.prepisBGB;
+package bisis.prepis_bgb;
 
 import bisis.circ.CircLocation;
 import bisis.circ.Lending;

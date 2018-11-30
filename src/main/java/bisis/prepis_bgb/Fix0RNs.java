@@ -1,4 +1,4 @@
-package bisis.prepisBGB;
+package bisis.prepis_bgb;
 
 import bisis.coders.Counter;
 import bisis.jongo_records.JoRecord;
