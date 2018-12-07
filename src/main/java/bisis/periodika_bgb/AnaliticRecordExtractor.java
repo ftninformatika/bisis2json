@@ -11,6 +11,7 @@ import org.jongo.MongoCollection;
 import org.jongo.MongoCursor;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -38,16 +39,20 @@ public class AnaliticRecordExtractor {
                 List<JoRecord> analitics = extractRec2Analitics(aRec, rnCnt, recIdCnt);
                 rnCnt++;
                 recIdCnt++;
-                System.out.println(analitics);
-                cnt++;
+                for (JoRecord rec: analitics) {
+                    cnt++;
+                    recordsMongoCollection.save(rec);
+                }
+                System.out.println("Records extracted: "+ cnt);
+                //TODO brisanje polja 423
             }
         }
         System.out.println(analiticRecords.count());
-        System.out.println(cnt);
+        System.out.println("Total analitic records extracted:" + cnt);
         counterRn.setCounterValue(rnCnt);
         counterRecordid.setCounterValue(recIdCnt);
-//        codersCountersMongoCollection.update("{counterName: 'RN', library: 'bgb'}").with(counterRn);
-//        codersCountersMongoCollection.update("{counterName: 'recordid', library: 'bgb'}").with(counterRecordid);
+        codersCountersMongoCollection.update("{counterName: 'RN', library: 'bgb'}").with(counterRn);
+        codersCountersMongoCollection.update("{counterName: 'recordid', library: 'bgb'}").with(counterRecordid);
         System.out.println("\nCOUNTERS FOR RN & RECORD_ID SET TO: " + rnCnt + " & " + recIdCnt);
     }
 
@@ -72,16 +77,20 @@ public class AnaliticRecordExtractor {
             f100.getSubfields().add(record.getSubfield("100c"));
             allFields.add(f100);
 
+            Field f101 = new Field("101");
             if (record.getSubfieldContent("101c") != null) {
-                Field f101 = new Field("101");
                 f101.add(new Subfield('c', record.getSubfieldContent("101c")));
-                allFields.add(f101);
                 Field f210 = new Field("210");
-                Subfield sf210d = new Subfield('d', record.getSubfieldContent("100c"));
+                Subfield sf210d = new Subfield('d', record.getSubfieldContent("101c"));
                 f210.add(sf210d);
                 allFields.add(f210);
             }
 
+            if (record.getSubfieldContent("101a") != null) {
+                f101.add(new Subfield('a', record.getSubfieldContent("101a")));
+            }
+
+            allFields.add(f101);
 
             Field f215 = new Field("215");
             if (record.getSubfieldContent("200h") != null) {
@@ -113,16 +122,21 @@ public class AnaliticRecordExtractor {
                 }
             }
 
+            Field f474 = new Field("474");
+            f474.add(new Subfield('1', String.valueOf(record.getRN())));
+            allFields.add(f474);
+
             Field f992 = new Field("992");
-            f992.add(new Subfield('b', "prepis 2018"));
+            f992.add(new Subfield('b', "prepis2018"));
             allFields.add(f992);
+
+            allFields.sort(Comparator.comparing(Field::getName));
 
             r.setFields(allFields);
             //r.pack();
             retVal.add(r);
 
         }
-
 
         return retVal;
     }
@@ -139,7 +153,7 @@ public class AnaliticRecordExtractor {
         if (record.getSubfieldContent("200a") != null)
             _011Content += "(" + record.getSubfieldContent("200a");
         if (record.getSubfieldContent("200e") != null)
-            _011Content += ":" + record.getSubfieldContent("200e");
+            _011Content += " : " + record.getSubfieldContent("200e");
         _011Content += ")";
         f011.add(new Subfield('b', _011Content));
 
