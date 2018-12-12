@@ -43,8 +43,9 @@ public class AnaliticRecordExtractor {
                     cnt++;
                     recordsMongoCollection.save(rec);
                 }
-                System.out.println("Records extracted: "+ cnt);
-                //TODO brisanje polja 423
+//                Remove 423 fields
+//                aRec.removeFields("423");
+                System.out.println("Records extracted: " + cnt);
             }
         }
         System.out.println(analiticRecords.count());

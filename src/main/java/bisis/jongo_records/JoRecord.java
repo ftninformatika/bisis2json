@@ -202,6 +202,10 @@ public class JoRecord implements Serializable {
         fields.remove(field);
     }
 
+    public void removeFields(String fName) {
+        fields = fields.stream().filter(f -> !f.getName().equals(fName)).collect(Collectors.toList());
+    }
+
     /**
      * Sorts the fields, subfields, and subsubfields in this record.
      */

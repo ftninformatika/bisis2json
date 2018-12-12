@@ -5,6 +5,7 @@ import bisis.circ.Organization;
 import bisis.circ.UserCategory;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.jongo.marshall.jackson.oid.MongoObjectId;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.List;
 @lombok.Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class JoMember {
 
     @MongoObjectId String _id;
