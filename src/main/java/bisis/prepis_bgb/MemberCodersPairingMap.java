@@ -37,7 +37,9 @@ public class MemberCodersPairingMap {
         memberCircMap.put("02","100");
         memberCircMap.put("08","200");
         memberCircMap.put("15","350");
-
+        memberCircMap.put("06","180");
+        memberCircMap.put("07","220");
+        memberCircMap.put("05","160");
 
         userCategsBgb.put("OSTALI", new UserCategory("bgb", "OSTALI", 10, 20, 5000));
         userCategsBgb.put("UČENICI SŠ", new UserCategory("bgb", "UČENICI SŠ", 10, 20, 5000));
@@ -54,6 +56,7 @@ public class MemberCodersPairingMap {
         userCategsBgb.put("PREDŠKOLSKI UZRAST", new UserCategory("bgb", "PREDŠKOLSKI UZRAST", 10, 20, 5000));
         userCategsBgb.put("UČENICI OŠ", new UserCategory("bgb", "UČENICI OŠ", 10, 20, 5000));
         userCategsBgb.put("SARADNICI", new UserCategory("bgb", "SARADNICI", 10, 20, 5000));
+
         categDescriptionMapping.put("OSTALI", "OSTALI");
         categDescriptionMapping.put("DOMAĆICE", "OSTALI");
         categDescriptionMapping.put("UČENICI SŠ", "UČENICI SŠ");
