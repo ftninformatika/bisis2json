@@ -19,6 +19,8 @@ public class AnaliticRecordExtractor {
 
     public static final String SERIAL_PUB_CRITERIA = "{'fields': {$elemMatch: {'name': '001', 'subfields': {$elemMatch: {'name': 'c', 'content':'s'}}}}}";
     public static final int ANALITIC_TYPE = 3;
+    public static int rnCnt;
+    public static int recIdCnt;
 
     public static void main(String[] args) {
         MongoClient mongoClient = new MongoClient("localhost", 27017);
@@ -29,16 +31,14 @@ public class AnaliticRecordExtractor {
         MongoCursor<JoRecord> analiticRecords = recordsMongoCollection.find(SERIAL_PUB_CRITERIA).as(JoRecord.class);
         Counter counterRn = codersCountersMongoCollection.findOne("{'library':'bgb', 'counterName':'RN'}").as(Counter.class);
         Counter counterRecordid = codersCountersMongoCollection.findOne("{'library':'bgb', 'counterName':'recordid'}").as(Counter.class);
-        int rnCnt = counterRn.getCounterValue() + 1;
-        int recIdCnt= counterRecordid.getCounterValue() + 1;
+        rnCnt = counterRn.getCounterValue() + 1;
+        recIdCnt= counterRecordid.getCounterValue() + 1;
 
         int cnt = 0;
         while (analiticRecords.hasNext()) {
             JoRecord aRec = analiticRecords.next();
             if (aRec.getField("423") != null) {
-                List<JoRecord> analitics = extractRec2Analitics(aRec, rnCnt, recIdCnt);
-                rnCnt++;
-                recIdCnt++;
+                List<JoRecord> analitics = extractRec2Analitics(aRec);
                 for (JoRecord rec: analitics) {
                     cnt++;
                     recordsMongoCollection.save(rec);
@@ -57,19 +57,19 @@ public class AnaliticRecordExtractor {
         System.out.println("\nCOUNTERS FOR RN & RECORD_ID SET TO: " + rnCnt + " & " + recIdCnt);
     }
 
-    private static List<JoRecord> extractRec2Analitics(JoRecord record, int rn, int record_id) {
+    private static List<JoRecord> extractRec2Analitics(JoRecord record) {
         List<JoRecord> retVal = new ArrayList<>();
 
         for(Field f423: record.getFields("423")){
             JoRecord r = new JoRecord();
             r.setPubType(ANALITIC_TYPE);
-            r.setRecordID(record_id);
-            r.setRN(rn);
+            r.setRecordID(recIdCnt);
+            r.setRN(rnCnt);
             r.setCreator(new Author("prepis 2018", "bgb"));
             r.setCreationDate(new Date());
 
             List<Field> allFields = new ArrayList<>();
-            allFields.addAll(get001Generics(rn));
+            allFields.addAll(get001Generics(rnCnt));
             if (format011(record) != null) {
                 allFields.add(format011(record));
             }
@@ -134,9 +134,9 @@ public class AnaliticRecordExtractor {
             allFields.sort(Comparator.comparing(Field::getName));
 
             r.setFields(allFields);
-            //r.pack();
             retVal.add(r);
-
+            rnCnt++;
+            recIdCnt++;
         }
 
         return retVal;
