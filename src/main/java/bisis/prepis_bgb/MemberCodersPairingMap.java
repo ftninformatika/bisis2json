@@ -87,6 +87,7 @@ public class MemberCodersPairingMap {
         categDescriptionMapping.put("SARADNICI", "SARADNICI");
         categDescriptionMapping.put("STRANI DRŽAVLJANIN", "STRANI DRŽAVLJANI");
         categDescriptionMapping.put("STUDENTI DIF-a", "STUDENTI");
+        categDescriptionMapping.put("PREDŠKOLCI", "PREDŠKOLSKI UZRAST");
 
         mmbrshipTypesBgb.put("REDOVAN ČLAN", new MembershipType("bgb", "REDOVAN ČLAN", 365));
         mmbrshipTypesBgb.put("SAJAM", new MembershipType("bgb", "SAJAM", 365));
@@ -119,6 +120,7 @@ public class MemberCodersPairingMap {
         mmbrshipTypesBgb.put("PRAZNIČNI POPUST", new MembershipType("bgb", "PRAZNIČNI POPUST", 365));
         mmbrshipTypesBgb.put("UG. ŠKOLA ZA NEGU LEPOTE", new MembershipType("bgb", "UG. ŠKOLA ZA NEGU LEPOTE", 365));
         mmbrshipTypesBgb.put("UČENICI SŠ", new MembershipType("bgb", "UČENICI SŠ", 365));
+        mmbrshipTypesBgb.put("UČENICI OŠ", new MembershipType("bgb", "UČENICI OŠ", 365));
         mmbrshipTypesBgb.put("GRUPA 10+DECA", new MembershipType("bgb", "GRUPA 10+DECA", 365));
         mmbrshipTypesBgb.put("MESEČNA (STRANCI)", new MembershipType("bgb", "MESEČNA (STRANCI)", 30));
         mmbrshipTypesBgb.put("EKOTEKA ODRASLI", new MembershipType("bgb", "EKOTEKA ODRASLI", 365));
@@ -136,6 +138,7 @@ public class MemberCodersPairingMap {
         mmbrshipTypesBgb.put("UG. ZEMUN+ PENZIONERI", new MembershipType("bgb", "UG. ZEMUN+ PENZIONERI", 365)); //TODO dodati nove sifarnike
         mmbrshipTypesBgb.put("UG. ZEMUN+ 65+", new MembershipType("bgb", "UG. ZEMUN+ 65+", 365));
         mmbrshipTypesBgb.put("OBRISANA VRSTA", new MembershipType("bgb", "OBRISANA VRSTA", 365));
+
 
         mmbrshipTypesMapping.put("STUD.BIBLIOTEKARSTVA", "NE PLAĆA ČLANARINU");
         mmbrshipTypesMapping.put("FILOLOŠKI F.", "OBRISANA VRSTA");
