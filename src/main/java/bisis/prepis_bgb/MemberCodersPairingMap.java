@@ -139,7 +139,6 @@ public class MemberCodersPairingMap {
         mmbrshipTypesBgb.put("UG. ZEMUN+ 65+", new MembershipType("bgb", "UG. ZEMUN+ 65+", 365));
         mmbrshipTypesBgb.put("OBRISANA VRSTA", new MembershipType("bgb", "OBRISANA VRSTA", 365));
 
-
         mmbrshipTypesMapping.put("STUD.BIBLIOTEKARSTVA", "NE PLAĆA ČLANARINU");
         mmbrshipTypesMapping.put("FILOLOŠKI F.", "OBRISANA VRSTA");
         mmbrshipTypesMapping.put("NAGRADNI UPIS", "NE PLAĆA ČLANARINU");
