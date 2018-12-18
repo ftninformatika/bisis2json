@@ -13,7 +13,7 @@ import org.jongo.MongoCollection;
 public class FixDuplicateRNs {
 
     public static void main(String[] args) {
-        MongoClient mongoClient = new MongoClient("localhost", 27018);
+        MongoClient mongoClient = new MongoClient("localhost", 27017);
         DB db = mongoClient.getDB("bisis");
         Jongo jongo = new Jongo(db);
         MongoCollection recordsCollection = jongo.getCollection("bgb_records");
