@@ -15,5 +15,8 @@ public class InventoryCodersPairingMap {
         internalMarkMap.put("čitaonica", "ČIT");
         internalMarkMap.put("d čitaonica", "DČIT");
         internalMarkMap.put("20", "ČIT");
+        internalMarkMap.put("kancelarija", "MAG");
+        internalMarkMap.put("šuber", "DEP");
+
     }
 }
