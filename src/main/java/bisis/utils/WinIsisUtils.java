@@ -1,7 +1,7 @@
 package bisis.utils;
 
-import bisis.winisis2bisis.WField;
-import bisis.winisis2bisis.WSubField;
+import bisis.apps.winisis2bisis.WField;
+import bisis.apps.winisis2bisis.WSubField;
 
 import java.util.Date;
 

@@ -2,10 +2,10 @@ package bisis.utils;
 
 import java.util.StringTokenizer;
 
-import bisis.records.Godina;
-import bisis.records.Primerak;
-import bisis.records.Subfield;
-import bisis.records.Subsubfield;
+import bisis.model.records.Godina;
+import bisis.model.records.Primerak;
+import bisis.model.records.Subfield;
+import bisis.model.records.Subsubfield;
 
 
 /** Generise prikaz bibliotekarske signature za korisnika. */

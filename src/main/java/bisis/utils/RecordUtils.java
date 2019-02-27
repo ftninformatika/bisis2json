@@ -1,9 +1,9 @@
 package bisis.utils;
 
-import bisis.jongo_records.JoGodina;
-import bisis.jongo_records.JoPrimerak;
-import bisis.jongo_records.JoRecord;
-import bisis.records.ItemAvailability;
+import bisis.model.jongo_records.JoGodina;
+import bisis.model.jongo_records.JoPrimerak;
+import bisis.model.jongo_records.JoRecord;
+import bisis.model.records.ItemAvailability;
 
 import java.util.ArrayList;
 import java.util.List;
