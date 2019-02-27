@@ -27,6 +27,7 @@ public class MemberCodersPairingMap {
      static {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
+        memberCircMap.put("01","005");
         memberCircMap.put("04","140");
         memberCircMap.put("10","260");
         memberCircMap.put("11","310");

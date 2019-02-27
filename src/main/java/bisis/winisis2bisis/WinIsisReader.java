@@ -21,7 +21,7 @@ public class WinIsisReader {
 
     private String pathToFile;
 
-    public void readFile() {
+    public List<WinIsisMemberTxt> readFile2WIMTList() {
 
         try (Stream<String> stream = Files.lines(Paths.get(WinIsisReader.class.getResource(pathToFile).getPath()))){
 
@@ -32,21 +32,23 @@ public class WinIsisReader {
                   if (line.equals("") && memberTxt[0] != null)
                       membersListTxt.add(memberTxt[0]);
 
-                  if (line.startsWith(MembersFieldMap.ID))
+                  if (line.startsWith(MembersConverter.ID_RAW))
                       memberTxt[0] = new WinIsisMemberTxt();
 
-                  List<SubfieldDataPair> sfs = WinIsisUtils.getSubfieldsList(line);
-                  for (SubfieldDataPair sfPair: sfs) {
-                      memberTxt[0].getSubfields().put(sfPair.getKey(), sfPair.getData());
-                  }
+                  WField field = WinIsisUtils.makeWField(line);
+                  if (field != null)
+                    memberTxt[0].getSubfields().add(field);
               }
             );
-            System.out.println(membersListTxt.toString());
 
+//            System.out.println(membersListTxt.toString());
+            return membersListTxt;
         }
         catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
+
     }
 
 }

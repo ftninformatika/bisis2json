@@ -81,10 +81,10 @@ public class AnaliticRecordExtractor {
             Field f101 = new Field("101");
             if (record.getSubfieldContent("101c") != null) {
                 f101.add(new Subfield('c', record.getSubfieldContent("101c")));
-                Field f210 = new Field("210");
-                Subfield sf210d = new Subfield('d', record.getSubfieldContent("101c"));
-                f210.add(sf210d);
-                allFields.add(f210);
+//                Field f210 = new Field("210");
+//                Subfield sf210d = new Subfield('d', record.getSubfieldContent("101c"));
+//                f210.add(sf210d);
+//                allFields.add(f210);
             }
 
             if (record.getSubfieldContent("101a") != null) {
@@ -102,26 +102,34 @@ public class AnaliticRecordExtractor {
                 Subfield sf215k = new Subfield('k', record.getSubfieldContent("200i"));
                 f215.add(sf215k);
             }
-            if (f215.getSubfield('i') != null || f215.getSubfield('h') != null)
-                allFields.add(f215);
+//            if (f215.getSubfield('i') != null || f215.getSubfield('h') != null)
 
             for (Subfield sf: f423.getSubfields()) {
-                if (sf.getSecField() != null) {
-                    boolean containsSf = false;
-                    for (Field field: allFields) {
-                        if (field.getName().equals(sf.getSecField().getName())){
-                            containsSf = true;
-                            for (Subfield _sf: sf.getSecField().getSubfields()) {
-                                if (field.getSubfield(sf.getName()) == null)
-                                    field.add(_sf);
-                            }
-                            break;
-                        }
+//                if (sf.getSecField() != null) {
+//                    boolean containsSf = false;
+//                    for (Field field: allFields) {
+//                        if (field.getName().equals(sf.getSecField().getName())){
+//                            containsSf = true;
+//                            for (Subfield _sf: sf.getSecField().getSubfields()) {
+//                                if (field.getSubfield(sf.getName()) == null)
+//                                    field.add(_sf);
+//                            }
+//                            break;
+//                        }
+//                    }
+//                    if (!containsSf)
+//                        allFields.add(sf.getSecField());
+//                }
+                if (sf.getSecField().getName().equals("215")) {
+                    for (Subfield secSf : sf.getSecField().getSubfields()){
+                        f215.add(secSf);
                     }
-                    if (!containsSf)
-                        allFields.add(sf.getSecField());
+                }
+                else if (sf.getSecField() != null) {
+                    allFields.add(sf.getSecField());
                 }
             }
+            allFields.add(f215);
 
             Field f474 = new Field("474");
             f474.add(new Subfield('1', String.valueOf(record.getRN())));
@@ -150,12 +158,11 @@ public class AnaliticRecordExtractor {
             return null;
 
         f011.add(new Subfield('a', record.getSubfieldContent("011a")));
-        _011Content = record.getSubfieldContent("011a");
+//        _011Content = record.getSubfieldContent("011a");
         if (record.getSubfieldContent("200a") != null)
-            _011Content += "(" + record.getSubfieldContent("200a");
+            _011Content += record.getSubfieldContent("200a");
         if (record.getSubfieldContent("200e") != null)
             _011Content += " : " + record.getSubfieldContent("200e");
-        _011Content += ")";
         f011.add(new Subfield('b', _011Content));
 
         return f011;

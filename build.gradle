@@ -50,12 +50,42 @@ task fatJarExtractRN(type: Jar){
 
 task fatJarInventoryPairingBGB(type: Jar){
     manifest {
-        attributes 'Main-Class': 'bisis.prepisBGB.InventoryPairingBGB'
+        attributes 'Main-Class': 'bisis.prepis_bgb.InventoryPairingBGB'
     }
     from sourceSets.main.output
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
     with jar
     archiveName 'inventory-pairing-bgb.jar'
+}
+
+task fatJarMemberPairingBGB(type: Jar){
+    manifest {
+        attributes 'Main-Class': 'bisis.prepis_bgb.MembersPairingBGB'
+    }
+    from sourceSets.main.output
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
+    with jar
+    archiveName 'members-pairing-bgb.jar'
+}
+
+task fatJarFixDuplicateRNs(type: Jar){
+    manifest {
+        attributes 'Main-Class': 'bisis.prepis_bgb.FixDuplicateRNs'
+    }
+    from sourceSets.main.output
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
+    with jar
+    archiveName 'fix-duplicate-rn-bgb.jar'
+}
+
+task fatJarPeriodikaBGB(type: Jar){
+    manifest {
+        attributes 'Main-Class': 'bisis.periodika_bgb.AnaliticRecordExtractor'
+    }
+    from sourceSets.main.output
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
+    with jar
+    archiveName 'periodika-bgb.jar'
 }
 
 repositories {
@@ -81,6 +111,7 @@ dependencies {
     compile group: 'org.mongodb', name: 'mongo-java-driver', version: '3.5.0'
     compile group: 'org.zeroturnaround', name: 'zt-zip', version: '1.12'
     compile group: 'org.jdom', name: 'jdom2', version: '2.0.6'
+//    compile group: 'org.elasticsearch', name: 'elasticsearch', version: '2.4.1'
 //    compile group: 'org.mongodb', name: 'mongo-java-driver', version: '3.6.3'
     compile group: 'org.jongo', name: 'jongo', version: '1.3.0'
 

@@ -1,9 +1,12 @@
 package bisis.winisis2bisis;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -11,17 +14,32 @@ import java.util.Map;
 @NoArgsConstructor
 public class WinIsisMemberTxt {
 
-    Map<String, String> subfields = new HashMap<>();
+    List<WField> subfields = new ArrayList<>();
 
-    @Override
-    public String toString() {
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("{\n");
-        for (Map.Entry<String, String> entry: subfields.entrySet()) {
-            stringBuffer.append(entry.getKey() + ":" + entry.getValue() + "\n");
+    public String get(String sfName) {
+        String retVal = null;
+
+        if (sfName.length() == 3) {
+            subfields.stream().filter(f -> f.getName().equals(sfName)).findFirst();
+        }
+        else if (sfName.length() == 4) {
+
         }
 
-        stringBuffer.append("}");
-        return stringBuffer.toString();
+        return retVal;
     }
+
+
+//    @Override
+//    public String toString() {
+//        StringBuffer stringBuffer = new StringBuffer();
+//        stringBuffer.append("{\n");
+//        for (Map.Entry<String, String> entry: subfields.entrySet()) {
+//            stringBuffer.append(entry.getKey() + ":" + entry.getValue() + "\n");
+//        }
+//
+//        stringBuffer.append("}");
+//        return stringBuffer.toString();
+//    }
+
 }

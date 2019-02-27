@@ -1,10 +1,9 @@
 package bisis.utils;
 
-import bisis.winisis2bisis.SubfieldDataPair;
+import bisis.winisis2bisis.WField;
+import bisis.winisis2bisis.WSubField;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class WinIsisUtils {
 
@@ -24,34 +23,33 @@ public class WinIsisUtils {
         return retVal;
     }
 
-    public static List<SubfieldDataPair> getSubfieldsList(String line) {
-        List<SubfieldDataPair> retVal = new ArrayList<>();
+    public static WField makeWField(String line) {
+        WField retVal = new WField();
+
         String field = "";
 
         if (line.equals("") || !line.substring(0,6).matches(FIELD_REGEX))
-            return retVal;
+            return null;
         else {
             field = line.substring(2,5);
+            retVal.setName(field);
+            String[] chunks = line.split(SUBFIELD_DELIMITER);
             // Polje bez potpolja
             if (line.split(SUBFIELD_DELIMITER).length == 1) {
                 String data = line.substring(6,line.length());
-                SubfieldDataPair sfPair = new SubfieldDataPair(field, data);
-                retVal.add(sfPair);
+                retVal.setContent(data);
             }
+            if (retVal.getContent() == null && !line.substring(6, line.length()).startsWith("^"))
+                retVal.setContent(line.substring(6, line.indexOf('^')));
             // Polje sa potpoljima
             else {
-                String[] chunks = line.split(SUBFIELD_DELIMITER);
                 for(int i = 1; i < chunks.length; i++) {
                     String sf = chunks[i].substring(0,1);
                     String data = chunks[i].substring(1, chunks[i].length());
-                    SubfieldDataPair sfPair = new SubfieldDataPair(field + sf, data);
-                    retVal.add(sfPair);
+                    retVal.getSubfields().add(new WSubField(sf, data));
                 }
-
             }
         }
-
         return retVal;
     }
-
 }

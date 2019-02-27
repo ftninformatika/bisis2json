@@ -9,9 +9,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SubfieldDataPair {
+public class WSubField {
 
-    private String key;
-    private String data;
-
+    private String name;
+    private String content;
 }
