@@ -15,4 +15,5 @@ public class ItemAvailability implements java.io.Serializable{
     private String ctlgNo;
     private String recordID;
     private String libDepartment;
+    private Integer rn;
 }

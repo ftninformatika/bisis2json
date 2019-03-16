@@ -1,13 +1,12 @@
 package bisis.model.format;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
+import bisis.utils.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import bisis.utils.FileUtils;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Provides access to UNIMARC format and publication type definitions.
@@ -49,7 +48,7 @@ public class PubTypes {
     try {
       log.info("Loading UNIMARC format definition");
       format = FormatFactory.getFormat(PubTypes.class.getResource(
-          "/bisis/format/spec/unimarc_sr.xml").openStream());      
+          "/bisis/model/format/spec/unimarc_sr.xml").openStream());
       log.info("Loading publication type definitions");
       String dirName = "/bisis/format/spec";
       String[] files = FileUtils.listFiles(PubTypes.class, dirName);

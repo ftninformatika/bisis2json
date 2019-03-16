@@ -5,11 +5,13 @@ import bisis.model.coders.Counter;
 import bisis.model.jongo_records.JoPrimerak;
 import bisis.model.jongo_records.JoRecord;
 import bisis.model.records.ItemAvailability;
+import bisis.utils.FileUtils;
 import bisis.utils.textsrv.DBStorage;
 import bisis.utils.CSVUtils;
 import bisis.utils.ProgressBar;
 import bisis.utils.RecordUtils;
 import com.mongodb.DB;
+import com.mongodb.DuplicateKeyException;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 
@@ -101,7 +103,7 @@ public class RecordsTransfusionMachine {
             while (scannerU.hasNext()) {
                 try {
                     List<String> line = CSVUtils.parseLine(scannerU.nextLine());
-                    unpairedList.add(Integer.valueOf(line.get(1)));
+                    unpairedList.add(Integer.valueOf(line.get(0)));
                 } catch (Exception e) {
                     continue;
                 }
@@ -158,11 +160,38 @@ public class RecordsTransfusionMachine {
                         localRec.setRecordID(recIdCnt);
                         rnCnt++;
                         recIdCnt++;
+                        try {
+                            centralRecsCollection.save(localRec);
+                        }
+                        catch (DuplicateKeyException e) {
+                            String errMsg = "Vec postoji zapis sa RN ili recordID: " + rnCnt + ", " + recIdCnt + ", record_id(mysql):" + sys_id + "\n";
+                            System.out.println(errMsg);
+                            // TODO - refactor this to write into LOGGER
+                            FileUtils.writeTextFile(mysqlDbName + "_zapisi_greske.txt", errMsg);
+
+                        }
+                        catch (Exception e) {
+                            e.printStackTrace();
+                            FileUtils.writeTextFile(mysqlDbName + "_zapisi_greske.txt", e.getMessage() + "\n");
+                        }
                         List<ItemAvailability> items = RecordUtils.makeItemAvailabilitesForRec(localRec, locationDescription);
                         centralRecsCollection.save(localRec);
-                        for(ItemAvailability i: items)
-                            centralItemAvailabilitiesCollection.save(i);
-                    }
+                        for (ItemAvailability i : items) {
+                            try {
+                                centralItemAvailabilitiesCollection.save(i);
+                            }
+                            catch (DuplicateKeyException e) {
+                                String errMsg = "Vec postoji inv broj za primerak: "+ i.getCtlgNo();
+                                System.out.println(errMsg);
+                                FileUtils.writeTextFile(mysqlDbName + "_items_greske.txt", errMsg);
+                            }
+                            catch (Exception e) {
+                                e.printStackTrace();
+                                FileUtils.writeTextFile(mysqlDbName + "_postojeci_inv.txt", e.getMessage() + "\n");
+                            }
+                        }
+
+                     }
                 }
                 if (cnt % 100 == 0)
                     progressBar.update(cnt, localRecIds.size());

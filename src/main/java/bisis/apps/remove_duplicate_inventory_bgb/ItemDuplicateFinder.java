@@ -3,6 +3,8 @@ package bisis.apps.remove_duplicate_inventory_bgb;
 import bisis.utils.LimitedOutputStream;
 import bisis.utils.ProgressBar;
 import com.mongodb.client.*;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.Indexes;
 import org.bson.Document;
 
 import java.io.BufferedWriter;
@@ -11,11 +13,7 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ItemDuplicateFinder {
 
@@ -26,16 +24,24 @@ public class ItemDuplicateFinder {
 
     // TODO - refactor to be generic and applicable to other libraries
     public static void main(String[] args) throws IOException {
-        MongoClient mongoClient = MongoClients.create(DEV_MONGO_DB_URI);
+        MongoClient mongoClient = MongoClients.create(TUNNEL_PROD_DB_URI);
         MongoDatabase db = mongoClient.getDatabase(DB_NAME);
         MongoCollection recordsCollection = db.getCollection("bgb_records");
         MongoCollection itemAvailibilitiesCollection = db.getCollection("bgb_itemAvailability");
         MongoCollection otherIACollection = db.getCollection("bgb_ItemAvailability");
-        MongoCollection newICollection = db.getCollection("NEW_bgb_itemAvailability");
         MongoCollection locationCollection = db.getCollection("coders.location");
+
+        MongoCollection newICollection = db.getCollection("bgb_itemAvailability");
+        IndexOptions indexOptions = new IndexOptions().unique(true);
+        newICollection.createIndex(Indexes.descending("rn"));
+        newICollection.createIndex(Indexes.descending("recordID"));
+        newICollection.createIndex(Indexes.ascending("ctlgNo"), indexOptions);
+
         Map<String, String> locations = getLocationMap(locationCollection);
-//        createItemAvailabilityCollection(recordsCollection, newICollection, locations);
-        writeItemsToFile(recordsCollection, Paths.get("./primerci_bgb.csv"));
+
+
+        createItemAvailabilityCollection(recordsCollection, newICollection, locations);
+//        writeItemsToFile(recordsCollection, Paths.get("./primerci_bgb.csv"));
 //        checkDuplicatedCollection(otherIACollection, itemAvailibilitiesCollection);
     }
 
@@ -125,6 +131,7 @@ public class ItemDuplicateFinder {
             Document rDoc = docRecs.next();
             Integer rn  = rDoc.getInteger("rn");
             Integer recordID = rDoc.getInteger("recordID");
+            List<Document> newItems = new ArrayList<>();
             if (rDoc.get("primerci") != null) {
                 List<Document> primerci = rDoc.getList("primerci", Document.class);
                 for (Document p: primerci) {
@@ -142,9 +149,11 @@ public class ItemDuplicateFinder {
                     item.append("recordID", String.valueOf(recordID));
                     item.append("libDepartment", libDepartment);
                     item.append("borrowed", false);
-                    newCollection.insertOne(item);
+                    newItems.add(item);
                 }
             }
+            if (newItems.size() > 0)
+                newCollection.insertMany(newItems);
             cnt++;
             progressBar.update(cnt, total);
         }

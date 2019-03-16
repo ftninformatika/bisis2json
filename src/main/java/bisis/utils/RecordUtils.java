@@ -20,6 +20,7 @@ public class RecordUtils {
                 ia.setBorrowed(false);
                 ia.setCtlgNo(p.getInvBroj());
                 ia.setRecordID(String.valueOf(record.getRecordID()));
+                ia.setRn(record.getRN());
                 retVal.add(ia);
             }
         }
@@ -31,6 +32,7 @@ public class RecordUtils {
                 ia.setBorrowed(false);
                 ia.setCtlgNo(g.getInvBroj());
                 ia.setRecordID(String.valueOf(record.getRecordID()));
+                ia.setRn(record.getRN());
                 retVal.add(ia);
             }
         }
@@ -50,6 +52,7 @@ public class RecordUtils {
                     ia.setBorrowed(false);
                     ia.setCtlgNo(p.getInvBroj());
                     ia.setRecordID(String.valueOf(record.getRecordID()));
+                    ia.setRn(record.getRN());
                     retVal = ia;
                     break;
                 }
@@ -65,6 +68,7 @@ public class RecordUtils {
                     ia.setBorrowed(false);
                     ia.setCtlgNo(g.getInvBroj());
                     ia.setRecordID(String.valueOf(record.getRecordID()));
+                    ia.setRn(record.getRN());
                     retVal = ia;
                     break;
                 }
