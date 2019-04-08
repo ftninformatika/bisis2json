@@ -2,14 +2,14 @@ package bisis.apps.prepis_bgb;
 
 import bisis.model.coders.Coder;
 import bisis.model.coders.Counter;
+import bisis.model.jongo_records.JoGodina;
 import bisis.model.jongo_records.JoPrimerak;
 import bisis.model.jongo_records.JoRecord;
 import bisis.model.records.ItemAvailability;
-import bisis.utils.FileUtils;
-import bisis.utils.textsrv.DBStorage;
 import bisis.utils.CSVUtils;
 import bisis.utils.ProgressBar;
 import bisis.utils.RecordUtils;
+import bisis.utils.textsrv.DBStorage;
 import com.mongodb.DB;
 import com.mongodb.DuplicateKeyException;
 import org.jongo.Jongo;
@@ -129,6 +129,18 @@ public class RecordsTransfusionMachine {
                     }
                 }
 
+                for (JoGodina g: localRec.getGodine()) {
+                    if (g.getSigIntOznaka() != null  && InventoryCodersPairingMap.internalMarkMap.get(g.getSigIntOznaka()) != null) {
+                        g.setSigIntOznaka(InventoryCodersPairingMap.internalMarkMap.get(g.getSigIntOznaka()));
+                    }
+                    // mapiranja ispod su za periodiku
+                    if(!mysqlDbName.equals("periodika_bgb"))
+                        continue;
+                    if (g.getNacinNabavke() != null && InventoryCodersPairingMap.acqTypeMap.get(g.getNacinNabavke()) != null) {
+                        g.setNacinNabavke(InventoryCodersPairingMap.acqTypeMap.get(g.getNacinNabavke()));
+                    }
+                }
+
                 Integer centralRn = localCentralMap.get(localRec.getRN());
                 if (centralRn != null && centralRecsCollection.findOne("{rn:" + centralRn + "}").as(JoRecord.class) != null) {
                     JoRecord centralRec = centralRecsCollection.findOne("{rn:" + centralRn + "}").as(JoRecord.class);
@@ -155,7 +167,7 @@ public class RecordsTransfusionMachine {
                         for(ItemAvailability i: items)
                             centralItemAvailabilitiesCollection.save(i);
                     }
-                    if (copyUnpaired && unpairedList.contains(sys_id)){
+                    if (copyUnpaired && unpairedList.contains(sys_id)) {
                         localRec.setRN(rnCnt);
                         localRec.setRecordID(recIdCnt);
                         rnCnt++;
@@ -167,12 +179,12 @@ public class RecordsTransfusionMachine {
                             String errMsg = "Vec postoji zapis sa RN ili recordID: " + rnCnt + ", " + recIdCnt + ", record_id(mysql):" + sys_id + "\n";
                             System.out.println(errMsg);
                             // TODO - refactor this to write into LOGGER
-                            FileUtils.writeTextFile(mysqlDbName + "_zapisi_greske.txt", errMsg);
+//                            FileUtils.writeTextFile(mysqlDbName + "_zapisi_greske.txt", errMsg);
 
                         }
                         catch (Exception e) {
                             e.printStackTrace();
-                            FileUtils.writeTextFile(mysqlDbName + "_zapisi_greske.txt", e.getMessage() + "\n");
+//                            FileUtils.writeTextFile(mysqlDbName + "_zapisi_greske.txt", e.getMessage() + "\n");
                         }
                         List<ItemAvailability> items = RecordUtils.makeItemAvailabilitesForRec(localRec, locationDescription);
                         centralRecsCollection.save(localRec);
@@ -183,11 +195,11 @@ public class RecordsTransfusionMachine {
                             catch (DuplicateKeyException e) {
                                 String errMsg = "Vec postoji inv broj za primerak: "+ i.getCtlgNo();
                                 System.out.println(errMsg);
-                                FileUtils.writeTextFile(mysqlDbName + "_items_greske.txt", errMsg);
+//                                FileUtils.writeTextFile(mysqlDbName + "_items_greske.txt", errMsg);
                             }
                             catch (Exception e) {
                                 e.printStackTrace();
-                                FileUtils.writeTextFile(mysqlDbName + "_postojeci_inv.txt", e.getMessage() + "\n");
+//                                FileUtils.writeTextFile(mysqlDbName + "_postojeci_inv.txt", e.getMessage() + "\n");
                             }
                         }
 
