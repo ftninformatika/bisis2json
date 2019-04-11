@@ -1,4 +1,4 @@
-package bisis.apps.export;
+package bisis.apps.export.csv;
 
 import bisis.model.jongo_records.JoRecord;
 import bisis.model.prefixes.PrefixConverter;

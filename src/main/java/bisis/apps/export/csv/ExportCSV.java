@@ -1,4 +1,4 @@
-package bisis.apps.export;
+package bisis.apps.export.csv;
 
 import bisis.model.records.Record;
 import bisis.utils.textsrv.DBStorage;
