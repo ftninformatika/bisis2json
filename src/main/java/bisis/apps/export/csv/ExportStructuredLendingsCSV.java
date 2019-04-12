@@ -27,7 +27,7 @@ import java.util.List;
 public class ExportStructuredLendingsCSV {
 
     public static final String CSV_HEADER = "rn\tmongoid\tlibrary\tauthor_full\tauthor_name\tauthor_surname\ttitle\tlanguage\tpublisher\tpublication_year\tudc\tctlg_no\tuser_id\tlend_date\tlocation\n";
-    public static final String DATE_PATTERN = "dd.MM.yyyy";
+    public static final String DATE_PATTERN = "yyyy-MM-dd";
 
     public static void main(String[] args) {
         DateFormat df = new SimpleDateFormat(DATE_PATTERN);
@@ -132,7 +132,8 @@ public class ExportStructuredLendingsCSV {
     private static String format(String cell) {
         if (cell == null)
             return "";
-        return LatCyrUtils.toLatinUnaccented(cell.replace("\t"," ").replace("\n", " ")).toLowerCase();
+        return LatCyrUtils.toLatinUnaccented(cell.replace("\t"," ")
+                .replace("\n", " ")).replace("\"","").toLowerCase();
     }
 
 }
