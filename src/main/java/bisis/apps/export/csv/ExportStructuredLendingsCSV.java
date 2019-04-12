@@ -2,9 +2,9 @@ package bisis.apps.export.csv;
 
 import bisis.model.config.LibraryConfiguration;
 import bisis.model.jongo_circ.JoLending;
+import bisis.model.jongo_records.JoPrimerak;
 import bisis.model.jongo_records.JoRecord;
 import bisis.model.records.Field;
-import bisis.model.records.Record;
 import bisis.model.records.Subfield;
 import bisis.utils.LatCyrUtils;
 import bisis.utils.ProgressBar;
@@ -32,7 +32,7 @@ public class ExportStructuredLendingsCSV {
     public static void main(String[] args) {
         DateFormat df = new SimpleDateFormat(DATE_PATTERN);
         try {
-            MongoClient mongoClient = new MongoClient("localhost", 27018);
+            MongoClient mongoClient = new MongoClient("localhost", 27017);
             DB db = mongoClient.getDB("bisis");
             Jongo jongo = new Jongo(db);
             MongoCursor<LibraryConfiguration> curConfigs = jongo.getCollection("configs").find().as(LibraryConfiguration.class);
@@ -41,40 +41,45 @@ public class ExportStructuredLendingsCSV {
                 PrintWriter errFile = new PrintWriter(new File("errors_" + lc.getLibraryName() + ".txt"));
                 exportFile.write(CSV_HEADER);
                 System.out.println("Starting generating csv for: " + lc.getLibraryName());
-                MongoCursor<JoLending> curLendings = jongo.getCollection(lc.getLibraryName() + "_lendings").find().as(JoLending.class);
+                MongoCollection collLendings = jongo.getCollection(lc.getLibraryName() + "_lendings");
                 int count = 0;
-                int lendingCount = curLendings.count();
                 ProgressBar progressBar = new ProgressBar();
-                MongoCollection collRecords = jongo.getCollection(lc.getLibraryName() + "_records");
-                MongoCollection collItemAvailability = jongo.getCollection(lc.getLibraryName() + "_itemAvailability");
-                while(curLendings.hasNext()) {
-                    JoLending lending = curLendings.next();
-                    JoRecord rec = collRecords.findOne("{'primerci.invBroj':#}", lending.getCtlgNo()).as(JoRecord.class);
-                    CsvItem row = new CsvItem();
-                    if (rec == null) {
-                        System.out.println("Error for lending with ctlgNo: " + lending.getCtlgNo());
-                        errFile.write("Error for lending with ctlgNo: " + lending.getCtlgNo() + "\n");
+                MongoCursor<JoRecord> curRecords = jongo.getCollection(lc.getLibraryName() + "_records").find().as(JoRecord.class);
+                int lendingCount = curRecords.count();
+                while(curRecords.hasNext()) {
+                    JoRecord rec = curRecords.next();
+                    if (rec == null || rec.getPrimerci().size() == 0)
                         continue;
+                    for (JoPrimerak p: rec.getPrimerci()) {
+                        if (p.getInvBroj() == null || p.getInvBroj().equals(""))
+                            continue;
+                        MongoCursor<JoLending> currLending = collLendings.find("{'ctlgNo':#}", p.getInvBroj()).as(JoLending.class);
+                        if (currLending == null || currLending.count() == 0)
+                            continue;
+                        while (currLending.hasNext()) {
+                            JoLending lending = currLending.next();
+                            CsvItem row = new CsvItem();
+                            row.setRn(String.valueOf(rec.getRN()));
+                            row.setMongoid(rec.get_id());
+                            row.setLibrary(lc.getLibraryName());
+                            row.setAuthor_full(null == rec.getSubfieldContent("200f") ? "" : format(rec.getSubfieldContent("200f")));
+                            row.setAuthor_name(getAuthorName(rec));
+                            row.setAuthor_surname(getAuthorSurname(rec));
+                            row.setTitle(null == rec.getSubfieldContent("200a") ? "" : format(rec.getSubfieldContent("200a")));
+                            row.setLanguage(null == rec.getSubfieldContent("101a") ? "" : format(rec.getSubfieldContent("101a")));
+                            row.setPublisher(null == rec.getSubfieldContent("210c") ? "" : format(rec.getSubfieldContent("210c")));
+                            row.setPublication_year(null == rec.getSubfieldContent("210d") ? "" : format(rec.getSubfieldContent("210d")));
+                            row.setUdc(getAllUDC(rec));
+                            row.setCtlg_no(format(lending.getCtlgNo()));
+                            row.setUser_id(format(lending.getUserId()));
+                            row.setLend_date(null == lending.getLendDate() ? "" : format(df.format(lending.getLendDate())));
+                            row.setLocation(format(lending.getLocation()));
+                            exportFile.write(row.toString());
+                            if (count % 100 == 0)
+                                progressBar.update(count, lendingCount);
+                        }
                     }
-                    row.setRn(String.valueOf(rec.getRN()));
-                    row.setMongoid(rec.get_id());
-                    row.setLibrary(lc.getLibraryName());
-                    row.setAuthor_full(null == rec.getSubfieldContent("200f") ? "" : format(rec.getSubfieldContent("200f")));
-                    row.setAuthor_name(getAuthorName(rec));
-                    row.setAuthor_surname(getAuthorSurname(rec));
-                    row.setTitle(null == rec.getSubfieldContent("200a") ? "" : format(rec.getSubfieldContent("200a")));
-                    row.setLanguage(null == rec.getSubfieldContent("101a") ? "" : format(rec.getSubfieldContent("101a")));
-                    row.setPublisher(null == rec.getSubfieldContent("210c") ? "" : format(rec.getSubfieldContent("210c")));
-                    row.setPublication_year(null == rec.getSubfieldContent("210d") ? "" : format(rec.getSubfieldContent("210d")));
-                    row.setUdc(getAllUDC(rec));
-                    row.setCtlg_no(format(lending.getCtlgNo()));
-                    row.setUser_id(format(lending.getUserId()));
-                    row.setLend_date(null == lending.getLendDate() ? "" : format(df.format(lending.getLendDate())));
-                    row.setLocation(format(lending.getLocation()));
-                    exportFile.write(row.toString());
                     count++;
-                    if (count % 1000 == 0)
-                        progressBar.update(count, lendingCount);
                 }
                 exportFile.close();
                 errFile.close();
@@ -83,12 +88,6 @@ public class ExportStructuredLendingsCSV {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-    }
-//TODO: this may be faster than current query
-    private static Record getRecFromInv(String inv, MongoCollection collItem, MongoCollection collRec) {
-        if (inv == null)
-            return null;
-        return null;
     }
 
     private static String getAuthorName(JoRecord r) {
