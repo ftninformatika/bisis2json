@@ -380,6 +380,8 @@ public class JoRecord implements Serializable {
 
     public JoGodina getGodina(String invBroj){
         for(JoGodina g:godine){
+            if (g.getInvBroj() == null)
+                return null;
             if(g.getInvBroj().equals(invBroj))
                 return g;
         }
