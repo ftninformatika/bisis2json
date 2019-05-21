@@ -1,24 +1,13 @@
 package bisis.utils.textsrv;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
+import bisis.model.records.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import bisis.model.records.Author;
-import bisis.model.records.Godina;
-import bisis.model.records.Primerak;
-import bisis.model.records.Record;
-import bisis.model.records.RecordFactory;
-import bisis.model.records.Sveska;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 public class DBStorage {
@@ -30,6 +19,28 @@ public class DBStorage {
    */
   public int getNewRecordID(Connection conn) {
     return getNewID(conn, "recordid");
+  }
+
+  public Record getByInvNum(String inv, Connection conn) throws SQLException {
+      if (inv == null) return null;
+      Statement stmt = conn.createStatement();
+      ResultSet rset = stmt.executeQuery("SELECT record_id from Primerci WHERE inv_broj=" + inv);
+      int recordId = 0;
+      if (rset.next()) {
+          recordId = rset.getInt(1);
+      }
+      if (recordId == 0) return null;
+      return get(conn, recordId);
+  }
+
+  public Record getByRn(Connection conn, int RN) throws SQLException {
+    Statement stmt = conn.createStatement();
+    ResultSet rset = stmt.executeQuery("SELECT record_id from Records WHERE rn=" + RN);
+    if(rset.next()) {
+      int record_id = rset.getInt(1);
+      return get(conn, record_id);
+    }
+    return null;
   }
   
   /**

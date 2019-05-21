@@ -165,9 +165,66 @@ public class MembersMerger {
         foundMembersWriter.close();
         System.out.println("\nFinished migrating members from " + branchPrefix + " to central library.");
         System.out.println("Merged: " + found + " members.");
-
     }
 
+
+    public void mergeWinIsis2Bisis(DB mongoDatabase, List<JoMember> winMembers, List<JoLending> winLendings, boolean mergeMembersMode, boolean printMergedMode) throws FileNotFoundException {
+        String locationId = "900";
+        Jongo jongo = new Jongo(mongoDatabase);
+        MongoCollection centralMembersCollection = jongo.getCollection("gbns_members");
+        MongoCollection lendingsCentralCollection = jongo.getCollection("gbns_lendings");
+        MongoCollection cmCentralCollection = jongo.getCollection("gbns_corporate_member");
+        PrintWriter foundMembersWriter = new PrintWriter(new File("gbns" + MERGED_MEMBERS_FILE_NAME_CHUNK));
+
+        int cnt = 0;
+        int found = 0;
+        System.out.println("Migrating members starting...");
+        if (mergeMembersMode)
+            System.out.println("Merge members mode ON.");
+        if (printMergedMode)
+            System.out.println("Printing merged members ON.");
+        ProgressBar progressBar = new ProgressBar();
+        for (JoMember winMember: winMembers) {
+            cnt++;
+            JoMember centralMember = centralMembersCollection.findOne("{'userId':#}", winMember.getUserId()).as(JoMember.class);
+            if (centralMember != null) {
+                if (isSameMember(winMember, centralMember) && mergeMembersMode) {
+                    // Pretpostavka da su potpuniji podaci u win-isisu
+                    winMember.getSignings().addAll(centralMember.getSignings());
+                    winMember.getDuplicates().addAll(centralMember.getDuplicates());
+                    winMember.getPicturebooks().addAll(centralMember.getPicturebooks());
+                    List<JoLending> joLendingList = winLendings.stream().filter(l -> l.getUserId().equals(winMember.getUserId())).collect(Collectors.toList());
+                    joLendingList.stream().forEach(l -> lendingsCentralCollection.save(l));
+                    centralMembersCollection.save(winMember);
+                    found++;
+                    if (printMergedMode)
+                        foundMembersWriter.write(toStringCompareMembers(winMember, centralMember));
+                }
+                else {
+                    // Generate new userId and copy it to central
+                    String userId = computeUserId(locationId);
+                    List<JoLending> joLendingList = winLendings.stream().filter(l -> l.getUserId().equals(winMember.getUserId())).collect(Collectors.toList());
+                    joLendingList.stream().forEach(l -> l.setUserId(userId));
+                    winMember.setOldNumbers(winMember.getUserId());
+                    winMember.setUserId(userId);
+                    centralMembersCollection.save(winMember);
+                    joLendingList.forEach(l -> lendingsCentralCollection.save(l));
+                    USER_ID_CNT++;
+                }
+            }
+            else {
+                List<JoLending> joLendingList = winLendings.stream().filter(l -> l.getUserId().equals(winMember.getUserId())).collect(Collectors.toList());
+                centralMembersCollection.save(winMember);
+                joLendingList.stream().forEach(l -> lendingsCentralCollection.save(l));
+            }
+            if (cnt % 100 == 0)
+                progressBar.update(cnt, winMembers.size());
+        }
+        progressBar.update(winMembers.size(), winMembers.size());
+        foundMembersWriter.close();
+        System.out.println("\nFinished migrating members from WinIsis export to central library.");
+        System.out.println("Merged: " + found + " members.");
+    }
 
     private static boolean isSameMember(JoMember m, JoMember m2) {
         if (m.getFirstName().toLowerCase().equals(m2.getFirstName().toLowerCase())
