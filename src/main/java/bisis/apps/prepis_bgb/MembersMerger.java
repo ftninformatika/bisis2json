@@ -4,8 +4,10 @@ import bisis.model.circ.CircLocation;
 import bisis.model.circ.Lending;
 import bisis.model.jongo_circ.JoLending;
 import bisis.model.jongo_circ.JoMember;
+import bisis.utils.LatCyrUtils;
 import bisis.utils.ProgressBar;
 import com.mongodb.DB;
+import com.mongodb.DuplicateKeyException;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.jongo.MongoCursor;
@@ -17,10 +19,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MembersMerger {
@@ -167,14 +166,38 @@ public class MembersMerger {
         System.out.println("Merged: " + found + " members.");
     }
 
+    private String getNextUserId(String userId, MongoCollection membersCollection) {
+        if (userId == null || userId.length() != 11)
+            return null;
+        String loc = userId.substring(0,3);
+        MongoCursor<JoMember> jm  = membersCollection.find("{userId: {$regex: #}}", "^"+loc+".*$").projection("{userId:1}").sort("{userId:-1}").as(JoMember.class);
+        if (jm.hasNext()) {
+            JoMember tmpJm = jm.next();
+            if (tmpJm.getUserId() == null || tmpJm.getUserId().length() != 11)
+                return null;
+            String lastUserId = tmpJm.getUserId();
+            try {
+                String next = String.valueOf(Integer.parseInt(lastUserId.substring(3)) + 1);
+                int zerosBetween = 8 - next.length();
+                next = loc + String.join("", Collections.nCopies(zerosBetween, "0")) + next;
+                if (next.length() != 11) return  null;
+
+                return next;
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
 
     public void mergeWinIsis2Bisis(DB mongoDatabase, List<JoMember> winMembers, List<JoLending> winLendings, boolean mergeMembersMode, boolean printMergedMode) throws FileNotFoundException {
-        String locationId = "900";
         Jongo jongo = new Jongo(mongoDatabase);
         MongoCollection centralMembersCollection = jongo.getCollection("gbns_members");
         MongoCollection lendingsCentralCollection = jongo.getCollection("gbns_lendings");
         MongoCollection cmCentralCollection = jongo.getCollection("gbns_corporate_member");
         PrintWriter foundMembersWriter = new PrintWriter(new File("gbns" + MERGED_MEMBERS_FILE_NAME_CHUNK));
+        PrintWriter mmWriter = new PrintWriter(new File("gbns_members_changedId.txt"));
 
         int cnt = 0;
         int found = 0;
@@ -190,25 +213,49 @@ public class MembersMerger {
             if (centralMember != null) {
                 if (isSameMember(winMember, centralMember) && mergeMembersMode) {
                     // Pretpostavka da su potpuniji podaci u win-isisu
-                    winMember.getSignings().addAll(centralMember.getSignings());
-                    winMember.getDuplicates().addAll(centralMember.getDuplicates());
-                    winMember.getPicturebooks().addAll(centralMember.getPicturebooks());
+                    if (winMember.getPicturebooks() == null) winMember.setPicturebooks(new ArrayList<>());
+                    if (winMember.getSignings() == null) winMember.setSignings(new ArrayList<>());
+                    if (winMember.getDuplicates() == null) winMember.setDuplicates(new ArrayList<>());
+                    if (centralMember.getPicturebooks() == null) centralMember.setPicturebooks(new ArrayList<>());
+                    if (centralMember.getSignings() == null) centralMember.setSignings(new ArrayList<>());
+                    if (centralMember.getDuplicates() == null) centralMember.setDuplicates(new ArrayList<>());
+                    if (centralMember.getJmbg() != null && winMember.getJmbg() != null) centralMember.setJmbg(winMember.getJmbg());
+
+                    centralMember.getSignings().addAll(winMember.getSignings());
+                    centralMember.getDuplicates().addAll(winMember.getDuplicates());
+                    centralMember.getPicturebooks().addAll(winMember.getPicturebooks());
                     List<JoLending> joLendingList = winLendings.stream().filter(l -> l.getUserId().equals(winMember.getUserId())).collect(Collectors.toList());
                     joLendingList.stream().forEach(l -> lendingsCentralCollection.save(l));
-                    centralMembersCollection.save(winMember);
+                    centralMembersCollection.save(centralMember);
                     found++;
                     if (printMergedMode)
                         foundMembersWriter.write(toStringCompareMembers(winMember, centralMember));
                 }
                 else {
                     // Generate new userId and copy it to central
-                    String userId = computeUserId(locationId);
+//                    String userId = computeUserId(locationId);
+                    String userId = getNextUserId(winMember.getUserId(), centralMembersCollection);
+                    if (userId == null) {
+                        System.err.println("Error generating new userId for: " + winMember.getUserId());
+                        continue;
+                    }
                     List<JoLending> joLendingList = winLendings.stream().filter(l -> l.getUserId().equals(winMember.getUserId())).collect(Collectors.toList());
                     joLendingList.stream().forEach(l -> l.setUserId(userId));
                     winMember.setOldNumbers(winMember.getUserId());
                     winMember.setUserId(userId);
-                    centralMembersCollection.save(winMember);
-                    joLendingList.forEach(l -> lendingsCentralCollection.save(l));
+                    try {
+                        centralMembersCollection.save(winMember);
+                    } catch (DuplicateKeyException e) {
+                        System.err.println("Duplicate key for member: " + winMember.getUserId());
+                    }
+                    joLendingList.forEach(l -> {
+                        try {
+                            lendingsCentralCollection.save(l);
+                        } catch (DuplicateKeyException e) {
+                            System.err.println("Duplicate key for lending: " + l.getCtlgNo());
+                        }
+                    });
+                    mmWriter.write(toStringCompareMembers(winMember, centralMember));
                     USER_ID_CNT++;
                 }
             }
@@ -222,14 +269,19 @@ public class MembersMerger {
         }
         progressBar.update(winMembers.size(), winMembers.size());
         foundMembersWriter.close();
+        mmWriter.close();
         System.out.println("\nFinished migrating members from WinIsis export to central library.");
         System.out.println("Merged: " + found + " members.");
     }
 
     private static boolean isSameMember(JoMember m, JoMember m2) {
-        if (m.getFirstName().toLowerCase().equals(m2.getFirstName().toLowerCase())
-                && m.getLastName().toLowerCase().equals(m2.getLastName().toLowerCase())
-                && m.getParentName().toLowerCase().equals(m2.getParentName().toLowerCase()))
+        if (m.getJmbg() != null && m2.getJmbg() != null && m.getJmbg().equals(m2.getJmbg()))
+            return true;
+        if (m.getFirstName() == null || m.getLastName() == null
+            || m2.getFirstName() == null || m2.getLastName() == null)
+            return false;
+        if (LatCyrUtils.toLatinUnaccented(m.getFirstName().toLowerCase()).trim().equals(LatCyrUtils.toLatinUnaccented(m2.getFirstName().toLowerCase()).trim())
+                && LatCyrUtils.toLatinUnaccented(m.getLastName().toLowerCase()).trim().equals(LatCyrUtils.toLatinUnaccented(m2.getLastName().toLowerCase()).trim()))
             return true;
         return false;
     }
