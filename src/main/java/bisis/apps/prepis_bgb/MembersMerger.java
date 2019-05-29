@@ -189,6 +189,42 @@ public class MembersMerger {
         return null;
     }
 
+    private static JoMember fillMemberProps(JoMember m) {
+        if (m.getLanguage() == null) m.setLanguage("");
+        if (m.getEducationLevel() == null) m.setEducationLevel("");
+        if (m.getFirstName() == null) m.setFirstName("");
+        if (m.getLastName() == null) m.setLastName("");
+        if (m.getParentName() == null) m.setParentName("");
+        if (m.getAddress() == null) m.setAddress("");
+        if (m.getCity() == null) m.setCity("");
+        if (m.getDocId() == null) m.setDocId(0);
+        if (m.getZip() == null) m.setZip("");
+        if (m.getPhone() == null) m.setPhone("");
+        if (m.getEmail() == null) m.setEmail("");
+        if (m.getPassword() == null) m.setPassword("");
+        if (m.getJmbg() == null) m.setJmbg("");
+        if (m.getDocNo() == null) m.setDocNo("");
+        if (m.getDocCity() == null) m.setDocCity("");
+        if (m.getCountry() == null) m.setCountry("");
+        if (m.getGender() == null) m.setGender("M");
+        if (m.getAge() == null) m.setAge("A");
+        if (m.getSecAddress() == null) m.setSecAddress("");
+        if (m.getSecZip() == null) m.setSecZip("");
+        if (m.getSecCity() == null) m.setSecCity("");
+        if (m.getSecPhone() == null) m.setSecPhone("");
+        if (m.getNote() == null) m.setNote("");
+        if (m.getLanguage() == null) m.setLanguage("");
+        if (m.getLanguage() == null) m.setLanguage("");
+        if (m.getLanguage() == null) m.setLanguage("");
+        if (m.getLanguage() == null) m.setLanguage("");
+        if (m.getLanguage() == null) m.setLanguage("");
+        if (m.getTitle() == null) m.setTitle("");
+        if (m.getOccupation() == null) m.setOccupation("");
+        if (m.getIndexNo() == null) m.setIndexNo("");
+        if (m.getClassNo() == null) m.setClassNo(0);
+        return m;
+    }
+
 
     public void mergeWinIsis2Bisis(DB mongoDatabase, List<JoMember> winMembers, List<JoLending> winLendings, boolean mergeMembersMode, boolean printMergedMode) throws FileNotFoundException {
         Jongo jongo = new Jongo(mongoDatabase);
@@ -222,6 +258,9 @@ public class MembersMerger {
                     JoMember[] mems = getPrimaryMember(centralMember, winMember);
                     JoMember primary = mems[0];
                     JoMember sec = mems[1];
+                    primary = fillMemberProps(primary);
+
+                    if (primary.get_id() == null) primary.set_id(sec.get_id());
 
                     primary.getSignings().addAll(sec.getSignings());
                     primary.getDuplicates().addAll(sec.getDuplicates());
