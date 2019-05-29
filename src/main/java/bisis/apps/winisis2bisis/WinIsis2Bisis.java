@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
-import org.json.JSONArray;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,15 +26,6 @@ public class WinIsis2Bisis {
         try {
             byte[] jsonDataMembers = Files.readAllBytes(Paths.get("./gbnsMembersJava.json"));
             byte[] jsonDataLendings = Files.readAllBytes(Paths.get("./gbnsLendingsJava.json"));
-
-            JSONArray jsonArray = new JSONArray(new String(jsonDataMembers));
-
-//            List<JoMember> members = new ArrayList<>();
-//
-//            for (Object jo: jsonArray) {
-//                JoMember jm = objectMapper.convertValue(jo, JoMember.class);
-//                members.add(jm);
-//            }
 
             List<JoMember> members = objectMapper.readValue(jsonDataMembers, objectMapper.getTypeFactory().constructCollectionType(List.class, JoMember.class));
             List<JoLending> lendings = objectMapper.readValue(jsonDataLendings, objectMapper.getTypeFactory().constructCollectionType(List.class, JoLending.class));

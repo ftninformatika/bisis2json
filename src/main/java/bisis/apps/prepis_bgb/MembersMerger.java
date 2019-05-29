@@ -4,6 +4,7 @@ import bisis.model.circ.CircLocation;
 import bisis.model.circ.Lending;
 import bisis.model.jongo_circ.JoLending;
 import bisis.model.jongo_circ.JoMember;
+import bisis.model.jongo_circ.JoSigning;
 import bisis.utils.LatCyrUtils;
 import bisis.utils.ProgressBar;
 import com.mongodb.DB;
@@ -15,11 +16,9 @@ import org.jongo.MongoCursor;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.*;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 public class MembersMerger {
@@ -212,7 +211,6 @@ public class MembersMerger {
             JoMember centralMember = centralMembersCollection.findOne("{'userId':#}", winMember.getUserId()).as(JoMember.class);
             if (centralMember != null) {
                 if (isSameMember(winMember, centralMember) && mergeMembersMode) {
-                    // Pretpostavka da su potpuniji podaci u win-isisu
                     if (winMember.getPicturebooks() == null) winMember.setPicturebooks(new ArrayList<>());
                     if (winMember.getSignings() == null) winMember.setSignings(new ArrayList<>());
                     if (winMember.getDuplicates() == null) winMember.setDuplicates(new ArrayList<>());
@@ -221,15 +219,19 @@ public class MembersMerger {
                     if (centralMember.getDuplicates() == null) centralMember.setDuplicates(new ArrayList<>());
                     if (centralMember.getJmbg() != null && winMember.getJmbg() != null) centralMember.setJmbg(winMember.getJmbg());
 
-                    centralMember.getSignings().addAll(winMember.getSignings());
-                    centralMember.getDuplicates().addAll(winMember.getDuplicates());
-                    centralMember.getPicturebooks().addAll(winMember.getPicturebooks());
-                    List<JoLending> joLendingList = winLendings.stream().filter(l -> l.getUserId().equals(winMember.getUserId())).collect(Collectors.toList());
+                    JoMember[] mems = getPrimaryMember(centralMember, winMember);
+                    JoMember primary = mems[0];
+                    JoMember sec = mems[1];
+
+                    primary.getSignings().addAll(sec.getSignings());
+                    primary.getDuplicates().addAll(sec.getDuplicates());
+                    primary.getPicturebooks().addAll(sec.getPicturebooks());
+                    List<JoLending> joLendingList = winLendings.stream().filter(l -> l.getUserId().equals(sec.getUserId())).collect(Collectors.toList());
                     joLendingList.stream().forEach(l -> lendingsCentralCollection.save(l));
-                    centralMembersCollection.save(centralMember);
+                    centralMembersCollection.save(primary);
                     found++;
                     if (printMergedMode)
-                        foundMembersWriter.write(toStringCompareMembers(winMember, centralMember));
+                        foundMembersWriter.write(toStringCompareMembers(sec, primary));
                 }
                 else {
                     // Generate new userId and copy it to central
@@ -292,6 +294,47 @@ public class MembersMerger {
         return retVal;
     }
 
+    private static JoMember[] getPrimaryMember(JoMember m1, JoMember m2) {
+        if (m1 == null || m2 == null)
+            return null;
+        JoMember[] retVal = {m1, m2};
+        if (m1.getSignings() == null || m1.getSignings().size() == 0) {
+            retVal[0] = m2;
+            retVal[1] = m1;
+            return retVal;
+        }
+        Date maxSign1 = Collections.max(m1.getSignings(), Comparator.comparing(JoSigning::getSignDate)).getSignDate();
+        if (m2.getSignings() == null || m2.getSignings().size() == 0) {
+            retVal[0] = m1;
+            retVal[1] = m2;
+            return retVal;
+        }
+        Date maxSign2 = Collections.max(m2.getSignings(), Comparator.comparing(JoSigning::getSignDate)).getSignDate();
+        if (maxSign1 == null) {
+            retVal[0] = m2;
+            retVal[1] = m1;
+            return retVal;
+        }
+        if (maxSign2 == null) {
+            retVal[0] = m1;
+            retVal[1] = m2;
+            return retVal;
+        }
+        if (maxSign1.before(maxSign2)) {
+            retVal[0] = m2;
+            retVal[1] = m1;
+        }
+        else if (maxSign2.before(maxSign1)) {
+            retVal[0] = m1;
+            retVal[1] = m2;
+        }
+        else {
+            retVal[0] = m2;
+            retVal[1] = m1;
+        };
+        return retVal;
+    }
+
     private static String computeUserId(String prefix) {
         String retVal = prefix;
         int nums = String.valueOf(USER_ID_CNT).length();
@@ -316,4 +359,5 @@ public class MembersMerger {
 
         return sb.toString();
     }
+
 }

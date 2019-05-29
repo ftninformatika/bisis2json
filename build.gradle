@@ -98,6 +98,16 @@ task fatJarRemoveDuplicateInvBgb(type: Jar) {
     archiveName 'remove-duplicate-invs-bgb.jar'
 }
 
+task fatJarWinIsis2Bisis(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'bisis.apps.winisis2bisis.WinIsis2Bisis'
+    }
+    from sourceSets.main.output
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
+    with jar
+    archiveName 'winisis2bisis-gbns.jar'
+}
+
 repositories {
     mavenCentral()
 }
