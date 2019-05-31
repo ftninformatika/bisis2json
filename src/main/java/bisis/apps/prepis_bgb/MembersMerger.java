@@ -222,6 +222,7 @@ public class MembersMerger {
         if (m.getOccupation() == null) m.setOccupation("");
         if (m.getIndexNo() == null) m.setIndexNo("");
         if (m.getClassNo() == null) m.setClassNo(0);
+        if (m.getWarningInd() == null) m.setWarningInd(1);
         return m;
     }
 
@@ -242,6 +243,9 @@ public class MembersMerger {
         if (printMergedMode)
             System.out.println("Printing merged members ON.");
         ProgressBar progressBar = new ProgressBar();
+        int mergedCount = 0;
+        int newCount = 0;
+        int newWithNewNumCount = 0;
         for (JoMember winMember: winMembers) {
             cnt++;
             JoMember centralMember = centralMembersCollection.findOne("{'userId':#}", winMember.getUserId()).as(JoMember.class);
@@ -268,6 +272,7 @@ public class MembersMerger {
                     List<JoLending> joLendingList = winLendings.stream().filter(l -> l.getUserId().equals(sec.getUserId())).collect(Collectors.toList());
                     joLendingList.stream().forEach(l -> lendingsCentralCollection.save(l));
                     centralMembersCollection.save(primary);
+                    mergedCount++;
                     found++;
                     if (printMergedMode)
                         foundMembersWriter.write(toStringCompareMembers(sec, primary));
@@ -275,6 +280,7 @@ public class MembersMerger {
                 else {
                     // Generate new userId and copy it to central
 //                    String userId = computeUserId(locationId);
+                    newWithNewNumCount++;
                     String userId = getNextUserId(winMember.getUserId(), centralMembersCollection);
                     if (userId == null) {
                         System.err.println("Error generating new userId for: " + winMember.getUserId());
@@ -301,6 +307,7 @@ public class MembersMerger {
                 }
             }
             else {
+                newCount++;
                 List<JoLending> joLendingList = winLendings.stream().filter(l -> l.getUserId().equals(winMember.getUserId())).collect(Collectors.toList());
                 centralMembersCollection.save(winMember);
                 joLendingList.stream().forEach(l -> lendingsCentralCollection.save(l));
@@ -308,11 +315,17 @@ public class MembersMerger {
             if (cnt % 100 == 0)
                 progressBar.update(cnt, winMembers.size());
         }
+        foundMembersWriter.write("\n*****************************" +
+                "New members: " + newCount + ", Merged members: "
+                + mergedCount + ", New with changed id: " + newWithNewNumCount
+                + "\nTOTAL: " + (newCount + mergedCount + newWithNewNumCount) + "\n***********************************");
         progressBar.update(winMembers.size(), winMembers.size());
         foundMembersWriter.close();
         mmWriter.close();
         System.out.println("\nFinished migrating members from WinIsis export to central library.");
         System.out.println("Merged: " + found + " members.");
+        System.out.println("New members: " + newCount + ", Merged members: " + mergedCount + ", New with changed id: " + newWithNewNumCount
+        + "\nTOTAL: " + (newCount + mergedCount + newWithNewNumCount) + "\n***********************************");
     }
 
     private static boolean isSameMember(JoMember m, JoMember m2) {
