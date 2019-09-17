@@ -226,8 +226,48 @@ public class MembersMerger {
         return m;
     }
 
+    public void fixInvalidMembers(DB mongoDatabase, List<JoMember> members) {
+        Jongo jongo = new Jongo(mongoDatabase);
+        MongoCollection centralMembersCollection = jongo.getCollection("gbns_members");
 
-    public void mergeWinIsis2Bisis(DB mongoDatabase, List<JoMember> winMembers, List<JoLending> winLendings, boolean mergeMembersMode, boolean printMergedMode) throws FileNotFoundException {
+        int cnt = 0;
+        for (JoMember m: members) {
+            JoMember jm = centralMembersCollection.findOne("{'userId':#}", m.getUserId()).as(JoMember.class);
+            jm = fillMemberProps(jm);
+            jm.setInUseBy(null);
+            centralMembersCollection.save(jm);
+            cnt++;
+            if (cnt % 100 == 0) System.out.println("Processed: " + cnt);
+        }
+    }
+
+    public void fixLendings(DB mongoDatabase, List<JoMember> members, List<JoLending> lendings) {
+        Jongo jongo = new Jongo(mongoDatabase);
+        MongoCollection lendingsCollection = jongo.getCollection("gbns_lendings");
+
+        int cnt = 0;
+        for (JoLending lending: lendings) {
+            lendingsCollection.save(lending);
+            cnt++;
+            if (cnt % 100 == 0) System.out.println("Processed: " + cnt);
+        }
+    }
+
+
+    public void deleteInvalidLendings(DB mongoDatabase, List<JoLending> winLendings) {
+
+        Jongo jongo = new Jongo(mongoDatabase);
+        MongoCollection lendingsCentralCollection = jongo.getCollection("gbns_lendings");
+        int cnt = 0;
+        for (JoLending lending: winLendings) {
+            lendingsCentralCollection.remove("{'ctlgNo':#, 'deadline':#, 'lendDate': #, 'librarianLend': #}", lending.getCtlgNo(),
+                    lending.getDeadline(), lending.getLendDate(), lending.getLibrarianLend());
+            if (cnt % 100 == 0) System.out.println("Processed: " + cnt);
+            cnt++;
+        }
+    }
+
+        public void mergeWinIsis2Bisis(DB mongoDatabase, List<JoMember> winMembers, List<JoLending> winLendings, boolean mergeMembersMode, boolean printMergedMode) throws FileNotFoundException {
         Jongo jongo = new Jongo(mongoDatabase);
         MongoCollection centralMembersCollection = jongo.getCollection("gbns_members");
         MongoCollection lendingsCentralCollection = jongo.getCollection("gbns_lendings");
@@ -290,6 +330,7 @@ public class MembersMerger {
                     joLendingList.stream().forEach(l -> l.setUserId(userId));
                     winMember.setOldNumbers(winMember.getUserId());
                     winMember.setUserId(userId);
+
                     try {
                         centralMembersCollection.save(winMember);
                     } catch (DuplicateKeyException e) {

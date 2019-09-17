@@ -19,14 +19,15 @@ public class TfzrCSVExtract {
     static Connection connection;
     static String ACTIVE_LENDINGS_QUERY = "select ctlg_no from lending where return_date is null";
     static String ALL_RECORDS_ID_QUERY = "select record_id from Records";
+    static String ALL_MONOGRAPH_INVENTORY = "select inv_broj from Primerci";
 
     public static void main(String[] args) {
         try {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/bisis_tfzr?useSSL=false&serverTimezone=CET",
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3307/bisis?useSSL=false&serverTimezone=CET",
                     "bisis", "bisis");
-            writeLended();
-            writeAllInventory();
-
+//            writeLended();
+//            writeAllInventory();
+              writeMongraphs();
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
@@ -49,6 +50,24 @@ public class TfzrCSVExtract {
             RowItem rowItem = new RowItem(cnt+"", inv, r);
             printWriter.write(rowItem.toString());
             if (cnt % 100 == 0) System.out.println("Processed LENDED: " + cnt);
+        }
+        printWriter.close();
+    }
+
+    private static void writeMongraphs() throws FileNotFoundException, SQLException {
+        PrintWriter printWriter = new PrintWriter(new File("TFZR_INV_MONOGRAFSKE.csv"));
+        printWriter.write(RowItem.TABLE_HEADER);
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(ALL_MONOGRAPH_INVENTORY);
+        DBStorage db = new DBStorage();
+        int cnt = 0;
+        while (resultSet.next()) {
+            String inv = resultSet.getString(1);
+            Record r = db.getByInvNum(inv, connection);
+            cnt++;
+            RowItem rowItem = new RowItem(cnt + "", inv, r);
+            printWriter.write(rowItem.toString());
+            if (cnt % 100 == 0) System.out.println("Processed mongoraph inventory: " + cnt);
         }
         printWriter.close();
     }
