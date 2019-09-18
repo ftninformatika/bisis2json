@@ -2,13 +2,14 @@ package bisis.apps.cobiss2bisis;
 
 
 import bisis.model.records.Record;
+import bisis.model.records.serializers.JSONSerializer;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Glavna klasa koja pokrece prepisivanje COBISS .json fajlova zapisa
@@ -30,7 +31,7 @@ public class ExportCobissCards2Bisis {
             System.out.println("Invalid path!");
             System.exit(0);
         }
-
+        List<Record> exportRecs = new ArrayList<>();
         for (File f: directoryListing) {
             try {
                 InputStream is = Files.newInputStream(f.toPath());
@@ -39,11 +40,25 @@ public class ExportCobissCards2Bisis {
                 is.close();
                 Cobiss2BisisRecordGenerator generator = new Cobiss2BisisRecordGenerator();
                 Record r = generator.generateRecord(jsonObject);
+                exportRecs.add(r);
                 System.out.println(r);
             } catch (IOException e) {
                 System.out.println("Can't read file: " + f.getAbsolutePath());
                 e.printStackTrace();
             }
+        }
+
+        try {
+            PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream("exportRecordsBogatic.json"), "UTF8")));
+            out.println("[");
+            for (Record r: exportRecs)
+                out.println(JSONSerializer.toJSON(r) + ",");
+            out.println("]");
+            out.close();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
 
     }
