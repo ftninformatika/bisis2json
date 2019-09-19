@@ -7,6 +7,7 @@ import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,14 +50,17 @@ public class ExportCobissCards2Bisis {
         }
 
         try {
-            PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream("exportRecordsBogatic.json"), "UTF8")));
-            out.println("[");
-            for (Record r: exportRecs)
-                out.println(JSONSerializer.toJSON(r) + ",");
-            out.println("]");
+            PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream("exportRecordsBogatic.json"), StandardCharsets.UTF_8)));
+            int rnCounter = 0;
+            for (Record r: exportRecs) {
+                rnCounter++;
+                r.setRN(rnCounter);
+                r.setRecordID(rnCounter);
+                r.sort();
+                r.pack();
+                out.println(JSONSerializer.toJSON(r));
+            }
             out.close();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

@@ -345,6 +345,7 @@ public class Record implements Serializable {
   }
   
   // get master record number
+  @JsonIgnore()
   public int getMR(){
   	try{
   		return Integer.parseInt(getSubfieldContent("4741"));

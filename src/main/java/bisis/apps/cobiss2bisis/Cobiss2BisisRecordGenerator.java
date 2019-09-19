@@ -43,8 +43,6 @@ class Cobiss2BisisRecordGenerator {
                 case "udkCard": fillUDK(record, parsingText); break;
                 case "cobissid": record.setCreator(new Author(parsingText, "import2019ftninf")); break;
             }
-            record.sort();
-            record.pack();
         }
         return record;
     }
