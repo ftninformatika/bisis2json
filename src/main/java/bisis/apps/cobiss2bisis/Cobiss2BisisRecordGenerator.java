@@ -22,6 +22,9 @@ class Cobiss2BisisRecordGenerator {
         for (String propName: cobissJson.keySet()) {
             JSONObject nestedObj = cobissJson.getJSONObject(propName);
             String parsingText = nestedObj.getString("value");
+            record.setPubType(0);
+            if (parsingText.equals("26454535"))
+                System.out.println("stop");
             if (parsingText == null || parsingText.trim().equals("")) continue;
             switch (propName) {
                 case "publisherCard": fillPublisherInfo(record, parsingText); break;
@@ -41,7 +44,7 @@ class Cobiss2BisisRecordGenerator {
                 case "notesCard": fillNotes(record, parsingText); break;
                 case "subjectCard": fillSubject(record, parsingText); break;
                 case "udkCard": fillUDK(record, parsingText); break;
-                case "cobissid": record.setCreator(new Author(parsingText, "import2019ftninf")); break;
+                case "cobissid": record.setCreator(new Author(parsingText, "")); break;
             }
         }
         return record;
@@ -59,7 +62,7 @@ class Cobiss2BisisRecordGenerator {
     }
 
     private void fillSubject(Record r, String parsingText) {
-        String[] parts = parsingText.split("<br>|<br/>");
+        String[] parts = parsingText.split("<br>|<br/>|<br />");
         for (String p: parts) {
             if (!p.trim().equals("")) {
                 Field _610 = new Field("610");
@@ -70,6 +73,7 @@ class Cobiss2BisisRecordGenerator {
     }
 
     private void fillNotes(Record r, String parsingText) {
+        parsingText.replace("&gt", ">").replace("&lt", "<");
         String[] parts = parsingText.split("<br>|<br/>");
         for (String p: parts) {
             if (!p.trim().equals("")) {
@@ -91,13 +95,14 @@ class Cobiss2BisisRecordGenerator {
 
     private void fillContent(Record r, String parsingText) {
         Field _327 = new Field("327");
-        String[] parts = parsingText.split("<br>|<br/>");
-        for (String p: parts) _327.add(new Subfield('a', p));
-        r.add(_327);
+        if (!parsingText.trim().equals("")) {
+            _327.add(new Subfield('a', parsingText));
+            r.add(_327);
+        }
     }
 
     private void fillPhDescription(Record r, String parsingText) {
-        String delimReg = " : |; | \\+ ";
+        String delimReg = " : | ; | \\+ ";
         String[] parts = parsingText.split(delimReg);
         Field _215 = new Field("215");
         for (int i = 0; i < parts.length; i++) {
@@ -121,7 +126,7 @@ class Cobiss2BisisRecordGenerator {
     }
 
     private void fillSeriesCard(Record r, String parsingText) {
-        String delimReg = " ; |\\. | / | : |, ";
+        String delimReg = " ; | / | : |, ";
         String items[] = parsingText.split("<br>|<br/>");
         char previousDelim = ' ';
         for (String item: items) {
@@ -143,16 +148,16 @@ class Cobiss2BisisRecordGenerator {
                     case ':': _225.add(new Subfield('e', parts[i].trim())); break;
                     case '.': _225.add(new Subfield('i', parts[i].trim())); break;
                     case '/': _225.add(new Subfield('f', parts[i].trim())); break;
-                    case ',': _225.add(new Subfield('x', parts[i].trim())); break;
+//                    case ',': _225.add(new Subfield('x', parts[i].trim())); break;
                     case ';': _225.add(new Subfield('v', parts[i].trim())); break;
                 }
                 if (leftDelim == '.' && rightDelim == ',' && previousDelim == ',' && _225.getSubfieldContent('i') == null)
                     _225.add(new Subfield('i', parts[i].trim()));
                 else if (leftDelim == '.' && rightDelim != ',' && _225.getSubfieldContent('i') == null)
                     _225.add(new Subfield('i', parts[i].trim()));
-                r.add(_225);
                 previousDelim = rightDelim;
             }
+            r.add(_225);
         }
     }
 
@@ -256,7 +261,18 @@ class Cobiss2BisisRecordGenerator {
 //TODO: problemi sa potpoljima: h, i
                 if (leftDelimiter == ':') _200.add(new Subfield('e', parts[i].trim()));
                 else if (leftDelimiter == ';' && rightDelimiter == '/') _200.add(new Subfield('a', parts[i].trim()));
-                else if (leftDelimiter == '.' && rightDelimiter == ',') _200.add(new Subfield('h', parts[i].trim()));
+//                else if (leftDelimiter == '.' && rightDelimiter == ',') _200.add(new Subfield('h', parts[i].trim()));
+                else if (rightDelimiter == '/') {
+
+//                    _200.add(new Subfield('h', parts[i].trim()));
+                    String[] hi = parts[i].split(", ");
+                    if (hi.length > 1) {
+                        _200.add(new Subfield('h', hi[0]));
+                        hi[0] = "";
+                        String  iContent = String.join("", hi);
+                        if (!iContent.trim().equals("")) _200.add(new Subfield('i', iContent));
+                    }
+                }
                 else if (leftDelimiter == ',') _200.add(new Subfield('i', parts[i].trim()));
                 else if (leftDelimiter == '.' && rightDelimiter != ',') _200.add(new Subfield('i', parts[i].trim()));
                 else if (leftDelimiter == '=') _200.add(new Subfield('d', parts[i].trim()));
@@ -275,20 +291,25 @@ class Cobiss2BisisRecordGenerator {
     private void fillAuthorInfo(Record r, String parsingText, boolean otherAuthorsMode) {
         String[] parts = parsingText.split("<br>|<br/>");
         for (int i = 0; i < parts.length; i++) {
-            String[] trnanslatedParts = parts[i].split("=");
-            for (int j = 0; j < trnanslatedParts.length; j++) {
+            String[] translatedParts = parts[i].split("=");
+            for (int j = 0; j < translatedParts.length; j++) {
+                translatedParts[j] = translatedParts[j].trim();
                 Field field = new Field();
 
                 if (parts.length < 4 && j == 0) field.setName(!otherAuthorsMode ? "700" : "702");
                 // Specijalan slucaj kada treba podesiti indikator u 200
                 else if (parts.length >= 4 && j == 0) {
                     field.setName(!otherAuthorsMode ? "701" : "702");
-                    if (r.getField("200") != null && !otherAuthorsMode) r.getField("200").setInd1('1');
-                    else r.add(new Field("200",'1', ' '));
+                    Field _200f = r.getField("200");
+
+                    if (_200f != null && !otherAuthorsMode)
+                        _200f.setInd1('1');
+                    else if (_200f == null)
+                        r.add(new Field("200",'1', ' '));
                 }
                 else field.setName(!otherAuthorsMode ? "900" : "902");
 
-                String[] abf = trnanslatedParts[j].split(",");
+                String[] abf = translatedParts[j].split(",");
                 if (abf.length > 0) field.add(new Subfield('a', abf[0]));
 
                 if (abf.length > 1 && !abf[1].replace("-","").trim().matches(".*\\d.*")) field.add(new Subfield('b',abf[1]));
@@ -318,8 +339,8 @@ class Cobiss2BisisRecordGenerator {
 
             if (betweenParenthesis != null && !betweenParenthesis.equals("")) {
                 String[] eg = betweenParenthesis.split(":");
-                if (eg.length > 1) _210.add(new Subfield('e', eg[1].trim()));
-                if (eg.length > 0) _210.add(new Subfield('g', eg[0].trim()));
+                if (eg.length > 0) _210.add(new Subfield('e', eg[0].trim()));
+                if (eg.length > 1) _210.add(new Subfield('g', eg[1].trim()));
             }
             r.add(_210);
         }

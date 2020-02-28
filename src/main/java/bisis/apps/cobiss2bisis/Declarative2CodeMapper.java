@@ -18,7 +18,15 @@ public class Declarative2CodeMapper {
         languageMap.put("српски", "srp");
         languageMap.put("италијански", "ita");
         languageMap.put("француски", "fra");
+        languageMap.put("руски", "rus");
+        languageMap.put("енглески", "eng");
+        languageMap.put("немачки", "ger");
+        languageMap.put("босански", "bos");
+        languageMap.put("бугарски", "bul");
+        languageMap.put("кинески", "chi");
+        languageMap.put("латински", "lat");
         languageMap.put("шпански", "esp");
+        languageMap.put("хрватски", "hrv");
     }
 
     static String mapLanguage2Coder(String val) {
