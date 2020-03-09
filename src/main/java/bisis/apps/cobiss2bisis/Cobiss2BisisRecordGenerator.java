@@ -73,7 +73,11 @@ class Cobiss2BisisRecordGenerator {
     }
 
     private void fillNotes(Record r, String parsingText) {
-        parsingText.replace("&gt", ">").replace("&lt", "<");
+        parsingText =parsingText
+                .replace("&gt;", ">")
+                .replace("&lt;", "<")
+                .replace("&gt", ">")
+                .replace("&lt", "<");;
         String[] parts = parsingText.split("<br>|<br/>");
         for (String p: parts) {
             if (!p.trim().equals("")) {
@@ -312,11 +316,15 @@ class Cobiss2BisisRecordGenerator {
                 String[] abf = translatedParts[j].split(",");
                 if (abf.length > 0) field.add(new Subfield('a', abf[0]));
 
-                if (abf.length > 1 && !abf[1].replace("-","").trim().matches(".*\\d.*")) field.add(new Subfield('b',abf[1]));
-                if (abf.length > 1 && abf[1].replace("-","").trim().matches(".*\\d.*")) field.add(new Subfield('f',abf[1]));
+                if (abf.length > 1 && !abf[1].replace("-","").trim().matches(".*\\d.*"))
+                    field.add(new Subfield('b',abf[1].trim()));
+                if (abf.length > 1 && abf[1].replace("-","").trim().matches(".*\\d.*"))
+                    field.add(new Subfield('f',abf[1].trim()));
 
-                if (abf.length > 2 && !abf[2].replace("-","").trim().matches(".*\\d.*")) field.add(new Subfield('b',abf[2]));
-                if (abf.length > 2 && abf[2].replace("-","").trim().matches(".*\\d.*")) field.add(new Subfield('f',abf[2]));
+                if (abf.length > 2 && !abf[2].replace("-","").trim().matches(".*\\d.*"))
+                    field.add(new Subfield('b',abf[2].trim()));
+                if (abf.length > 2 && abf[2].replace("-","").trim().matches(".*\\d.*"))
+                    field.add(new Subfield('f',abf[2].trim()));
 
                 r.add(field);
             }
