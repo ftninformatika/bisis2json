@@ -37,8 +37,6 @@ public class ExportCobissCards2Bisis {
             try {
                 InputStream is = Files.newInputStream(f.toPath());
                 String jsonTxt = IOUtils.toString(is);
-                if (jsonTxt.contains("710"))
-                    System.out.println("stoj");
                 JSONObject jsonObject = new JSONObject(jsonTxt);
                 is.close();
                 Cobiss2BisisRecordGenerator generator = new Cobiss2BisisRecordGenerator();

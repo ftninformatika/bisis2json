@@ -44,13 +44,133 @@ class Cobiss2BisisRecordGenerator {
                 case "notesCard": fillNotes(record, parsingText); break;
                 case "subjectCard": fillSubject(record, parsingText); break;
                 case "udkCard": fillUDK(record, parsingText); break;
+                case "supplement": fillSupplement(record, parsingText); break;
+                case "frequency": fillFrequency(record, parsingText); break;
+                case "bound": fillBound(record, parsingText); break;
+                case "measure": fillMeasure(record, parsingText); break;
+                case "erCharacteristic": fillerCharacteristic(record, parsingText); break;
+                case "subjectCardUncon": fillsubjectCardUncon(record, parsingText); break;
+                case "continues": fillContinues(record, parsingText); break;
+                case "issnL": fillissnL(record, parsingText); break;
+                case "urlCard": fillUrlCard(record, parsingText); break;
+                case "Award": fillAward(record, parsingText); break;
+                case "captionTitle": fillcaptionTitle(record, parsingText); break;
+                case "otherAuthors712": fillotherAuthors712(record, parsingText); break;
+                case "Doi": fillDoi(record, parsingText); break;
+                case "summaryCard": fillSummaryCard(record, parsingText); break;
+                case "linkPubl": fillLinkPubl(record, parsingText); break;
+                case "ismn": fillIsmn(record, parsingText); break;
+                case "author710and711": fillAuthor710and711(record, parsingText); break;
                 case "cobissid": record.setCreator(new Author(parsingText, "")); break;
             }
         }
         return record;
     }
 
+    private Field getOrCreateField(String fName, Record record) {
+        if (fName == null || fName.length() != 3) {
+            return null;
+        }
+        Field f = record.getField(fName);
+        if (f == null) {
+            f = new Field(fName);
+            record.add(f);
+        }
+        return f;
+    }
 
+    private void fillAuthor710and711(Record r, String parsingText) {
+        Field _710 = getOrCreateField("710", r);
+        _710.add(new Subfield('a',  parsingText));
+    }
+
+    private void fillIsmn(Record r, String parsingText) {
+        Field _071 = getOrCreateField("071", r);
+        _071.add(new Subfield('a',  parsingText));
+    }
+
+    private void fillLinkPubl(Record r, String parsingText) {
+        Field _300 = getOrCreateField("300", r);
+        if (parsingText.contains(">") && parsingText.contains(">")) {
+            parsingText = "U:" + parsingText.substring(parsingText.indexOf('>') + 1, parsingText.lastIndexOf('<') - 1);
+        }
+        _300.add(new Subfield('a',  parsingText));
+    }
+
+    private void fillSummaryCard(Record r, String parsingText) {
+        Field _330 = getOrCreateField("330", r);
+        _330.add(new Subfield('a',  parsingText));
+    }
+
+    private void fillDoi(Record r, String parsingText) {
+        Field _041 = getOrCreateField("041", r);
+        _041.add(new Subfield('a',  parsingText));
+    }
+
+    private void fillotherAuthors712(Record r, String parsingText) {
+        Field _712 = getOrCreateField("712", r);
+        _712.add(new Subfield('a',  parsingText));
+    }
+
+    private void fillcaptionTitle(Record r, String parsingText) {
+        Field _514 = getOrCreateField("514", r);
+        _514.add(new Subfield('a',  parsingText));
+    }
+
+    private void fillAward(Record r, String parsingText) {
+        Field _300 = getOrCreateField("300", r);
+        _300.add(new Subfield('a',  parsingText));
+    }
+
+
+    private void fillUrlCard(Record r, String parsingText) {
+        Field _856 = getOrCreateField("856", r);
+        _856.add(new Subfield('u',  parsingText));
+    }
+
+    private void fillissnL(Record r, String parsingText) {
+        Field _300 = getOrCreateField("300", r);
+        _300.add(new Subfield('a',  parsingText));
+    }
+
+    private void fillContinues(Record r, String parsingText) {
+        Field _300 = getOrCreateField("300", r);
+        _300.add(new Subfield('a',  "Je nastavak: " + parsingText));
+    }
+
+    private void fillsubjectCardUncon(Record r, String parsingText) {
+        Field _610 = getOrCreateField("610", r);
+        _610.add(new Subfield('a',  parsingText));
+    }
+
+    private void fillMeasure(Record r, String parsingText) {
+        Field _206 = getOrCreateField("206", r);
+        _206.add(new Subfield('a',  parsingText));
+    }
+
+    private void fillBound(Record r, String parsingText) {
+        Field _371 = getOrCreateField("371", r);
+        _371.add(new Subfield('a', "Privezano: " + parsingText));
+    }
+
+    private void fillerCharacteristic(Record r, String parsingText) {
+        Field _300 = getOrCreateField("300", r);
+        _300.add(new Subfield('a', parsingText));
+    }
+
+    private void fillFrequency(Record r, String parsingText) {
+        Field _300 = getOrCreateField("300", r);
+        _300.add(new Subfield('a', parsingText));
+    }
+
+    private void fillSupplement(Record r, String parsingText) {
+        Field _421 = getOrCreateField("421", r);
+        Field _200Sec = new Field("200");
+        _200Sec.add(new Subfield('1', parsingText));
+        _421.add(new Subfield('1'));
+        _421.getSubfield('1').setSecField(_200Sec);
+
+    }
 
     private void fillUDK(Record r, String parsingText) {
         String[] parts = parsingText.split("<br>|<br/>");
