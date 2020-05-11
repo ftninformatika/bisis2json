@@ -218,6 +218,9 @@ class Cobiss2BisisRecordGenerator {
     }
 
     private void fillContent(Record r, String parsingText) {
+        String brReg = "<br>|<br/>|<br />";
+        parsingText = parsingText.replaceFirst(brReg, "");
+        parsingText = parsingText.replace(brReg, ";");
         Field _327 = new Field("327");
         if (!parsingText.trim().equals("")) {
             _327.add(new Subfield('a', parsingText));
@@ -334,30 +337,39 @@ class Cobiss2BisisRecordGenerator {
             r.add(_100);
     }
 
-    private void fillUniformTitle(Record r, String parsingText) {
-        String[] parts = parsingText.split("\\. ");
-        Field _500 = new Field("500");
-        String a = "";
-        String m = null;
-        for (int i = 0; i < parts.length; i++) {
-            if (parts.length > 1 && i == parts.length -1) m = Declarative2CodeMapper.mapLanguage2Coder(parts[i]);
-            else a += parts[i];
+    private void fillUniformTitle(Record r, String text) {
+        String[] parsingTextParts = text.split("<br>|<br/>|<br />");
+        for (String parsingText: parsingTextParts) {
+            String[] parts = parsingText.split("\\. ");
+            Field _500 = new Field("500");
+            String a = "";
+            String m = null;
+            for (int i = 0; i < parts.length; i++) {
+                if (parts.length > 1 && i == parts.length - 1) m = Declarative2CodeMapper.mapLanguage2Coder(parts[i]);
+                else a += parts[i];
+            }
+            _500.add(new Subfield('a', a));
+            if (m != null) _500.add(new Subfield('m', m));
+            r.add(_500);
         }
-        _500.add(new Subfield('a', a));
-        if (m != null) _500.add(new Subfield('m', m));
-        r.add(_500);
     }
 
-    private void fillParallelTitle(Record r, String parsingText) {
+    private void fillParallelTitle(Record r, String text) {
+        String[] pasingTextParts = text.split("\"<br>|<br/>|<br />\"");
+        for (String parsingText: pasingTextParts) {
             Field _510 = new Field("510");
             _510.add(new Subfield('a', parsingText));
             r.add(_510);
+        }
     }
 
-    private void fillOtherTitles(Record r, String parsingText) {
+    private void fillOtherTitles(Record r, String text) {
+        String[] parsingTextParts = text.split("<br>|<br/>|<br />");
+        for (String parsingText: parsingTextParts) {
             Field _540 = new Field("540");
             _540.add(new Subfield('a', parsingText));
             r.add(_540);
+        }
     }
 
     private void fillTitleMainInfo(Record r, String parsingText) {
