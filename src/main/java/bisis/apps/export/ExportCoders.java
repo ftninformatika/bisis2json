@@ -83,7 +83,7 @@ public class ExportCoders {
     private static void exportCircCoders(Connection conn, String library, String circCodersOutputDirName) throws SQLException, JsonProcessingException, FileNotFoundException, UnsupportedEncodingException {
         //circ_location??
         Statement statement = conn.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT * from groups");
+        ResultSet rs = statement.executeQuery("SELECT * from krupanj.groups");
 
         {
             List<CorporateMember> corporateMembers = new ArrayList<>();

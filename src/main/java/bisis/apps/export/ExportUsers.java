@@ -65,7 +65,7 @@ public class ExportUsers {
     PreparedStatement organizationPS = conn.prepareStatement("SELECT id, address, name, city, zip from organization where id=?");
     PreparedStatement membershipTypePS = conn.prepareStatement("SELECT name, period from mmbr_types where id=?");
     PreparedStatement userCategoryPS = conn.prepareStatement("SELECT * from user_categs where id=?");
-    PreparedStatement corporateMemberPS = conn.prepareStatement("SELECT * from groups where sys_id=?");
+    PreparedStatement corporateMemberPS = conn.prepareStatement("SELECT * from `groups` where sys_id=?");
     PreparedStatement duplicatesPS = conn.prepareStatement("SELECT * from duplicate where id=?");
     PreparedStatement picturebooksPS = conn.prepareStatement("SELECT * from picturebooks where id=?");
     PreparedStatement languagePS = conn.prepareStatement("SELECT * from languages where id=?");
@@ -74,7 +74,7 @@ public class ExportUsers {
     String organizationsMapJson = new Scanner(new File("export" + library.toUpperCase() + "/circ_coders_json_output/organization_id-id.json")).useDelimiter("\\Z").next();
     Map<Integer, String> orgMap = mapper.readValue(organizationsMapJson, new TypeReference<Map<Integer, String>>(){});
 
-    ResultSet rset = stmt.executeQuery("SELECT sys_id, organization, languages, edu_lvl, mmbr_type, user_categ, groups, user_id, first_name, last_name, parent_name, address, city, zip, phone, email, jmbg, doc_id, doc_no, doc_city, country, gender, age, sec_address, sec_zip, sec_city, sec_phone, note, interests, warning_ind, occupation, title, index_no, class_no, pass, block_reason FROM users");
+    ResultSet rset = stmt.executeQuery("SELECT sys_id, organization, languages, edu_lvl, mmbr_type, user_categ, `groups`, user_id, first_name, last_name, parent_name, address, city, zip, phone, email, jmbg, doc_id, doc_no, doc_city, country, gender, age, sec_address, sec_zip, sec_city, sec_phone, note, interests, warning_ind, occupation, title, index_no, class_no, pass, block_reason FROM users");
     while (rset.next()) {
       if (++userCount % 1000 == 0)
         System.out.println("members exported: " + userCount);

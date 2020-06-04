@@ -18,9 +18,9 @@ import java.util.Map;
 public class KrupanjFix {
 
     public static void main(String[] args) {
-        MongoClient mongoClient = new MongoClient("localhost", 27019);
+        MongoClient mongoClient = new MongoClient("localhost", 27018);
         Jongo jongo = new Jongo(mongoClient.getDB("bisis"));
-        MongoCollection recordsMongoCollection = jongo.getCollection("kru_records");
+        MongoCollection recordsMongoCollection = jongo.getCollection("bpk_records");
 
         MongoCursor<JoRecord> analiticRecords = recordsMongoCollection.find().as(JoRecord.class);
         while (analiticRecords.hasNext()) {
