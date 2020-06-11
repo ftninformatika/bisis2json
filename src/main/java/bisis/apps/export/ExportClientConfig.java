@@ -93,6 +93,7 @@ public class ExportClientConfig {
             //collecting reports.ini configuration
             List<Object> reportsConfList = ExportReportsConfig.export(new String[]{"-f", inputr, "-l", Mysql2MongoBisisMigrationTool.library});
             JSONObject jo = new JSONObject(outString.toString());
+            jo.put("libraryName", Mysql2MongoBisisMigrationTool.library);
             jo.put("reports", reportsConfList);
             out.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jo.toMap()));
             out.close();

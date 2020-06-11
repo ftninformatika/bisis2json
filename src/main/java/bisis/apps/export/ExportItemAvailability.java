@@ -1,7 +1,9 @@
 package bisis.apps.export;
 
 import bisis.model.records.ItemAvailability;
+import bisis.model.records.Record;
 import bisis.utils.DaoUtils;
+import bisis.utils.textsrv.DBStorage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.cli.*;
@@ -73,6 +75,16 @@ public class ExportItemAvailability {
             ia.setBorrowed(DaoUtils.getInteger(rset,"stanje") == 1);
             ia.setCtlgNo(rset.getString("inv_broj"));
             ia.setLibDepartment(libDepartments.get(rset.getString("odeljenje_id")));
+
+            int recId = rset.getInt("record_id");
+            DBStorage storage = new DBStorage();
+            Record rec = storage.get(conn, recId);
+
+            if (rec != null && rec.getRN() != 0) {
+                ia.setRn(rec.getRN());
+            } else {
+                System.out.println("No RN for:" + recId);
+            }
 
             outputFile.write(toJSON(ia));
         }
