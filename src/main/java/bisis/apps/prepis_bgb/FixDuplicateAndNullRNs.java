@@ -27,13 +27,18 @@ public class FixDuplicateAndNullRNs {
         int nextRn = rnCounter.getCounterValue();
 
         //-----------NULLs-------------------
-        MongoCursor<JoRecord> recsWithNull = recordsCollection.find("{rn: null}").as(JoRecord.class);
+        MongoCursor<JoRecord> recsWithNull = recordsCollection.find("{rn: 0}").as(JoRecord.class);
+        int cnt = 0;
         System.out.println("Started changing records with NULL RN values...");
         while (recsWithNull.hasNext()) {
             JoRecord record = recsWithNull.next();
             nextRn++;
             record.setRN(nextRn);
             recordsCollection.save(record);
+            cnt++;
+            if (cnt % 100 == 0) {
+                System.out.println("Cnt :" + cnt);
+            }
         }
 
         //-----------DUPLICATES--------------

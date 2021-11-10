@@ -22,7 +22,7 @@ class Cobiss2BisisRecordGenerator {
         for (String propName: cobissJson.keySet()) {
             JSONObject nestedObj = cobissJson.getJSONObject(propName);
             String parsingText = nestedObj.getString("value");
-            record.setPubType(0);
+            record.setPubType(1);
             if (parsingText.equals("26454535"))
                 System.out.println("stop");
             if (parsingText == null || parsingText.trim().equals("")) continue;

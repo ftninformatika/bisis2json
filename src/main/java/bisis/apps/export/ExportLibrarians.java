@@ -14,6 +14,8 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -51,10 +53,14 @@ public class ExportLibrarians {
                 l.setUsername(rs.getString("username") + "@" + lib);
                 l.getAuthorities().add("ROLE_ADMIN");
                 l.setIme(rs.getString("ime"));
-                l.setPassword(rs.getString("password"));
+                String plainPassword = rs.getString("password");
+                String hashedPass = BCrypt.hashpw(plainPassword, BCrypt.gensalt(10));
+                l.setPassword(hashedPass);
+
                 l.setPrezime(rs.getString("prezime"));
                 l.setEmail(rs.getString("email"));
-                l.setNapomena(rs.getString("napomena"));
+                l.setNapomena((rs.getString("napomena") == null ? "" : rs.getString("napomena"))
+                + " stara lozinka je: " + plainPassword);
                 l.setObrada(DaoUtils.getInteger(rs,"obrada") == 1);
                 l.setCirkulacija(DaoUtils.getInteger(rs,"cirkulacija") == 1);
                 l.setAdministracija(DaoUtils.getInteger(rs,"administracija") == 1);

@@ -68,14 +68,24 @@ task fatJarMemberPairingBGB(type: Jar){
     archiveName 'members-pairing-bgb.jar'
 }
 
-task fatJarFixDuplicateRNs(type: Jar){
+task fatJarFillSig675a(type: Jar){
     manifest {
-        attributes 'Main-Class': 'bisis.apps.prepis_bgb.FixDuplicateRNs'
+        attributes 'Main-Class': 'bisis.apps.prepis_bgb.FillInvSigUDKFrom675a'
     }
     from sourceSets.main.output
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
     with jar
-    archiveName 'fix-duplicate-rn-bgb.jar'
+    archiveName 'fill-sig-675a.jar'
+}
+
+task fatJarFixDuplicateAndNullRNs(type: Jar){
+    manifest {
+        attributes 'Main-Class': 'bisis.apps.prepis_bgb.FixDuplicateAndNullRNs'
+    }
+    from sourceSets.main.output
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
+    with jar
+    archiveName 'fix-duplicate-null-rn-bgb.jar'
 }
 
 task fatJarPeriodikaBGB(type: Jar){
@@ -130,6 +140,8 @@ dependencies {
     compile group: 'org.zeroturnaround', name: 'zt-zip', version: '1.12'
     compile group: 'org.jdom', name: 'jdom2', version: '2.0.6'
     compile group: 'org.jongo', name: 'jongo', version: '1.4.0'
+    compile group: 'org.springframework.security', name: 'spring-security-crypto', version: '5.5.3'
+
 
 
 
