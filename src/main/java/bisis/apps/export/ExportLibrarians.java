@@ -65,6 +65,17 @@ public class ExportLibrarians {
                 l.setCirkulacija(DaoUtils.getInteger(rs,"cirkulacija") == 1);
                 l.setAdministracija(DaoUtils.getInteger(rs,"administracija") == 1);
                 l.setBiblioteka(lib);
+
+                if (l.isAdministracija()) {
+                    l.getLibrarianRoles().add("administracija");
+                }
+                if (l.isCirkulacija()) {
+                    l.getLibrarianRoles().add("cirkulacija");
+                }
+                if(l.isObrada()) {
+                    l.getLibrarianRoles().add("obrada");
+                }
+
                 LibrarianContextDTO cntx = null;
 
                 ProcessTypeCatalog processTypeCatalog = new ProcessTypeCatalog();

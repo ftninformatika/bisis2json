@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Petar on 8/10/2017.
@@ -31,5 +32,5 @@ public class LibrarianDTO {
     private LibrarianContextDTO context = new LibrarianContextDTO();
     private String biblioteka;
     private ProcessTypeDTO curentProcessType;
-
+    private List<String> librarianRoles = new ArrayList<>();
 }

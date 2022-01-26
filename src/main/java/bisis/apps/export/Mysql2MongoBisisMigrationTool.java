@@ -24,6 +24,7 @@ public class Mysql2MongoBisisMigrationTool {
     static String os = System.getProperty("os.name");
     static String library = "";
     static String branchLibrary = "";
+    static String mysqlDbName = "bisis";
 
     public static void main(String[] args){
         Options options = new Options();
@@ -32,7 +33,7 @@ public class Mysql2MongoBisisMigrationTool {
 
         String mysqlAddress = "localhost";
         String mysqlPort = "3306";
-        String mysqlDbName = "bisis";
+
         String mysqlUsername = "bisis";
         String mysqlPassword = "bisis";
         String pathToInnis = "";
