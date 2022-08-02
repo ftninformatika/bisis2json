@@ -88,8 +88,6 @@ public class ExportItemAvailability {
 
             outputFile.write(toJSON(ia));
         }
-        stmt.close();
-
 
         ResultSet rsetSveske = stmt.executeQuery("SELECT * FROM Sveske");
         int sveskeCount = 0;
