@@ -248,7 +248,7 @@ public class ExportUsers {
         signing.setUntilDate(DateUtils.getInstant(r2, "until_date"));
         signing.setCost(r2.getDouble("cost"));
         signing.setReceipt(r2.getString("receipt_id"));
-        signing.setLibrarian(r2.getString("librarian"));
+        signing.setLibrarian(r2.getString("librarian") + "@" + library);
         member.getSignings().add(signing);
       }
       r2.close();

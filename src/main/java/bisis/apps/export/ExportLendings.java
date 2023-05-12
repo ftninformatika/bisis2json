@@ -28,14 +28,21 @@ public class ExportLendings {
     public static void main(Connection conn, String[] args) {
         Options options = new Options();
 
+        options.addOption("l", "library", true,
+                "Library code (gbns, gbsa, tfzr...)");
         options.addOption("o", "output", true,
                 "Output file");
         CommandLineParser parser = new GnuParser();
 
+        String library = "";
         String outputFile = "";
         try {
             CommandLine cmd = parser.parse(options, args);
 
+            if (cmd.hasOption("l"))
+                library = cmd.getOptionValue("l");
+            else
+                throw new Exception("Library code not specified.");
             if (cmd.hasOption("o"))
                 outputFile = cmd.getOptionValue("o");
             else
@@ -48,14 +55,14 @@ public class ExportLendings {
         }
         try {
             PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), "UTF8")));
-            export(conn, out);
+            export(conn, out, library);
             out.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void export(Connection conn, PrintWriter outputFile) throws SQLException {
+    public static void export(Connection conn, PrintWriter outputFile, String library) throws SQLException {
 
         Statement stmt = conn.createStatement();
         ResultSet rset = stmt.executeQuery("SELECT * FROM lending");
@@ -105,9 +112,9 @@ public class ExportLendings {
             lending.setResumeDate(DateUtils.getInstant(rset, "resume_date"));
             lending.setReturnDate(DateUtils.getInstant(rset, "return_date"));
             lending.setDeadline(DateUtils.getInstant(rset, "deadline"));
-            lending.setLibrarianLend(rset.getString("librarian_lend"));
-            lending.setLibrarianReturn(rset.getString("librarian_return"));
-            lending.setLibrarianResume(rset.getString("librarian_resume"));
+            lending.setLibrarianLend(rset.getString("librarian_lend") + "@" + library);
+            lending.setLibrarianReturn(rset.getString("librarian_return") + "@" + library);
+            lending.setLibrarianResume(rset.getString("librarian_resume") + "@" + library);
 
 
             locPS.setInt(1, rset.getInt("location"));

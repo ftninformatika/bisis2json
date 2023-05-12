@@ -45,3 +45,39 @@ Parametri:
 ```
 java -jar bisis-migrate.jar -l gbns -f C:\Users\Korisnik\Documents\gbnsConfigs -n bisisgbns
 ```
+
+## MySQL restore
+
+* mysqladmin create naziv_baze
+* mysql -u root
+
+U mysql konzoli:
+* grant all privileges on naziv_baze.* to 'bisis'@'%' identified by 'bisis';
+* flush privileges;
+
+U backup fajlu promeniti use database na naziv nove baze.
+
+* mysql -u bisis -pbisis -D naziv_baze < dump.sql
+
+Proveriti da li je baza potpuna u odnosu na poslednju verziju Bisis4 (sifarnici, registri). Ako nije izvršiti patch_mysql_to_bisis.sql sa bisis korisnikom.
+
+Eksport podataka:
+* java -jar bisis-migrate.jar -e -l sufix_biblioteke -f ./dir_ini_files -n naziv_baze -z
+
+Rezultat su json fajlovi u folderu koje treba probaciti na server gde je NoSQL (folder treba da bude u istom folderu gde je bisis-migrate.jar, dodati -d da obrise prethodne podatke).
+
+java -jar bisis-migrate.jar -i -l sufix_biblioteke 
+
+
+Ako fale RN brojevi (Kreirai RN brojac ako ne postoji, posle pobrisati duplo kreirane brojace):
+java -jar fix-duplicate-null-rn-bgb.jar sufix_biblioteke
+
+Indexer:
+./bisis5-tools/bisis-indexer-5.0.0/bin/bisis-indexer sufix_biblioteke
+
+Izvestaji:
+./bisis5-tools/bisis-reports-5.0.0/bin/bisis-reports sufix_biblioteke
+
+Povezivanje korica:
+./bisis-books-common-merger m sufix_biblioteke
+
