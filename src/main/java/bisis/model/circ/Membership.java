@@ -1,5 +1,6 @@
 package bisis.model.circ;
 
+import bisis.model.coders.Coder;
 import lombok.*;
 
 /**
@@ -11,8 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class Membership {
-    private String library;
+public class Membership extends Coder {
     private String memberType; // description
     private String userCateg; //desc
     private Double cost;

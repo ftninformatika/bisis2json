@@ -12,9 +12,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Counter {
-
-    private String library;
-    private String counterName;
+public class Counter extends Coder {
+    private String _id;
     private int counterValue;
 }

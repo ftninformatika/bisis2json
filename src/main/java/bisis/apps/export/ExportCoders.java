@@ -83,7 +83,7 @@ public class ExportCoders {
     private static void exportCircCoders(Connection conn, String library, String circCodersOutputDirName) throws SQLException, JsonProcessingException, FileNotFoundException, UnsupportedEncodingException {
         //circ_location??
         Statement statement = conn.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT * from krupanj.groups");
+        ResultSet rs = statement.executeQuery("SELECT * from groups");
 
         {
             List<CorporateMember> corporateMembers = new ArrayList<>();
@@ -200,7 +200,7 @@ public class ExportCoders {
                 m.setZip(rs.getString("zip"));
                 m.setAddress(rs.getString("address"));
                 m.setCity(rs.getString("city"));
-                m.setName(rs.getString("name"));
+                m.setDescription(rs.getString("name"));
                 organizations.add(m);
 
                 idMigrationMap.put(DaoUtils.getInteger(rs,"id"),m.get_id());
@@ -319,7 +319,7 @@ public class ExportCoders {
             while (rs.next()) {
                 Counter c = new Counter();
                 c.setLibrary(library);
-                c.setCounterName(rs.getString("counter_name"));
+                c.setCoder_id(rs.getString("counter_name"));
                 c.setCounterValue(DaoUtils.getInteger(rs, "counter_value"));
                 lc.add(c);
             }

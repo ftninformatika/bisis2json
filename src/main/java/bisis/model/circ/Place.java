@@ -1,5 +1,6 @@
 package bisis.model.circ;
 
+import bisis.model.coders.Coder;
 import lombok.*;
 
 /**
@@ -10,8 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class Place {
-    private String library;
+public class Place extends Coder {
     private String city;
     private String zip;
 }

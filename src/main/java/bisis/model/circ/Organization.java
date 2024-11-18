@@ -1,6 +1,7 @@
 package bisis.model.circ;
 
 
+import bisis.model.coders.Coder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,11 +14,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Organization {
+public class Organization extends Coder {
 
     private String _id;
-    private String library;
-    private String name;
     private String address;
     private String city;
     private String zip;

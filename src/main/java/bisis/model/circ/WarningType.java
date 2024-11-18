@@ -1,5 +1,6 @@
 package bisis.model.circ;
 
+import bisis.model.coders.Coder;
 import lombok.*;
 
 /**
@@ -10,8 +11,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class WarningType {
-    private String library;
-    private String description;
+public class WarningType extends Coder {
     private String template;
 }

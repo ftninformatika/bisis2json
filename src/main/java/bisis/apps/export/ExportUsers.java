@@ -88,7 +88,7 @@ public class ExportUsers {
 
           Organization org = new Organization();
           org.set_id(orgMap.get(rOrg.getInt("id")));
-          org.setName(rOrg.getString("name"));
+          org.setDescription(rOrg.getString("name"));
           org.setAddress(rOrg.getString("address"));
           org.setCity(rOrg.getString("city"));
           org.setZip(rOrg.getString("zip"));

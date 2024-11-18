@@ -1,5 +1,6 @@
 package bisis.model.circ;
 
+import bisis.model.coders.Coder;
 import lombok.*;
 
 /**
@@ -10,9 +11,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class WarningCounter {
+public class WarningCounter extends Coder {
 
-    private String library;
     private String warningType; //WarningType.description
     private String warnYear;
     private Integer lastNo;

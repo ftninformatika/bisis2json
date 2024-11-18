@@ -1,5 +1,6 @@
 package bisis.model.circ;
 
+import bisis.model.coders.Coder;
 import lombok.*;
 
 /**
@@ -8,9 +9,6 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @ToString
-public class EducationLvl {
-    private String library;
-    private String description;
+public class EducationLvl extends Coder {
 }

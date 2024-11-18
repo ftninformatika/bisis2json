@@ -1,5 +1,6 @@
 package bisis.model.circ;
 
+import bisis.model.coders.Coder;
 import lombok.*;
 
 /**
@@ -11,10 +12,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class CircLocation {
+public class CircLocation extends Coder {
 
-    private String library;
+    private String _id;
     private String locationCode;
-    private String description;
     private int lastUserId;
 }

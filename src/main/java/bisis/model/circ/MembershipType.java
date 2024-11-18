@@ -1,6 +1,7 @@
 package bisis.model.circ;
 
 
+import bisis.model.coders.Coder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,8 +14,12 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MembershipType {
-    private String library;
-    private String description;
+public class MembershipType extends Coder {
     private int period;
+
+    public MembershipType(String library, String description, int period) {
+        this.library = library;
+        this.description = description;
+        this.period = period;
+    }
 }
