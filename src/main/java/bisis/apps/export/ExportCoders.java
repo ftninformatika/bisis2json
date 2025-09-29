@@ -432,7 +432,7 @@ public class ExportCoders {
         return  retVal;
     }
 
-    private static String toJSONCoder(List<Coder> c) {
+    public static String toJSONCoder(List<Coder> c) {
         try {
             return mapper.writeValueAsString(c);
         } catch (JsonProcessingException e) {

@@ -118,6 +118,16 @@ task fatJarWinIsis2Bisis(type: Jar) {
     archiveName 'winisis2bisis-gbns.jar'
 }
 
+task fatJarMsuPrepis(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'bisis.apps.msu_prepis.Import'
+    }
+    from sourceSets.main.output
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
+    with jar
+    archiveName 'msu_prepis.jar'
+}
+
 repositories {
     mavenCentral()
 }
@@ -153,4 +163,5 @@ configurations.archives.artifacts.clear();
 
 artifacts {
     archives  fatJarBisisMigrate
+    archives  fatJarMsuPrepis
 }

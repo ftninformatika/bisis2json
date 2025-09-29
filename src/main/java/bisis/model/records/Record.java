@@ -4,6 +4,7 @@ import bisis.apps.export.IsoDateSerializer;
 import bisis.model.jongo_records.JoRecord;
 import bisis.model.records.serializers.PrimerakSerializer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("serial")
 @Getter
 @Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Record implements Serializable {
 
   /**

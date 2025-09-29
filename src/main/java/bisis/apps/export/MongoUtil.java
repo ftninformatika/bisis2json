@@ -117,7 +117,7 @@ public class MongoUtil {
            command = "mongoimport --host " + host +" --port " + port + " --db "+ dbname + " --collection " + lib + "_records" + " --file " + System.getProperty("user.dir") + File.separator +"export" + lib.toUpperCase() + File.separator +"exportedRecords.json";
 
        Process p = Runtime.getRuntime().exec(runCmd + command);
-       System.out.println("Importing records");
+       System.out.println("Importing records: " + command);
        BufferedReader stdInput = new BufferedReader(new
                InputStreamReader(p.getInputStream()));
 
@@ -277,7 +277,7 @@ public class MongoUtil {
      * @throws IOException
      * @throws InterruptedException
      */
-    public  void importCoders() throws IOException, InterruptedException {
+    public  void importCoders(Map<String, String> coderMap) throws IOException, InterruptedException {
         String command = "";
 
         for (Map.Entry<String, String> entry: coderMap.entrySet()){
@@ -319,7 +319,7 @@ public class MongoUtil {
         //check if export files are generated, exit app if not
         exportExists();
 
-        importCoders();
+        importCoders(coderMap);
         importMembers();
         importRecords();
         importLendings();

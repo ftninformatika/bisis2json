@@ -2,6 +2,7 @@ package bisis.model.records;
 
 import bisis.apps.export.IsoDateSerializer;
 import bisis.model.jongo_records.JoPrimerak;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
@@ -10,6 +11,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @SuppressWarnings("serial")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Primerak implements Serializable {
 
   private int primerakID;
