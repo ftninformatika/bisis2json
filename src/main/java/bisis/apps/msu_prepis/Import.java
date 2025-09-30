@@ -3,38 +3,32 @@ package bisis.apps.msu_prepis;
 import bisis.apps.export.MongoUtil;
 import bisis.apps.export.Mysql2MongoBisisMigrationTool;
 import bisis.model.coders.Coder;
-import bisis.model.coders.ItemStatus;
 import bisis.model.prefixes.PrefixConverter;
 import bisis.model.records.Record;
 import bisis.model.records.serializers.JSONSerializer;
-import bisis.utils.DaoUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoDatabase;
 import org.apache.commons.cli.*;
-import org.bson.types.Code;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static bisis.apps.export.ExportCoders.toJSONCoder;
-
 public class Import {
 
     private static final Logger LOGGER = Logger.getLogger( Mysql2MongoBisisMigrationTool.class.getName() );
+    public static final String library = "msu";
     public static MongoClient mongo = null;
     public static MongoDatabase mdb = null;
-    public static String library = "msu";
 
     public static void main(String[] args) {
         String jsonInputPath = "";
@@ -74,7 +68,7 @@ public class Import {
 
             List<Record> records = loadRecords(jsonInputPath);
             for (Record record : records) {
-                // dva primerka bez inv broja, baca npe
+                // remove records without inv numbers (2 records)
                 record.getPrimerci().removeIf(p -> p.getInvBroj() == null);
             }
 
@@ -113,7 +107,7 @@ public class Import {
                 System.exit(0);
             }
 
-            // import
+            // import records
             iu.dropLibraryData();
             iu.importRecords();
 
@@ -138,16 +132,23 @@ public class Import {
             iu.indexField(library + "_records", "fields.subfields.name", true, false);
 
             // make coders
-            List<Coder> coders = makeAccessionRegCoders();
+            Map<String, String> codersMap = new HashMap<>();
+            codersMap.put(Coders.CODER_TYPE_ACCESSION_REG, exportDir + "/invBooks.json");
+            codersMap.put(Coders.CODER_TYPE_LOCATION, exportDir + "/locations.json");
+            codersMap.put(Coders.CODER_TYPE_PROCESS_TYPE, exportDir + "/processTypes.json");
+            codersMap.put(Coders.CODER_TYPE_STATUS, exportDir + "/statuses.json");
+            codersMap.put(Coders.CODER_TYPE_INTERNAL_MARK, exportDir + "/internalMarks.json");
+            codersMap.put(Coders.CODER_TYPE_COUNTER, exportDir + "/counters.json");
 
-            // write coders
-            writeCoders(coders, exportDir + "/Invknj.json");
+            for (String name : codersMap.keySet()) {
+                List<Coder> coders = Coders.make(name, library, records);
+                String path = codersMap.get(name);
+                // export coders
+                if (!coders.isEmpty()) Coders.write(coders, path);
+            }
 
             // import coders
-            Map<String, String> codersMap = new HashMap<>();
-            codersMap.put("coders.accessionReg", exportDir + "/Invknj.json");
             iu.importCoders(codersMap);
-
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, e.toString(), e);
             System.exit(0);
@@ -180,30 +181,5 @@ public class Import {
         System.out.println("*requirement: installed mongoimport on machine and put in PATH variables\nParameters:");
         for (Object o: options.getOptions())
             System.out.println("* Short param: -" + ((Option) o).getOpt().toString() + "; Long param: --" + ((Option) o).getLongOpt().toString() + "; Description: " + ((Option) o).getDescription().toString());
-    }
-
-    public static List<Coder> makeAccessionRegCoders() {
-        Map<String, String> books = new HashMap<>();
-        books.put("00", "Monografske publikacije");
-        books.put("01", "Izložbeni katalozi");
-        books.put("02", "Serijske publikacije");
-
-        List<Coder> coders = new ArrayList<>();
-        for (String id : books.keySet()) {
-            String description = books.get(id);
-            Coder c = new Coder();
-            c.setCoder_id(id);
-            c.setDescription(description);
-            c.setLibrary(library);
-            coders.add(c);
-        }
-
-        return coders;
-    }
-
-    public static void writeCoders(List<Coder> coders, String path) throws IOException {
-        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(Paths.get(path)), StandardCharsets.UTF_8)));
-        pw.write(toJSONCoder(coders));
-        pw.close();
     }
 }
