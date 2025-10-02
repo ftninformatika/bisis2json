@@ -4,8 +4,12 @@ import bisis.apps.export.MongoUtil;
 import bisis.apps.export.Mysql2MongoBisisMigrationTool;
 import bisis.model.coders.Coder;
 import bisis.model.prefixes.PrefixConverter;
+import bisis.model.records.ItemAvailability;
+import bisis.model.records.Primerak;
 import bisis.model.records.Record;
 import bisis.model.records.serializers.JSONSerializer;
+import bisis.utils.DaoUtils;
+import bisis.utils.textsrv.DBStorage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.mongodb.MongoClient;
@@ -23,6 +27,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static bisis.apps.export.ExportItemAvailability.toJSON;
+
 public class Import {
 
     private static final Logger LOGGER = Logger.getLogger( Mysql2MongoBisisMigrationTool.class.getName() );
@@ -34,6 +40,7 @@ public class Import {
         String jsonInputPath = "";
         String exportDir = "export" + library.toUpperCase();
         String outputFile = exportDir + "/exportedRecords.json";
+        String outputFileIA = exportDir + "/exportedItemAvailabilities.json";
         String mongoAddres = "localhost";
         String mongoPort = "27017";
         String mongoName = "bisis";
@@ -84,14 +91,25 @@ public class Import {
 
             // write data to export dir
             PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(Paths.get(outputFile)), StandardCharsets.UTF_8)));
+            PrintWriter outIA = new PrintWriter(new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(Paths.get(outputFileIA)), StandardCharsets.UTF_8)));
             PrintWriter outElastic = new PrintWriter(new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(Paths.get(outputFile.substring(0, outputFile.lastIndexOf(".")) + "Elastic.json")), StandardCharsets.UTF_8)));
             for (Record rec: records) {
                 rec.pack();
                 out.println(JSONSerializer.toJSON(rec) );
                 outElastic.write(JSONSerializer.toElasticJson(PrefixConverter.toMap(rec, null)));
+                for(Primerak p: rec.getPrimerci()) {
+                    ItemAvailability ia = new ItemAvailability();
+                    ia.setRecordID(String.valueOf(rec.getRecordID()));
+                    ia.setBorrowed(false);
+                    ia.setCtlgNo(p.getInvBroj());
+                    ia.setLibDepartment(p.getOdeljenje());
+                    ia.setRn(rec.getRN());
+                    outIA.write(toJSON(ia));
+                }
             }
             out.close();
             outElastic.close();
+            outIA.close();
 
             // init mongo
             if (mongoUsername.isEmpty() && mongoPassword.isEmpty())
@@ -110,6 +128,8 @@ public class Import {
             // import records
             iu.dropLibraryData();
             iu.importRecords();
+            // import item availability
+            iu.importItemAvailibilities();
 
             //index required fields
             iu.indexField(library + "_itemAvailability", "recordID", true, false);
@@ -139,6 +159,7 @@ public class Import {
             codersMap.put(Coders.CODER_TYPE_STATUS, exportDir + "/statuses.json");
             codersMap.put(Coders.CODER_TYPE_INTERNAL_MARK, exportDir + "/internalMarks.json");
             codersMap.put(Coders.CODER_TYPE_COUNTER, exportDir + "/counters.json");
+            codersMap.put(Coders.CODER_TYPE_SUBLOCATION, exportDir + "/sublocations.json");
 
             for (String name : codersMap.keySet()) {
                 List<Coder> coders = Coders.make(name, library, records);

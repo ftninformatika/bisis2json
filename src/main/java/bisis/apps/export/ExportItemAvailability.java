@@ -145,7 +145,7 @@ public class ExportItemAvailability {
         return retVal;
     }
 
-    private static String toJSON(ItemAvailability lending) {
+    public static String toJSON(ItemAvailability lending) {
         try {
             return mapper.writeValueAsString(lending);
         } catch (JsonProcessingException e) {

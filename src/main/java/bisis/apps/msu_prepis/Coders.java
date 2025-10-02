@@ -27,6 +27,7 @@ public class Coders {
     public static final String CODER_TYPE_STATUS = "coders.status";
     public static final String CODER_TYPE_INTERNAL_MARK = "coders.internalMark";
     public static final String CODER_TYPE_COUNTER = "coders.counters";
+    public static final String CODER_TYPE_SUBLOCATION = "coders.sublocation";
 
     public static List<Coder> make(String coderName, String library, List<Record> records) {
         switch (coderName) {
@@ -43,6 +44,8 @@ public class Coders {
                 return makeInternalMark(library);
             case CODER_TYPE_COUNTER:
                 return makeCounters(library, records);
+            case CODER_TYPE_SUBLOCATION:
+                return makeSublocations(library, records);
             default: throw new IllegalArgumentException("Unknown coder name: " + coderName);
         }
     }
@@ -65,9 +68,12 @@ public class Coders {
 
     public static List<Coder> makeStatus(String library) {
         Map<String, String> map = new HashMap<>();
-        map.put("A", "Aktivno");
-        map.put("7", "?");
-        map.put("8", "?");
+        map.put("N", "Neobrađena");
+        map.put("F", "U fondu");
+        map.put("I", "Izdata");
+        map.put("P", "Predlog za otpis");
+        map.put("O", "Otpisana");
+        map.put("R", "Predlog za razmenu");
 
         return getCoders(library, map);
     }
@@ -108,6 +114,19 @@ public class Coders {
             coders.add(c);
         }
         return coders;
+    }
+
+    public static List<Coder> makeSublocations(String library, List<Record> records) {
+        Map<String, String> map = new HashMap<>();
+
+        for (Record record : records) {
+            for (Primerak primerak : record.getPrimerci()) {
+                if (primerak.getSigPodlokacija().isEmpty()) continue;;
+                map.put(primerak.getSigPodlokacija(), primerak.getSigPodlokacija());
+            }
+        }
+
+        return getCoders(library, map);
     }
 
     private static List<Coder> getCoders(String library, Map<String, String> map) {
