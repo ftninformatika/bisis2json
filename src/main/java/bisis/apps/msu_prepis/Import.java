@@ -42,7 +42,7 @@ public class Import {
         String outputFile = exportDir + "/exportedRecords.json";
         String outputFileIA = exportDir + "/exportedItemAvailabilities.json";
         String mongoAddres = "localhost";
-        String mongoPort = "27017";
+        String mongoPort = "27027";
         String mongoName = "bisis";
         String mongoUsername = "";
         String mongoPassword = "";
@@ -74,10 +74,10 @@ public class Import {
                 mongoPassword = cmd.getOptionValue("mw");
 
             List<Record> records = loadRecords(jsonInputPath);
-            for (Record record : records) {
-                // remove records without inv numbers (2 records)
-                record.getPrimerci().removeIf(p -> p.getInvBroj() == null);
-            }
+//            for (Record record : records) {
+//                // remove records without inv numbers (2 records)
+//                record.getPrimerci().removeIf(p -> p.getInvBroj() == null);
+//            }
 
             // create export dir if it does not exist
             File dir = new File(exportDir);
@@ -126,30 +126,30 @@ public class Import {
             }
 
             // import records
-            iu.dropLibraryData();
+//            iu.dropLibraryData();
             iu.importRecords();
             // import item availability
             iu.importItemAvailibilities();
 
             //index required fields
-            iu.indexField(library + "_itemAvailability", "recordID", true, false);
-            iu.indexField(library + "_lendings", "ctlgNo", true, false);
-            iu.indexField(library + "_lendings", "lendDate", false, false);
-            iu.indexField(library + "_lendings", "returnDate", false, false);
-            iu.indexField(library + "_lendings", "resumeDate", false, false);
-            iu.indexField(library + "_lendings", "deadline", false, false);
-            iu.indexField(library + "_members", "userId", true, true);
-            iu.indexField(library + "_members", "firstName", true, false);
-            iu.indexField(library + "_members", "lastName", true, false);
-            iu.indexField(library + "_members", "signings.signDate", false, false);
-            iu.indexField(library + "_members", "corporateMember.instName", false, false);
-            iu.indexField(library + "_records", "primerci.invBroj", false, false);
-            iu.indexField(library + "_records", "godine.invBroj", false, false);
-            iu.indexField(library + "_records", "godine.sveske.invBroj", false, false);
-            iu.indexField(library + "_records", "rn", true, false);
-            iu.indexField(library + "_registries", "code", true, false);
-            iu.indexField(library + "_records", "fields.name", true, false);
-            iu.indexField(library + "_records", "fields.subfields.name", true, false);
+//            iu.indexField(library + "_itemAvailability", "recordID", true, false);
+//            iu.indexField(library + "_lendings", "ctlgNo", true, false);
+//            iu.indexField(library + "_lendings", "lendDate", false, false);
+//            iu.indexField(library + "_lendings", "returnDate", false, false);
+//            iu.indexField(library + "_lendings", "resumeDate", false, false);
+//            iu.indexField(library + "_lendings", "deadline", false, false);
+//            iu.indexField(library + "_members", "userId", true, true);
+//            iu.indexField(library + "_members", "firstName", true, false);
+//            iu.indexField(library + "_members", "lastName", true, false);
+//            iu.indexField(library + "_members", "signings.signDate", false, false);
+//            iu.indexField(library + "_members", "corporateMember.instName", false, false);
+//            iu.indexField(library + "_records", "primerci.invBroj", false, false);
+//            iu.indexField(library + "_records", "godine.invBroj", false, false);
+//            iu.indexField(library + "_records", "godine.sveske.invBroj", false, false);
+//            iu.indexField(library + "_records", "rn", true, false);
+//            iu.indexField(library + "_registries", "code", true, false);
+//            iu.indexField(library + "_records", "fields.name", true, false);
+//            iu.indexField(library + "_records", "fields.subfields.name", true, false);
 
             // make coders
             Map<String, String> codersMap = new HashMap<>();
