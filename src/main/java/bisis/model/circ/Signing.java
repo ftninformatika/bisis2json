@@ -25,5 +25,8 @@ public class Signing implements Serializable {
   private Double cost;
   private String receipt;
   private String location; //description
+  private MembershipType membershipType;
+  private UserCategory userCategory;
+
 }
 

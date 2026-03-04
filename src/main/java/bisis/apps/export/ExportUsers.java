@@ -99,6 +99,7 @@ public class ExportUsers {
 
       //MembershipType
       membershipTypePS.setInt(1, rset.getInt("mmbr_type"));
+      MembershipType mmbType = null;
       if(!rset.wasNull()) {
         ResultSet rMmbrt = membershipTypePS.executeQuery();
 
@@ -106,17 +107,15 @@ public class ExportUsers {
         if (Mysql2MongoBisisMigrationTool.library.equals("bgb")) {
           if(rMmbrt.next()) {
             String name = rMmbrt.getString("name");
-            MembershipType mmbType = MemberCodersPairingMap.getMmbrTypeByName(name);
-            member.setMembershipType(mmbType);
+            mmbType = MemberCodersPairingMap.getMmbrTypeByName(name);
           }
         }
         else {
-          MembershipType mmbrt = new MembershipType();
+          mmbType = new MembershipType();
           if (rMmbrt.next()) {
-            mmbrt.setDescription(rMmbrt.getString("name"));
-            mmbrt.setPeriod(DaoUtils.getInteger(rMmbrt, "period"));
-            mmbrt.setLibrary(library);
-            member.setMembershipType(mmbrt);
+            mmbType.setDescription(rMmbrt.getString("name"));
+            mmbType.setPeriod(DaoUtils.getInteger(rMmbrt, "period"));
+            mmbType.setLibrary(library);
           }
         }
         rMmbrt.close();
@@ -124,6 +123,7 @@ public class ExportUsers {
 
       //UserCategory
       userCategoryPS.setInt(1, rset.getInt("user_categ"));
+      UserCategory uc = null;
       if(!rset.wasNull()) {
         ResultSet rUc = userCategoryPS.executeQuery();
 
@@ -131,22 +131,20 @@ public class ExportUsers {
         if (Mysql2MongoBisisMigrationTool.library.equals("bgb")) {
           if (rUc.next()) {
             String ucDesc = rUc.getString("name");
-            UserCategory uc = MemberCodersPairingMap.getUserCategMappedByDesc(ucDesc);
-            member.setUserCategory(uc);
+            uc = MemberCodersPairingMap.getUserCategMappedByDesc(ucDesc);
           }
         }
         else {
           if (rUc.next()) {
-            UserCategory uC = new UserCategory();
-            uC.setLibrary(library);
-            uC.setDescription(rUc.getString("name"));
-            uC.setTitlesNo(rUc.getInt("titles_no"));
-            uC.setPeriod(rUc.getInt("period"));
+            uc = new UserCategory();
+            uc.setLibrary(library);
+            uc.setDescription(rUc.getString("name"));
+            uc.setTitlesNo(rUc.getInt("titles_no"));
+            uc.setPeriod(rUc.getInt("period"));
             if (ExportCoders.hasColumn(rUc, "max_period"))
-              uC.setMaxPeriod(rUc.getInt("max_period"));
+              uc.setMaxPeriod(rUc.getInt("max_period"));
             else
-              uC.setMaxPeriod(5000);
-            member.setUserCategory(uC);
+              uc.setMaxPeriod(5000);
           }
         }
         rUc.close();
@@ -249,6 +247,12 @@ public class ExportUsers {
         signing.setCost(r2.getDouble("cost"));
         signing.setReceipt(r2.getString("receipt_id"));
         signing.setLibrarian(r2.getString("librarian") + "@" + library);
+        if (mmbType != null) {
+          signing.setMembershipType(mmbType);
+        }
+        if (uc != null) {
+          signing.setUserCategory(uc);
+        }
         member.getSignings().add(signing);
       }
       r2.close();

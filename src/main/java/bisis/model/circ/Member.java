@@ -20,8 +20,6 @@ public class Member implements Serializable {
   private Organization organization;
   private String language; //desc
   private String educationLevel; //desc
-  private MembershipType membershipType;
-  private UserCategory userCategory;
   private CorporateMember corporateMember;
   private String userId;
   private String firstName;

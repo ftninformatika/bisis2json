@@ -34,8 +34,8 @@ public class Mysql2MongoBisisMigrationTool {
         String mysqlAddress = "localhost";
         String mysqlPort = "3306";
 
-        String mysqlUsername = "bisis";
-        String mysqlPassword = "bisis";
+        String mysqlUsername = "bisisuns";
+        String mysqlPassword = "bisisuns";
         String pathToInnis = "";
         String mongoAddres = "localhost";
         String mongoPort = "27017";
