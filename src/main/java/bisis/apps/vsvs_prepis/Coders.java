@@ -12,10 +12,7 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static bisis.apps.export.ExportCoders.toJSONCoder;
 
@@ -24,7 +21,7 @@ public class Coders {
     public static final String CODER_TYPE_ACCESSION_REG = "coders.accessionReg";
     public static final String CODER_TYPE_LOCATION = "coders.location";
     public static final String CODER_TYPE_PROCESS_TYPE = "coders.process_types";
-//    public static final String CODER_TYPE_STATUS = "coders.status";
+    public static final String CODER_TYPE_STATUS = "coders.status";
     public static final String CODER_TYPE_INTERNAL_MARK = "coders.internalMark";
     public static final String CODER_TYPE_COUNTER = "coders.counters";
 
@@ -37,8 +34,8 @@ public class Coders {
             case CODER_TYPE_PROCESS_TYPE:
                 // manually copied
                 return new ArrayList<>();
-//            case CODER_TYPE_STATUS:
-//                return makeStatus(library);
+            case CODER_TYPE_STATUS:
+                return makeStatus(library);
             case CODER_TYPE_INTERNAL_MARK:
                 return makeInternalMark(library, records);
             case CODER_TYPE_COUNTER:
@@ -50,6 +47,7 @@ public class Coders {
     public static List<Coder> makeAccessionReg(String library) {
         Map<String, String> map = new HashMap<>();
         map.put("00", "Monografske publikacije");
+        map.put("88", "Greške");
 
         return getCoders(library, map);
     }
@@ -74,23 +72,31 @@ public class Coders {
         return getCoders(library, map);
     }
 
-//    public static List<Coder> makeStatus(String library) {
-//        Map<String, String> map = new HashMap<>();
-//        map.put("N", "Neobrađena");
-//        map.put("F", "U fondu");
-//        map.put("I", "Izdata");
-//        map.put("P", "Predlog za otpis");
-//        map.put("O", "Otpisana");
-//        map.put("R", "Predlog za razmenu");
-//
-//        return getCoders(library, map);
-//    }
+    public static List<Coder> makeStatus(String library) {
+        Map<String, String> map = new HashMap<>();
+
+        map.put("A", "Aktivno");
+        map.put("9", "Otpisano");
+        map.put("8", "Izgubljeno");
+        map.put("7", "Zagubljeno");
+        map.put("6", "Oštećeno");
+        map.put("5", "Preusmereno");
+        map.put("4", "U reviziji");
+        map.put("3", "U povezu");
+        map.put("2", "U obradi");
+        map.put("1", "Naručeno");
+        map.put("-", "Deziderat");
+        map.put("+", "Slobodno za razmenu");
+
+        return getCoders(library, map);
+    }
 
     public static List<Coder> makeCounters(String library, List<Record> records) {
         int maxRn = records.stream()
                 .mapToInt(Record::getRN)
                 .max()
                 .orElse(0);
+
         int maxPrimerakId = records.stream()
                 .flatMap(r -> r.getPrimerci().stream())
                 .mapToInt(Primerak::getPrimerakID)
@@ -104,6 +110,26 @@ public class Coders {
         map.put("sveskaid", 0);
         map.put("godinaid", 0);
 
+        for (Coder book : makeAccessionReg(library)) {
+            for (Coder dept : makeLocation(library)) {
+                String coderId = dept.coder_id + book.coder_id;
+
+                int maxForCoder =
+                        records.stream()
+                                .flatMap(r -> r.getPrimerci().stream())
+                                .map(Primerak::getInvBroj)
+                                .filter(Objects::nonNull)
+                                .filter(inv -> coderId.equals(getInvCode(inv)))
+                                .map(Coders::getLast7AsInt)
+                                .filter(Objects::nonNull)
+                                .mapToInt(Integer::intValue)
+                                .max()
+                                .orElse(0);
+
+                map.put(coderId, maxForCoder);
+            }
+        }
+
         List<Coder> coders = new ArrayList<>();
         for (String id : map.keySet()) {
             Integer value = map.get(id);
@@ -115,6 +141,26 @@ public class Coders {
         }
         return coders;
     }
+
+    private static String getInvCode(String invBroj) {
+        if (invBroj == null || invBroj.length() < 4) {
+            return null;
+        }
+        return invBroj.substring(0, 4);
+    }
+
+    private static Integer getLast7AsInt(String invBroj) {
+        if (invBroj == null || invBroj.length() < 7) {
+            return null;
+        }
+        String last7 = invBroj.substring(invBroj.length() - 7);
+        try {
+            return Integer.parseInt(last7);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
 
     private static List<Coder> getCoders(String library, Map<String, String> map) {
         List<Coder> coders = new ArrayList<>();

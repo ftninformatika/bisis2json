@@ -152,6 +152,7 @@ public class Import {
             codersMap.put(bisis.apps.vsvs_prepis.Coders.CODER_TYPE_PROCESS_TYPE, exportDir + "/processTypes.json");
             codersMap.put(bisis.apps.vsvs_prepis.Coders.CODER_TYPE_INTERNAL_MARK, exportDir + "/internalMarks.json");
             codersMap.put(bisis.apps.vsvs_prepis.Coders.CODER_TYPE_COUNTER, exportDir + "/counters.json");
+            codersMap.put(bisis.apps.vsvs_prepis.Coders.CODER_TYPE_STATUS, exportDir + "/statuses.json");
 
             for (String name : codersMap.keySet()) {
                 List<Coder> coders = bisis.apps.vsvs_prepis.Coders.make(name, library, records);
