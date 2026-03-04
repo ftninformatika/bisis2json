@@ -1,0 +1,176 @@
+package bisis.apps.pzzp_prepis;
+
+import bisis.model.coders.Coder;
+import bisis.model.coders.Counter;
+import bisis.model.records.Primerak;
+import bisis.model.records.Record;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
+
+import static bisis.apps.export.ExportCoders.toJSONCoder;
+
+public class Coders {
+
+    public static final String CODER_TYPE_ACCESSION_REG = "coders.accessionReg";
+    public static final String CODER_TYPE_LOCATION = "coders.location";
+    public static final String CODER_TYPE_PROCESS_TYPE = "coders.process_types";
+    public static final String CODER_TYPE_STATUS = "coders.status";
+    public static final String CODER_TYPE_COUNTER = "coders.counters";
+    public static final String CODER_ACQUISITION = "coders.acquisition";
+
+    public static List<Coder> make(String coderName, String library, List<Record> records) {
+        switch (coderName) {
+            case CODER_TYPE_ACCESSION_REG:
+                return makeAccessionReg(library);
+            case CODER_TYPE_LOCATION:
+                return makeLocation(library);
+            case CODER_TYPE_PROCESS_TYPE:
+                // manually copied
+                return new ArrayList<>();
+            case CODER_TYPE_STATUS:
+                return makeStatus(library);
+            case CODER_TYPE_COUNTER:
+                return makeCounters(library, records);
+            case CODER_ACQUISITION:
+                return makeAcquisition(library);
+            default: throw new IllegalArgumentException("Unknown coder name: " + coderName);
+        }
+    }
+
+    public static List<Coder> makeAccessionReg(String library) {
+        Map<String, String> map = new HashMap<>();
+        map.put("00", "Monografske publikacije");
+
+        return getCoders(library, map);
+    }
+
+    public static List<Coder> makeLocation(String library) {
+        Map<String, String> map = new HashMap<>();
+        map.put("00", "Biblioteka");
+
+        return getCoders(library, map);
+    }
+
+    public static List<Coder> makeStatus(String library) {
+        Map<String, String> map = new HashMap<>();
+
+        map.put("A", "Aktivno");
+        map.put("9", "Otpisano");
+        map.put("8", "Izgubljeno");
+        map.put("7", "Zagubljeno");
+        map.put("6", "Oštećeno");
+        map.put("5", "Preusmereno");
+        map.put("4", "U reviziji");
+        map.put("3", "U povezu");
+        map.put("2", "U obradi");
+        map.put("1", "Naručeno");
+        map.put("-", "Deziderat");
+        map.put("+", "Slobodno za razmenu");
+
+        return getCoders(library, map);
+    }
+
+    public static List<Coder> makeCounters(String library, List<Record> records) {
+        int maxRecordId = records.stream()
+                .mapToInt(Record::getRecordID)
+                .max()
+                .orElse(0);
+
+        int maxPrimerakId = records.stream()
+                .flatMap(r -> r.getPrimerci().stream())
+                .mapToInt(Primerak::getPrimerakID)
+                .max()
+                .orElse(0);
+
+        Map<String, Integer> map = new HashMap<>();
+        map.put("RN", maxRecordId);
+        map.put("recordid", maxRecordId);
+        map.put("primerakid", maxPrimerakId);
+        map.put("sveskaid", 0);
+        map.put("godinaid", 0);
+
+        for (Coder book : makeAccessionReg(library)) {
+            for (Coder dept : makeLocation(library)) {
+                String coderId = dept.coder_id + book.coder_id;
+
+                int maxForCoder =
+                        records.stream()
+                                .flatMap(r -> r.getPrimerci().stream())
+                                .map(Primerak::getInvBroj)
+                                .filter(Objects::nonNull)
+                                .filter(inv -> coderId.equals(getInvCode(inv)))
+                                .map(Coders::getLast7AsInt)
+                                .filter(Objects::nonNull)
+                                .mapToInt(Integer::intValue)
+                                .max()
+                                .orElse(0);
+
+                map.put(coderId, maxForCoder);
+            }
+        }
+
+        List<Coder> coders = new ArrayList<>();
+        for (String id : map.keySet()) {
+            Integer value = map.get(id);
+            Counter c = new Counter();
+            c.setCoder_id(id);
+            c.setLibrary(library);
+            c.setCounterValue(value);
+            coders.add(c);
+        }
+        return coders;
+    }
+
+    public static List<Coder> makeAcquisition(String library) {
+        Map<String, String> map = new HashMap<>();
+        map.put("o", "Otkup");
+
+        return getCoders(library, map);
+    }
+
+    private static String getInvCode(String invBroj) {
+        if (invBroj == null || invBroj.length() < 4) {
+            return null;
+        }
+        return invBroj.substring(0, 4);
+    }
+
+    private static Integer getLast7AsInt(String invBroj) {
+        if (invBroj == null || invBroj.length() < 7) {
+            return null;
+        }
+        String last7 = invBroj.substring(invBroj.length() - 7);
+        try {
+            return Integer.parseInt(last7);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+
+    private static List<Coder> getCoders(String library, Map<String, String> map) {
+        List<Coder> coders = new ArrayList<>();
+        for (String id : map.keySet()) {
+            String description = map.get(id);
+            Coder c = new Coder();
+            c.setCoder_id(id);
+            c.setDescription(description);
+            c.setLibrary(library);
+            coders.add(c);
+        }
+        return coders;
+    }
+
+    public static void write(List<Coder> coders, String path) throws IOException {
+        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(Paths.get(path)), StandardCharsets.UTF_8)));
+        pw.write(toJSONCoder(coders));
+        pw.close();
+    }
+}

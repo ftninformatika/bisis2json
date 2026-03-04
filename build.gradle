@@ -138,6 +138,16 @@ task fatJarVsvsPrepis(type: Jar) {
     archiveName 'vsvs_prepis.jar'
 }
 
+task fatJarPzzpPrepis(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'bisis.apps.pzzp_prepis.Import'
+    }
+    from sourceSets.main.output
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
+    with jar
+    archiveName 'pzzp_prepis.jar'
+}
+
 repositories {
     mavenCentral()
 }
@@ -175,4 +185,5 @@ artifacts {
     archives  fatJarBisisMigrate
     archives  fatJarMsuPrepis
     archives  fatJarVsvsPrepis
+    archives  fatJarPzzpPrepis
 }
